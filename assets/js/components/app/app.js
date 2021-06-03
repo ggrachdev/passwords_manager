@@ -22,13 +22,13 @@ export default class App extends Component {
              */
             app_is_initialized: false,
             
-            state: null
+            global_state: null
             
         };
         
         StateApi.update().then((data) => {
             this.setState({
-                state: data,
+                global_state: data,
                 app_is_initialized: true
             });
         });
