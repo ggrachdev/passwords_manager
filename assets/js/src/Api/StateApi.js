@@ -1,9 +1,6 @@
 export default class StateApi {
     static async update() {
-        return new Promise(function(resolve, reject) {
-            resolve({
-                user_is_auth: true
-            });
-        });
+        let response = await fetch('/api/global_state/get');
+        return await response.json();
     }
 }
