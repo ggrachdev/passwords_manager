@@ -9,7 +9,7 @@ export default class MainMenu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            path: location.pathname
+            path: props.path
         };
     }
 

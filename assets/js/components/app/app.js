@@ -4,27 +4,61 @@ import { Menu } from 'semantic-ui-react';
 import LoginScreen from '../screen/LoginScreen';
 import MainMenu from '../main-menu/main-menu';
 import { Container } from 'semantic-ui-react';
+import StateApi from '../../src/Api/StateApi';
 
 export default class App extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            path: location.pathname
+            
+            /**
+             * Текущий путь
+             */
+            path: location.pathname,
+            
+            /**
+             * Получены ли первичные данные для инициализации приложения
+             */
+            app_is_initialized: false,
+            
+            state: null
+            
         };
+        
+        StateApi.update().then((data) => {
+            this.setState({
+                state: data,
+                app_is_initialized: true
+            });
+        });
     }
 
     render() {
 
-        const {path} = this.state;
+        const {path, app_is_initialized} = this.state;
         
-        return (
-            <Router>
-                <MainMenu path={path}/>
-                <Route path="/">
-                    <LoginScreen/>
-                </Route>
-            </Router>
-            );
+        if (app_is_initialized)
+        {
+            return (
+                <Router>
+                    <MainMenu path={path}/>
+                    <Route path="/">
+                        <LoginScreen/>
+                    </Route>
+                </Router>
+                );
+        } else
+        {
+            return (
+                <React.Fragment>
+                    <br/>
+                    <br/>
+                    <Container>
+                        Загрузка...
+                    </Container>
+                </React.Fragment>
+                );
+        }
     }
 }
