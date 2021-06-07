@@ -8,11 +8,15 @@ export default class FormSerializer {
         return new FormData(this.formNode);
     }
 
-    getJson() {
+    getObject() {
         var object = {};
         this.getFormData().forEach((value, key) => {
             object[key] = value;
         });
-        return JSON.stringify(object);
+        return object;
+    }
+
+    getJson() {
+        return JSON.stringify(this.getObject());
     }
 }

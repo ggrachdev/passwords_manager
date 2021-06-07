@@ -26,7 +26,7 @@ export default class App extends Component {
             
         };
         
-        StateApi.update().then((data) => {
+        StateApi.get().then((data) => {
             this.setState({
                 global_state: data,
                 app_is_initialized: true

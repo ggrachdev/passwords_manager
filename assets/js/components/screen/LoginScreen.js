@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Header } from 'semantic-ui-react';
 import LoginForm from '../form/LoginForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
+import AuthApi from '../../src/Api/AuthApi';
 
 export default class LoginScreen extends Component {
 
@@ -12,11 +13,8 @@ export default class LoginScreen extends Component {
         };
         
         this.onSubmitLoginForm = (e) => {
-            console.log('custom submit');
-            
-            const dataForm = (new FormSerializer(e.target)).getJson();
-            
-            console.log(dataForm);
+            const dataForm = (new FormSerializer(e.target)).getObject();
+            AuthApi.login(dataForm);
         };
     }
 
@@ -25,9 +23,11 @@ export default class LoginScreen extends Component {
         const {path} = this.state;
 
         return (
-            <Container text>
-                <LoginForm onSubmit={this.onSubmitLoginForm}/>
-            </Container>
+            <React.Fragment>
+                <Container text>
+                    <LoginForm onSubmit={this.onSubmitLoginForm}/>
+                </Container>
+            </React.Fragment>
         );
     }
 }
