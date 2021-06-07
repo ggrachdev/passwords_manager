@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Header } from 'semantic-ui-react'
+import { Form, Header, Message } from 'semantic-ui-react'
 
 export default class LoginForm extends Component {
 
@@ -8,7 +8,8 @@ export default class LoginForm extends Component {
 
         this.state = {
             email: null,
-            password: null
+            password: null,
+            errors: props.errors || []
         };
 
         this.handlers = {
@@ -28,6 +29,15 @@ export default class LoginForm extends Component {
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {
         };
     }
+    
+    componentDidUpdate(prevProps) {
+        if(this.props.errors.length != prevProps.errors.length)
+        {
+          this.setState({
+              errors: this.props.errors
+          });
+        }
+      } 
 
     render() {
 
@@ -46,13 +56,26 @@ export default class LoginForm extends Component {
         {
             errorPassword = 'Введите пароль';
         }
-        
+
+        let Errors = [];
+
+        if (this.state.errors.length)
+        {
+            this.state.errors.forEach(function (item) {
+                Errors.push(<Message
+                    error visible
+                    header={item.header}
+                    content={item.content}
+                    />);
+            });
+        }
+
         const ButtonSubmit = (errorPassword === null && errorEmail === null && this.state.password !== null && this.state.email !== null) ? <Form.Button>Войти</Form.Button> : null;
 
         return (
             <React.Fragment>
                 <Header as='h1'>Вход:</Header>
-                <Form onSubmit={this.onSubmit}>
+                <Form autoComplete="off" onSubmit={this.onSubmit}>
                     <Form.Input fluid 
                                 label="Ваш email:" 
                                 name="email" 
@@ -68,6 +91,7 @@ export default class LoginForm extends Component {
                                 type="password" 
                                 placeholder="Введите пароль" />
                     {ButtonSubmit}
+                    {Errors}
                 </Form>
             </React.Fragment>
             );

@@ -13,11 +13,15 @@ class GlobalStateApiController extends AbstractController
      */
     public function index(): Response
     {
+        $userIsAuth = $this->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        $userName = null;
+        $userId = null;
+        
         return $this->json(
             [
-                'user_name' => null,
-                'user_id' => null,
-                'user_is_auth' => false
+                'user_name' => $userName,
+                'user_id' => $userId,
+                'user_is_auth' => $userIsAuth
             ]
         );
     }
