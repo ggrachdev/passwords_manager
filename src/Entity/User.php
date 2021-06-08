@@ -103,7 +103,7 @@ class User implements UserInterface
      */
     public function getSalt(): ?string
     {
-        return null;
+        return $_SERVER['SALT_PASSWORD'];
     }
 
     /**

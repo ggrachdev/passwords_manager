@@ -23,7 +23,18 @@ class AuthApiController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->json(['last_username' => $lastUsername, 'error' => $error]);
+        $response = [];
+        
+        if($error === null)
+        {
+            $response = ['is_success' => true, 'user_login' => $lastUsername];
+        }
+        else
+        {
+            $response = ['is_success' => false, 'error' => $error];
+        }
+
+        return $this->json($response);
     }
 
     /**1

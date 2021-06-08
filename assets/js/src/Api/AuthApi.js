@@ -13,10 +13,10 @@ export default class AuthApi {
         const responseObj = await response.json();
 
         return new Promise((resolve, reject) => {
-            if ('error' in responseObj) {
-                reject(responseObj);
-            } else {
+            if (responseObj['is_success'] == true) {
                 resolve(responseObj);
+            } else {
+                reject(responseObj);
             }
         })
     }
