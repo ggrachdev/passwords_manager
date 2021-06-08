@@ -4,6 +4,8 @@ import LoginForm from '../form/LoginForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import AuthApi from '../../src/Api/AuthApi';
 
+const equal = require('deep-equal');
+
 export default class LoginScreen extends Component {
 
     constructor(props) {
@@ -16,14 +18,11 @@ export default class LoginScreen extends Component {
         this.onSubmitLoginForm = (e) => {
             const dataForm = (new FormSerializer(e.target)).getObject();
             AuthApi.login(dataForm).then((response) => {
-                console.log('success');
-                console.log(response);
+                location.href = '/cabinet/';
                 this.setState({
                     errors: []
                 });
             }).catch((response) => {
-                console.log('error');
-                console.log(response);
                 this.setState({
                     errors: [
                         {
@@ -36,11 +35,19 @@ export default class LoginScreen extends Component {
         };
     }
 
+    componentDidUpdate(prevProps) {
+
+        if (!equal(prevProps.errors, this.props.errors))
+        {
+            this.setState({
+                errors: this.props.errors
+            });
+        }
+    }
+
     render() {
 
         const {path, errors} = this.state;
-        
-        console.log(errors);
 
         return (
             <React.Fragment>

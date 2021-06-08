@@ -6,15 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class IndexController extends AbstractController
-{
+class IndexController extends AbstractController {
+
     /**
      * @Route("/", name="index")
      */
-    public function index(): Response
-    {
-        return $this->render('base.html.twig', [
-            'controller_name' => 'IndexController',
-        ]);
+    public function index(): Response {
+        if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            return $this->redirectToRoute('cabinet');
+        } else {
+            return $this->render('base.html.twig', []);
+        }
     }
+
 }
