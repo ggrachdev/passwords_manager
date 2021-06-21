@@ -20,17 +20,43 @@ class ScreensController extends AbstractController {
     }  
     
     /**
+     * @Route("/projects/", name="projects")
+     */
+    public function projects(): Response {
+        if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            return $this->render('base.html.twig', []);
+        } else {
+            return $this->redirectToRoute('cabinet');
+        }
+    }  
+    
+    /**
+     * @Route("/history/", name="history")
+     */
+    public function historyScreen(): Response
+    {
+        if($this->isGranted('ROLE_ADMIN'))
+        {
+            return $this->render('base.html.twig', []);
+        }
+        else
+        {
+            return $this->redirectToRoute('index');
+        }
+    }
+    
+    /**
      * @Route("/cabinet/", name="cabinet")
      */
     public function cabinetScreen(): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+        if($this->isGranted('IS_AUTHENTICATED_REMEMBERED'))
         {
-            return $this->redirectToRoute('index');
+            return $this->render('base.html.twig', []);
         }
         else
         {
-            return $this->render('base.html.twig', []);
+            return $this->redirectToRoute('index');
         }
     }
     
@@ -39,13 +65,13 @@ class ScreensController extends AbstractController {
      */
     public function usersScreen(): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+        if($this->isGranted('ROLE_ADMIN'))
         {
-            return $this->redirectToRoute('index');
+            return $this->render('base.html.twig', []);
         }
         else
         {
-            return $this->render('base.html.twig', []);
+            return $this->redirectToRoute('index');
         }
     }
     
@@ -54,13 +80,13 @@ class ScreensController extends AbstractController {
      */
     public function rolesScreen(): Response
     {
-        if(!$this->isGranted('IS_AUTHENTICATED_REMEMBERED'))
+        if($this->isGranted('ROLE_ADMIN'))
         {
-            return $this->redirectToRoute('index');
+            return $this->render('base.html.twig', []);
         }
         else
         {
-            return $this->render('base.html.twig', []);
+            return $this->redirectToRoute('index');
         }
     }
 
