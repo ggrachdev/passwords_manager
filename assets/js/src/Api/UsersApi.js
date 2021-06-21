@@ -1,4 +1,4 @@
-import ResponseAdapter from './';
+import ResponseAdapter from './ResponseAdapter';
 
 export default class UsersApi {
     static async getList() {
@@ -13,7 +13,7 @@ export default class UsersApi {
             
             const response = new ResponseAdapter(responseObj);
             
-            if (responseObj.isSuccess()) {
+            if (response.isSuccess()) {
                 resolve(response);
             } else {
                 reject(response);
