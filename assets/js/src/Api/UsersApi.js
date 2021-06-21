@@ -14,9 +14,9 @@ export default class UsersApi {
             const response = new ResponseAdapter(responseObj);
             
             if (responseObj.isSuccess()) {
-                resolve(responseObj);
+                resolve(response);
             } else {
-                reject(responseObj);
+                reject(response);
             }
         })
     }
