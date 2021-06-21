@@ -42,10 +42,17 @@ export default class MainMenu extends Component {
         if (global_state.user_is_auth)
         {
             menu.push(<Menu.Item
-                name='cabinet' to='/cabinet/'
+                name='cabinet' to='/cabinet/' onClick={() => {this.setState({ path: '/cabinet/' });}} 
                 as={ Link }
                 active={path === '/cabinet/'}>
                 Кабинет
+            </Menu.Item>);
+        
+            menu.push(<Menu.Item
+                name='users' to='/users/' onClick={() => {this.setState({ path: '/users/' });}} 
+                as={ Link }
+                active={path === '/users/'}>
+                Пользователи
             </Menu.Item>);
 
             menu.push(<Menu.Item
@@ -56,8 +63,8 @@ export default class MainMenu extends Component {
         } else
         {
             menu.push(<Menu.Item
-                name='login'
-                active={path === '/'}>
+                name='login' onClick={() => {this.setState({ path: '/login/'});}} 
+                active={path === '/'}>  
                 Вход
             </Menu.Item>);
         }

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import { Menu } from 'semantic-ui-react';
 import LoginScreen from '../screen/LoginScreen';
 import CabinetScreen from '../screen/CabinetScreen';
+import UsersScreen from '../screen/UsersScreen';
 import MainMenu from '../main-menu/main-menu';
 import { Container } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
@@ -33,6 +34,7 @@ export default class App extends Component {
                 app_is_initialized: true
             });
         });
+
     }
 
     render() {
@@ -44,13 +46,17 @@ export default class App extends Component {
             return (
                 <Router>
                     <MainMenu global_state={global_state} path={path}/>
+                    <br/>
                     <Switch>
-                        <Route path="/cabinet/">
-                            <CabinetScreen/>
-                        </Route>
-                        <Route path="/">
-                            <LoginScreen/>
-                        </Route>
+                    <Route path="/cabinet/">
+                        <CabinetScreen global_state={global_state}/>
+                    </Route>
+                    <Route path="/users/">
+                        <UsersScreen global_state={global_state}/>
+                    </Route>
+                    <Route path="/">
+                        <LoginScreen global_state={global_state}/>
+                    </Route>
                     </Switch>
                 </Router>
                 );
