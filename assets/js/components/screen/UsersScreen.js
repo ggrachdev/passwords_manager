@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Container, Button, Icon, Image, Item, Label } from 'semantic-ui-react';
+import { Container, Button, Icon, Image, Item, Label, Modal, Form} from 'semantic-ui-react';
 import UsersApi from '../../src/Api/UsersApi';
+import RegistrationUserForm from '../form/RegistrationUserForm';
 
 const equal = require('deep-equal');
 
@@ -12,8 +13,12 @@ export default class UsersScreen extends Component {
             global_state: props.global_state,
             path: location.pathname,
             errors: [],
-            users: []
+            users: [],
+            modal_registration_is_open: false
         };
+
+        this.open = () => this.setState({modal_registration_is_open: true});
+        this.close = () => this.setState({modal_registration_is_open: false});
 
         UsersApi.getList().then((response) => {
             this.setState({
@@ -34,7 +39,7 @@ export default class UsersScreen extends Component {
 
     render() {
 
-        const {path, errors, users} = this.state;
+        const {path, errors, users, modal_registration_is_open} = this.state;
 
         let usersView = [];
 
@@ -50,13 +55,30 @@ export default class UsersScreen extends Component {
         });
 
         return (
-            <React.Fragment>
-                <Container>
-                    <Item.Group divided>
-                        {usersView}
-                    </Item.Group>
-                </Container>
-            </React.Fragment>
+            <Container>
+                <Item.Group divided>
+                    {usersView}
+                </Item.Group>
+            
+                <Modal 
+                    open={modal_registration_is_open} 
+                    trigger={
+                        <Button onClick={this.open}>Добавить пользователя</Button>
+                    }
+                >
+            
+                    <Modal.Header>Добавить пользователя</Modal.Header>
+                    <Modal.Content>
+                        <RegistrationUserForm />
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button onClick={this.close}>
+                            Закрыть окно
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
+            
+            </Container>
             );
     }
 }
