@@ -48,15 +48,15 @@ export default class App extends Component {
                     <MainMenu global_state={global_state} path={path}/>
                     <br/>
                     <Switch>
-                    <Route path="/cabinet/">
-                        <CabinetScreen global_state={global_state}/>
-                    </Route>
-                    <Route path="/users/">
-                        <UsersScreen global_state={global_state}/>
-                    </Route>
-                    <Route path="/">
-                        <LoginScreen global_state={global_state}/>
-                    </Route>
+                        <Route path="/cabinet/">
+                            <CabinetScreen global_state={global_state}/>
+                        </Route>
+                        <Route path="/users/">
+                            <UsersScreen global_state={global_state}/>
+                        </Route>
+                        <Route path="/">
+                            <LoginScreen global_state={global_state}/>
+                        </Route>
                     </Switch>
                 </Router>
                 );

@@ -48,12 +48,15 @@ export default class MainMenu extends Component {
                 Кабинет
             </Menu.Item>);
         
-            menu.push(<Menu.Item
-                name='users' to='/users/' onClick={() => {this.setState({ path: '/users/' });}} 
-                as={ Link }
-                active={path === '/users/'}>
-                Пользователи
-            </Menu.Item>);
+            if(global_state.user_roles.includes('ROLE_ADMIN'))
+            {
+                menu.push(<Menu.Item
+                    name='users' to='/users/' onClick={() => {this.setState({ path: '/users/' });}} 
+                    as={ Link }
+                    active={path === '/users/'}>
+                    Пользователи
+                </Menu.Item>);
+            }
 
             menu.push(<Menu.Item
                 name='logout' to='/logout/' onClick={() => {location.href = '/logout'}}
