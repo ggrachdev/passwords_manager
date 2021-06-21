@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Button, Icon, Image, Item, Label, Modal, Form} from 'semantic-ui-react';
 import UsersApi from '../../src/Api/UsersApi';
+import AuthApi from '../../src/Api/AuthApi';
 import RegistrationUserForm from '../form/RegistrationUserForm';
+import FormSerializer from '../../src/FormSerializer/FormSerializer';
 
 const equal = require('deep-equal');
 
@@ -17,6 +19,15 @@ export default class UsersScreen extends Component {
             modal_registration_is_open: false
         };
 
+        this.onSubmitRegistrationForm = (e) => {
+            const dataForm = (new FormSerializer(e.target)).getObject();
+            if(dataForm['registration_user_form[password]'] === dataForm['registration_user_form[re_password]'])
+            {
+                AuthApi.registration(dataForm).then((data) => {
+                    location.reload();
+                });
+            }
+        };
         this.open = () => this.setState({modal_registration_is_open: true});
         this.close = () => this.setState({modal_registration_is_open: false});
 
@@ -65,11 +76,11 @@ export default class UsersScreen extends Component {
                     trigger={
                         <Button onClick={this.open}>Добавить пользователя</Button>
                     }
-                >
+                    >
             
                     <Modal.Header>Добавить пользователя</Modal.Header>
                     <Modal.Content>
-                        <RegistrationUserForm />
+                        <RegistrationUserForm onSubmit={this.onSubmitRegistrationForm} />
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={this.close}>

@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class AuthApiController extends AbstractController {
 
     /**
-     * @Route("/api/auth/login", name="app_login")
+     * @Route("/api/auth/login/", name="app_login")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response {
         // if ($this->getUser()) {

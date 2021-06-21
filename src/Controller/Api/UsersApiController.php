@@ -11,16 +11,17 @@ use App\Utils\Api\Response\ApiResponse;
 class UsersApiController extends AbstractController {
 
     /**
-     * @Route("/api/users/get/all", name="users_api_get_all")
+     * @Route("/api/users/get/all/", name="users_api_get_all")
      */
     public function index(): Response {
         $apiResponse = new ApiResponse();
 
-        $em = $this->getDoctrine()->getManager();
-        $userRepository = $em->getRepository(User::class);
-        $usersDb = $userRepository->findAll();
-
         if ($this->isGranted('ROLE_ADMIN')) {
+
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository(User::class);
+            $usersDb = $userRepository->findAll();
+
             if ($usersDb === null) {
                 $apiResponse->setFail();
                 $apiResponse->setErrors('Not found users');

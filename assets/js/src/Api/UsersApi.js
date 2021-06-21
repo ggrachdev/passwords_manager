@@ -3,7 +3,7 @@ import ResponseAdapter from './ResponseAdapter';
 export default class UsersApi {
     static async getList() {
         
-        const response = await fetch('/api/users/get/all', {
+        const response = await fetch('/api/users/get/all/', {
             method: 'GET'
         });
 

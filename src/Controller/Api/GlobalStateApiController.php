@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class GlobalStateApiController extends AbstractController {
 
     /**
-     * @Route("/api/global_state/get", name="global_state_api")
+     * @Route("/api/global_state/get/", name="global_state_api")
      */
     public function index(): Response {
         $userIsAuth = $this->isGranted('IS_AUTHENTICATED_REMEMBERED');
