@@ -1,4 +1,6 @@
-export default class AuthApi {
+import ResponseAdapter from './';
+
+export default class UsersApi {
     static async getList() {
         
         const response = await fetch('/api/users/get/all', {
@@ -8,7 +10,10 @@ export default class AuthApi {
         const responseObj = await response.json();
 
         return new Promise((resolve, reject) => {
-            if (responseObj['is_success'] == true) {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (responseObj.isSuccess()) {
                 resolve(responseObj);
             } else {
                 reject(responseObj);
