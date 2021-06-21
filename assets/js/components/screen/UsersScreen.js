@@ -13,7 +13,6 @@ export default class UsersScreen extends Component {
         super(props);
         this.state = {
             global_state: props.global_state,
-            path: location.pathname,
             errors: [],
             users: [],
             modal_registration_is_open: false
@@ -25,11 +24,17 @@ export default class UsersScreen extends Component {
             {
                 AuthApi.registration(dataForm).then((data) => {
                     location.reload();
+                }).catch((response) => {
+                    alert(response);
                 });
             }
+            else
+            {
+                alert('Пароли не совпадают');
+            }
         };
-        this.open = () => this.setState({modal_registration_is_open: true});
-        this.close = () => this.setState({modal_registration_is_open: false});
+        this.openModalAddUser = () => this.setState({modal_registration_is_open: true});
+        this.closeModalAddUser = () => this.setState({modal_registration_is_open: false});
 
         UsersApi.getList().then((response) => {
             this.setState({
@@ -50,16 +55,23 @@ export default class UsersScreen extends Component {
 
     render() {
 
-        const {path, errors, users, modal_registration_is_open} = this.state;
+        const {errors, users, modal_registration_is_open} = this.state;
 
         let usersView = [];
 
         users.forEach((user) => {
+            
+            let labels = [];
+            
+            user.roles.forEach((roleData) => {
+                labels.push(<Label color={roleData.color}>{roleData.name}</Label>);
+            });
+            
             usersView.push(<Item>
                 <Item.Content>
                     <Item.Header as='a'>{user.second_name} {user.first_name} {user.middle_name}</Item.Header>
                     <Item.Extra>
-                        <Label color='blue'>Администраторы</Label>
+                        {labels}
                     </Item.Extra>
                 </Item.Content>
             </Item>);
@@ -74,7 +86,7 @@ export default class UsersScreen extends Component {
                 <Modal 
                     open={modal_registration_is_open} 
                     trigger={
-                        <Button onClick={this.open}>Добавить пользователя</Button>
+                        <Button onClick={this.openModalAddUser}>Добавить пользователя</Button>
                     }
                     >
             
@@ -83,7 +95,7 @@ export default class UsersScreen extends Component {
                         <RegistrationUserForm onSubmit={this.onSubmitRegistrationForm} />
                     </Modal.Content>
                     <Modal.Actions>
-                        <Button onClick={this.close}>
+                        <Button onClick={this.closeModalAddUser}>
                             Закрыть окно
                         </Button>
                     </Modal.Actions>

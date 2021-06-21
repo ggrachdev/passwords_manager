@@ -42,10 +42,24 @@ export default class MainMenu extends Component {
         if (global_state.user_is_auth)
         {
             menu.push(<Menu.Item
+                name='cabinet' to='/projects/' onClick={() => {this.setState({ path: '/projects/' });}} 
+                as={ Link }
+                active={path === '/projects/'}>
+                Проекты
+            </Menu.Item>);
+        
+            menu.push(<Menu.Item
                 name='cabinet' to='/cabinet/' onClick={() => {this.setState({ path: '/cabinet/' });}} 
                 as={ Link }
                 active={path === '/cabinet/'}>
                 Кабинет
+            </Menu.Item>);
+        
+            menu.push(<Menu.Item
+                name='cabinet' to='/history/' onClick={() => {this.setState({ path: '/history/' });}} 
+                as={ Link }
+                active={path === '/history/'}>
+                История
             </Menu.Item>);
         
             if(global_state.user_roles.includes('ROLE_ADMIN'))
@@ -56,10 +70,17 @@ export default class MainMenu extends Component {
                     active={path === '/users/'}>
                     Пользователи
                 </Menu.Item>);
+            
+                menu.push(<Menu.Item
+                    name='roles' to='/roles/' onClick={() => {this.setState({ path: '/roles/' });}} 
+                    as={ Link }
+                    active={path === '/roles/'}>
+                    Роли
+                </Menu.Item>);
             }
 
             menu.push(<Menu.Item
-                name='logout' to='/logout/' onClick={() => {location.href = '/logout'}}
+                name='logout' onClick={() => {location.href = '/logout'}}
                 as={ Link }>
                 Выход
             </Menu.Item>);

@@ -4,6 +4,7 @@ import { Menu } from 'semantic-ui-react';
 import LoginScreen from '../screen/LoginScreen';
 import CabinetScreen from '../screen/CabinetScreen';
 import UsersScreen from '../screen/UsersScreen';
+import RolesScreen from '../screen/RolesScreen';
 import MainMenu from '../main-menu/main-menu';
 import { Container } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
@@ -46,13 +47,18 @@ export default class App extends Component {
             return (
                 <Router>
                     <MainMenu global_state={global_state} path={path}/>
+                    
                     <br/>
+                    
                     <Switch>
                         <Route path="/cabinet/">
                             <CabinetScreen global_state={global_state}/>
                         </Route>
                         <Route path="/users/">
                             <UsersScreen global_state={global_state}/>
+                        </Route>
+                        <Route path="/roles/">
+                            <RolesScreen global_state={global_state}/>
                         </Route>
                         <Route path="/">
                             <LoginScreen global_state={global_state}/>

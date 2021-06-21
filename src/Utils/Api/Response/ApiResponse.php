@@ -38,7 +38,7 @@ class ApiResponse {
     public function generate()
     {
 	$response = new Response();
-	$response->setContent(json_encode($this->responseData));
+	$response->setContent(json_encode($this->responseData, JSON_UNESCAPED_UNICODE));
 	$response->headers->set('Content-Type', 'application/json');
 	return $response;
     }

@@ -1,10 +1,10 @@
 export default class ResponseAdapter {
         
-    constructor(response)
+    constructor(responseObject)
     {
-        this.is_success = response['is_success'] == true;
-        this.data = response['data'];
-        this.errors = response['errors'];
+        this.is_success = responseObject['is_success'] == true;
+        this.data = responseObject['data'];
+        this.errors = responseObject['errors'];
     }
         
     isSuccess()
