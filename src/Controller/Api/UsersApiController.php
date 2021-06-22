@@ -12,9 +12,36 @@ use App\Utils\Api\Response\ApiResponse;
 class UsersApiController extends AbstractController {
 
     /**
+     * @Route("/api/users/remove/{id}/", name="users_api_remove_user")
+     */
+    public function removeUser($id): Response {
+        $apiResponse = new ApiResponse();
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository(User::class);
+            $userForRemove = $userRepository->find($id);
+
+            if ($userForRemove != null) {
+                $em->remove($userForRemove);
+                $em->flush();
+                $apiResponse->setSuccess();
+            } else {
+                $apiResponse->setFail();
+                $apiResponse->setErrors("User with id = $id not found");
+            }
+        } else {
+            $apiResponse->setFail();
+            $apiResponse->setErrors('Has not access');
+        }
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/api/users/get/all/", name="users_api_get_all")
      */
-    public function index(): Response {
+    public function getAll(): Response {
         $apiResponse = new ApiResponse();
 
         if ($this->isGranted('ROLE_ADMIN')) {
@@ -54,7 +81,8 @@ class UsersApiController extends AbstractController {
                         'first_name' => $user->getFirstName(),
                         'second_name' => $user->getSecondName(),
                         'middle_name' => $user->getMiddleName(),
-                        'email' => $user->getEmail()
+                        'email' => $user->getEmail(),
+                        'id' => $user->getId()
                     ];
                 }
 

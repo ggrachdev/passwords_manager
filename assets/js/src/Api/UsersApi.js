@@ -20,4 +20,24 @@ export default class UsersApi {
             }
         })
     }
+    
+    static async remove(id) {
+        
+        const response = await fetch(`/api/users/remove/${id}/`, {
+            method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
 }

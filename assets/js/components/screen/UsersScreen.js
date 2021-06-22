@@ -15,9 +15,13 @@ export default class UsersScreen extends Component {
             global_state: props.global_state,
             errors: [],
             users: [],
+            user_id_for_delete: null,
+            user_name_for_delete: null,
+            modal_delete_user_is_open: false,
+            modal_edit_user_is_open: false,
             modal_registration_is_open: false
         };
-
+        
         this.onSubmitRegistrationForm = (e) => {
             const dataForm = (new FormSerializer(e.target)).getObject();
             if(dataForm['registration_user_form[password]'] === dataForm['registration_user_form[re_password]'])
@@ -55,7 +59,7 @@ export default class UsersScreen extends Component {
 
     render() {
 
-        const {errors, users, modal_registration_is_open} = this.state;
+        const {errors, users, modal_registration_is_open, modal_delete_user_is_open, user_name_for_delete} = this.state;
 
         let usersView = [];
 
@@ -70,7 +74,37 @@ export default class UsersScreen extends Component {
             usersView.push(
                 <Item>
                     <Item.Content>
-                        <Item.Header as='a'>{user.second_name} {user.first_name} {user.middle_name}</Item.Header>
+                        <Item.Header>{user.second_name} {user.first_name} {user.middle_name}</Item.Header>
+                        
+                        <Item.Meta>
+                            {user.email}
+                        </Item.Meta>
+                
+                        <Item.Description>
+                        
+                            <Button basic color='blue' size='mini'>
+                                <Icon name='edit' />
+                                Изменить                            
+                            </Button> 
+                            
+                            <Button basic color='violet' size='mini'>
+                                <Icon name='shield alternate' />
+                                Скомпрометировать пароли
+                            </Button>
+                            
+                            <Button onClick={() => {
+                                this.setState({
+                                    user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
+                                    user_id_for_delete: user.id,
+                                    modal_delete_user_is_open: true
+                                });
+                            }} basic color='red' size='mini'>
+                                <Icon name='remove' />
+                                Удалить
+                            </Button>
+                            
+                        </Item.Description>
+                        
                         <Item.Extra>
                             {labels}
                         </Item.Extra>
@@ -101,6 +135,40 @@ export default class UsersScreen extends Component {
                         </Button>
                     </Modal.Actions>
                 </Modal>
+                
+                <Modal
+                    open={modal_delete_user_is_open} 
+                    header={`Вы действительно хотите удалить пользователя ${user_name_for_delete}?`}
+                    actions={
+                        [
+                            {
+                                key: 'no', 
+                                content: 'Нет', 
+                                positive: false, 
+                                onClick: () => {
+                                    this.setState({
+                                        modal_delete_user_is_open: false
+                                    })
+                                }
+                            }, 
+                            {
+                                key: 'done', 
+                                content: 'Да', 
+                                positive: true, 
+                                onClick: () => {
+                                    
+                                    this.setState({
+                                        modal_delete_user_is_open: false
+                                    });
+                                        
+                                    UsersApi.remove(this.state.user_id_for_delete).then(function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        ]
+                    }
+                  />
             
             </Container>
         );

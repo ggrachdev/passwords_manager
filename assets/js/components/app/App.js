@@ -6,7 +6,7 @@ import CabinetScreen from '../screen/CabinetScreen';
 import UsersScreen from '../screen/UsersScreen';
 import RolesScreen from '../screen/RolesScreen';
 import MainMenu from '../main-menu/main-menu';
-import { Container } from 'semantic-ui-react';
+import { Container, Loader, Dimmer } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
 
 export default class App extends Component {
@@ -64,8 +64,11 @@ export default class App extends Component {
                             <LoginScreen global_state={global_state}/>
                         </Route>
                     </Switch>
+                    
+                    <br/>
+                    
                 </Router>
-                );
+            );
         } else
         {
             return (
@@ -73,10 +76,12 @@ export default class App extends Component {
                     <br/>
                     <br/>
                     <Container>
-                        Загрузка...
+                        <Dimmer active inverted>
+                            <Loader inverted>Загрузка</Loader>
+                        </Dimmer>
                     </Container>
                 </React.Fragment>
-                );
+            );
         }
     }
 }
