@@ -13,7 +13,7 @@ class RolesApiController extends AbstractController {
     /**
      * @Route("/api/roles/get/all/", name="roles_api_get_all")
      */
-    public function index(): Response {
+    public function getAll(): Response {
         $apiResponse = new ApiResponse();
 
         if ($this->isGranted('ROLE_ADMIN')) {

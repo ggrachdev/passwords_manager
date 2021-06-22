@@ -3,6 +3,7 @@ import { Container, Button, Icon, Image, Item, Label, Modal, Form} from 'semanti
 import UsersApi from '../../src/Api/UsersApi';
 import AuthApi from '../../src/Api/AuthApi';
 import RegistrationUserForm from '../form/RegistrationUserForm';
+import ChangeUserForm from '../form/ChangeUserForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 
 const equal = require('deep-equal');
@@ -15,11 +16,24 @@ export default class UsersScreen extends Component {
             global_state: props.global_state,
             errors: [],
             users: [],
+            user_id_for_update: null,
             user_id_for_delete: null,
             user_name_for_delete: null,
             modal_delete_user_is_open: false,
             modal_edit_user_is_open: false,
             modal_registration_is_open: false
+        };
+        
+        this.onSubmitChangeForm = (e) => {
+            const dataForm = (new FormSerializer(e.target)).getObject();
+            if(dataForm['registration_user_form[password]'] === dataForm['registration_user_form[re_password]'])
+            {
+                
+            }
+            else
+            {
+                
+            }
         };
         
         this.onSubmitRegistrationForm = (e) => {
@@ -37,6 +51,10 @@ export default class UsersScreen extends Component {
                 alert('Пароли не совпадают');
             }
         };
+        
+        this.openModalChangeUser = () => this.setState({modal_edit_user_is_open: true});
+        this.closeModalChangeUser = () => this.setState({modal_edit_user_is_open: false});
+        
         this.openModalAddUser = () => this.setState({modal_registration_is_open: true});
         this.closeModalAddUser = () => this.setState({modal_registration_is_open: false});
 
@@ -59,7 +77,7 @@ export default class UsersScreen extends Component {
 
     render() {
 
-        const {errors, users, modal_registration_is_open, modal_delete_user_is_open, user_name_for_delete} = this.state;
+        const {errors, users, user_id_for_update, modal_registration_is_open, modal_delete_user_is_open, modal_edit_user_is_open, user_name_for_delete} = this.state;
 
         let usersView = [];
 
@@ -67,7 +85,7 @@ export default class UsersScreen extends Component {
             
             let labels = [];
             
-            user.roles.forEach((roleData) => {
+            user.roles_full.forEach((roleData) => {
                 labels.push(<Label color={roleData.color}>{roleData.name}</Label>);
             });
             
@@ -82,7 +100,12 @@ export default class UsersScreen extends Component {
                 
                         <Item.Description>
                         
-                            <Button basic color='blue' size='mini'>
+                            <Button onClick={() => {
+                                this.setState({
+                                    user_id_for_update: user.id,
+                                    modal_edit_user_is_open: true
+                                });
+                            }} basic color='blue' size='mini'>
                                 <Icon name='edit' />
                                 Изменить                            
                             </Button> 
@@ -131,6 +154,19 @@ export default class UsersScreen extends Component {
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={this.closeModalAddUser}>
+                            Закрыть окно
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
+            
+                <Modal 
+                    open={modal_edit_user_is_open} >
+                    <Modal.Header>Изменить данные пользователя</Modal.Header>
+                    <Modal.Content>
+                        <ChangeUserForm user_id={user_id_for_update} onSubmit={this.onSubmitChangeForm} />
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button onClick={this.closeModalChangeUser}>
                             Закрыть окно
                         </Button>
                     </Modal.Actions>

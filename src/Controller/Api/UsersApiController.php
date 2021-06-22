@@ -39,6 +39,65 @@ class UsersApiController extends AbstractController {
     }
 
     /**
+     * @Route("/api/users/get/{id}/", requirements={"id"="\d+"} , name="users_api_get_data")
+     */
+    public function getData($id): Response {
+        $apiResponse = new ApiResponse();
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository(User::class);
+            $roleRepository = $em->getRepository(Role::class);
+
+            $usersDb = [$userRepository->find($id)];
+            $rolesDb = $roleRepository->findAll();
+
+            if ($usersDb === null) {
+                $apiResponse->setFail();
+                $apiResponse->setErrors('Not found users');
+            } else {
+                $apiResponse->setSuccess();
+                $users = [];
+
+                foreach ($usersDb as $user) {
+                    $rolesResponse = [];
+                    $roles = $user->getRoles();
+
+                    foreach ($roles as $value) {
+                        foreach ($rolesDb as $role) {
+                            if ($role->getRoleKey() === $value) {
+                                $rolesResponse[] = [
+                                    'key' => $value,
+                                    'color' => $role->getRoleColor(),
+                                    'name' => $role->getRoleName()
+                                ];
+                            }
+                        }
+                    }
+
+                    $users[] = [
+                        'roles' => $user->getRoles(),
+                        'roles_full' => $rolesResponse,
+                        'first_name' => $user->getFirstName(),
+                        'second_name' => $user->getSecondName(),
+                        'middle_name' => $user->getMiddleName(),
+                        'email' => $user->getEmail(),
+                        'id' => $user->getId()
+                    ];
+                }
+
+                $apiResponse->setData(['user' => $users[0]]);
+            }
+        } else {
+            $apiResponse->setFail();
+            $apiResponse->setErrors('Has not access');
+        }
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/api/users/get/all/", name="users_api_get_all")
      */
     public function getAll(): Response {
@@ -77,7 +136,8 @@ class UsersApiController extends AbstractController {
                     }
 
                     $users[] = [
-                        'roles' => $rolesResponse,
+                        'roles_full' => $rolesResponse,
+                        'roles' => $user->getRoles(),
                         'first_name' => $user->getFirstName(),
                         'second_name' => $user->getSecondName(),
                         'middle_name' => $user->getMiddleName(),

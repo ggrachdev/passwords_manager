@@ -20,7 +20,6 @@ class GlobalStateApiController extends AbstractController {
         $userRoles = [];
 
         if ($userIsAuth) {
-
             $user = $this->getUser();
             $userName = $user->getFirstName();
             $userSecondName = $user->getSecondName();
