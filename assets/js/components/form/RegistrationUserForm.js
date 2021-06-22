@@ -7,16 +7,25 @@ export default class RegistrationUserForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            roles: [],
             errors: props.errors || [],
-            roles: [
-
-            ]
+            selected_roles: []
         };
 
-        this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {
+        this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
+
+        this.changeRolesRadioHandler = (e, valueData) => {
+            
+            const value = valueData.value;
+            
+            let nowSelectedRoles = [...this.state.selected_roles];
+            
+            let newSelectedRoles = nowSelectedRoles.includes(value) ? _.without(nowSelectedRoles, value) : _.concat(nowSelectedRoles, value);
+            
+            this.setState({
+                selected_roles: newSelectedRoles
+            })
         };
-
-
 
         RolesApi.getList().then((response) => {
             this.setState({
@@ -34,13 +43,15 @@ export default class RegistrationUserForm extends Component {
             roles.forEach((role) => {
                 viewRadio.push(
                     <Form.Field>
-                        <Radio
-                            label={role.name}
-                            name={role.name}
-                            value={role.key}
+                        <Radio 
+                            label={role.name} 
+                            name={`registration_user_form[role][${role.key}]`}
+                            checked={this.state.selected_roles.includes(role.key)} 
+                            onClick={this.changeRolesRadioHandler} 
+                            value={role.key} 
                         />
                     </Form.Field>
-                    );
+                );
             });
             return viewRadio;
         };

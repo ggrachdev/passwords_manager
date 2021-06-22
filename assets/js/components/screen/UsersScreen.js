@@ -67,14 +67,16 @@ export default class UsersScreen extends Component {
                 labels.push(<Label color={roleData.color}>{roleData.name}</Label>);
             });
             
-            usersView.push(<Item>
-                <Item.Content>
-                    <Item.Header as='a'>{user.second_name} {user.first_name} {user.middle_name}</Item.Header>
-                    <Item.Extra>
-                        {labels}
-                    </Item.Extra>
-                </Item.Content>
-            </Item>);
+            usersView.push(
+                <Item>
+                    <Item.Content>
+                        <Item.Header as='a'>{user.second_name} {user.first_name} {user.middle_name}</Item.Header>
+                        <Item.Extra>
+                            {labels}
+                        </Item.Extra>
+                    </Item.Content>
+                </Item>
+            );
         });
 
         return (
@@ -87,8 +89,7 @@ export default class UsersScreen extends Component {
                     open={modal_registration_is_open} 
                     trigger={
                         <Button onClick={this.openModalAddUser}>Добавить пользователя</Button>
-                    }
-                    >
+                    }>
             
                     <Modal.Header>Добавить пользователя</Modal.Header>
                     <Modal.Content>
@@ -102,6 +103,6 @@ export default class UsersScreen extends Component {
                 </Modal>
             
             </Container>
-            );
+        );
     }
 }

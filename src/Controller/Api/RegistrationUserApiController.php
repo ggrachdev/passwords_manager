@@ -49,7 +49,7 @@ class RegistrationUserApiController extends AbstractController {
                 if ($registrationForm->isValid()) {
                     $pass = $encoder->encodePassword($newUser, $request->request->get('registration_user_form')['password']);
                     $newUser->setPassword($pass);
-                    $newUser->setRoles(['ROLE_USER']);
+                    $newUser->setRoles($request->request->get('registration_user_form')['role']);
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($newUser);
                     $em->flush();
