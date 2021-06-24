@@ -10,14 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Role
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
 
     /**
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
      * @ORM\Column(type="string", length=255)
      */
     private $role_key;
@@ -25,17 +21,12 @@ class Role
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $role_name;
+    private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $role_color;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    private $color;
 
     public function getRoleKey(): ?string
     {
@@ -49,26 +40,26 @@ class Role
         return $this;
     }
 
-    public function getRoleName(): ?string
+    public function getName(): ?string
     {
-        return $this->role_name;
+        return $this->name;
     }
 
-    public function setRoleName(string $role_name): self
+    public function setName(string $role_name): self
     {
-        $this->role_name = $role_name;
+        $this->name = $role_name;
 
         return $this;
     }
 
-    public function getRoleColor(): ?string
+    public function getColor(): ?string
     {
-        return $this->role_color;
+        return $this->color;
     }
 
-    public function setRoleColor(string $role_color): self
+    public function setColor(string $color): self
     {
-        $this->role_color = $role_color;
+        $this->color = $color;
 
         return $this;
     }

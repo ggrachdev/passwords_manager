@@ -69,8 +69,8 @@ class UsersApiController extends AbstractController {
                             if ($role->getRoleKey() === $value) {
                                 $rolesResponse[] = [
                                     'key' => $value,
-                                    'color' => $role->getRoleColor(),
-                                    'name' => $role->getRoleName()
+                                    'color' => $role->getColor(),
+                                    'name' => $role->getName()
                                 ];
                             }
                         }
@@ -128,8 +128,8 @@ class UsersApiController extends AbstractController {
                             if ($role->getRoleKey() === $value) {
                                 $rolesResponse[] = [
                                     'key' => $value,
-                                    'color' => $role->getRoleColor(),
-                                    'name' => $role->getRoleName()
+                                    'color' => $role->getColor(),
+                                    'name' => $role->getName()
                                 ];
                             }
                         }

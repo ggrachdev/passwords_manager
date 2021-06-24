@@ -32,8 +32,8 @@ class RolesApiController extends AbstractController {
                 foreach ($rolesDb as $role) {
                     $roles[] = [
                         'key' => $role->getRoleKey(),
-                        'color' => $role->getRoleColor(),
-                        'name' => $role->getRoleName()
+                        'color' => $role->getColor(),
+                        'name' => $role->getName()
                     ];
                 }
 
