@@ -23,43 +23,53 @@ export default class UsersScreen extends Component {
             modal_edit_user_is_open: false,
             modal_registration_is_open: false
         };
-        
-        this.onSubmitChangeForm = (e) => {
+
+        this.onSubmitUserChangeForm = (e) => {
             const dataForm = (new FormSerializer(e.target)).getObject();
-            if(dataForm['change_user_form[password]'] === dataForm['change_user_form[re_password]'])
+            if (dataForm['change_user_form[password]'] === dataForm['change_user_form[re_password]'])
             {
                 UsersApi.set(this.state.user_id_for_update, dataForm).then((response) => {
+                    this.setState({
+                        modal_edit_user_is_open: false
+                    });
+                    this.initialize();
+                }).catch(() => {
                     location.reload();
                 });
-            }
-            else
-            {
-                
-            }
-        };
-        
-        this.onSubmitRegistrationForm = (e) => {
-            const dataForm = (new FormSerializer(e.target)).getObject();
-            if(dataForm['registration_user_form[password]'] === dataForm['registration_user_form[re_password]'])
-            {
-                AuthApi.registration(dataForm).then((data) => {
-                    location.reload();
-                }).catch((response) => {
-                    alert(response);
-                });
-            }
-            else
+            } else
             {
                 alert('Пароли не совпадают');
             }
         };
-        
+
+        this.onSubmitRegistrationForm = (e) => {
+            const dataForm = (new FormSerializer(e.target)).getObject();
+            if (dataForm['registration_user_form[password]'] === dataForm['registration_user_form[re_password]'])
+            {
+                AuthApi.registration(dataForm).then((data) => {
+                    this.setState({
+                        modal_registration_is_open: false
+                    });
+                    this.initialize();
+                }).catch((response) => {
+                    alert(response);
+                });
+            } else
+            {
+                alert('Пароли не совпадают');
+            }
+        };
+
         this.openModalChangeUser = () => this.setState({modal_edit_user_is_open: true});
         this.closeModalChangeUser = () => this.setState({modal_edit_user_is_open: false});
-        
+
         this.openModalAddUser = () => this.setState({modal_registration_is_open: true});
         this.closeModalAddUser = () => this.setState({modal_registration_is_open: false});
 
+        this.initialize();
+    }
+    
+    initialize() {
         UsersApi.getList().then((response) => {
             this.setState({
                 users: response.getData()['users']
@@ -84,58 +94,58 @@ export default class UsersScreen extends Component {
         let usersView = [];
 
         users.forEach((user) => {
-            
+
             let labels = [];
-            
+
             user.roles_full.forEach((roleData) => {
                 labels.push(<Label color={roleData.color}>{roleData.name}</Label>);
             });
-            
+
             usersView.push(
                 <Item>
                     <Item.Content>
                         <Item.Header>{user.second_name} {user.first_name} {user.middle_name}</Item.Header>
-                        
+                
                         <Item.Meta>
                             {user.email}
                         </Item.Meta>
                 
                         <Item.Description>
-                        
+                
                             <Button onClick={() => {
-                                this.setState({
-                                    user_id_for_update: user.id,
-                                    modal_edit_user_is_open: true
-                                });
-                            }} basic color='blue' size='mini'>
+                        this.setState({
+                            user_id_for_update: user.id,
+                                        modal_edit_user_is_open: true
+                                    });
+                                }} basic color='blue' size='mini'>
                                 <Icon name='edit' />
                                 Изменить                            
                             </Button> 
-                            
+                
                             <Button basic color='violet' size='mini'>
                                 <Icon name='shield alternate' />
                                 Скомпрометировать пароли
                             </Button>
-                            
+                
                             <Button onClick={() => {
-                                this.setState({
-                                    user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
-                                    user_id_for_delete: user.id,
-                                    modal_delete_user_is_open: true
-                                });
-                            }} basic color='red' size='mini'>
+                        this.setState({
+                            user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
+                                        user_id_for_delete: user.id,
+                                        modal_delete_user_is_open: true
+                                    });
+                                }} basic color='red' size='mini'>
                                 <Icon name='remove' />
                                 Удалить
                             </Button>
-                            
+                
                         </Item.Description>
-                        
+                
                         <Item.Extra>
                             {labels}
                         </Item.Extra>
                     </Item.Content>
                 </Item>
-            );
+                );
         });
 
         return (
@@ -165,7 +175,7 @@ export default class UsersScreen extends Component {
                     open={modal_edit_user_is_open} >
                     <Modal.Header>Изменить данные пользователя</Modal.Header>
                     <Modal.Content>
-                        <ChangeUserForm user_id={user_id_for_update} onSubmit={this.onSubmitChangeForm} />
+                        <ChangeUserForm user_id={user_id_for_update} onSubmit={this.onSubmitUserChangeForm} />
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={this.closeModalChangeUser}>
@@ -173,32 +183,32 @@ export default class UsersScreen extends Component {
                         </Button>
                     </Modal.Actions>
                 </Modal>
-                
+            
                 <Modal
                     open={modal_delete_user_is_open} 
                     header={`Вы действительно хотите удалить пользователя ${user_name_for_delete}?`}
                     actions={
-                        [
-                            {
-                                key: 'no', 
-                                content: 'Нет', 
-                                positive: false, 
+                [
+                    {
+                                key: 'no',
+                                content: 'Нет',
+                                positive: false,
                                 onClick: () => {
                                     this.setState({
                                         modal_delete_user_is_open: false
                                     })
                                 }
-                            }, 
+                            },
                             {
-                                key: 'done', 
-                                content: 'Да', 
-                                positive: true, 
+                                key: 'done',
+                                content: 'Да',
+                                positive: true,
                                 onClick: () => {
-                                    
+
                                     this.setState({
                                         modal_delete_user_is_open: false
                                     });
-                                        
+
                                     UsersApi.remove(this.state.user_id_for_delete).then(function () {
                                         location.reload();
                                     });
@@ -206,9 +216,9 @@ export default class UsersScreen extends Component {
                             }
                         ]
                     }
-                  />
+                    />
             
             </Container>
-        );
+            );
     }
 }

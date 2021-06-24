@@ -63,7 +63,18 @@ class UsersApiController extends AbstractController {
                 $changedUser->setPassword($pass);
             }
             
-            $changedUser->setRoles(array_values($request->request->get('change_user_form')['role']));
+            
+            if(
+                array_key_exists('role', $request->request->get('change_user_form'))
+            )
+            {
+                $newRoles = array_values($request->request->get('change_user_form')['role']);
+                $changedUser->setRoles($newRoles);
+            }
+            else
+            {
+                $changedUser->setRoles(['ROLE_USER']);
+            }
 
             $em->persist($changedUser);
             $em->flush();

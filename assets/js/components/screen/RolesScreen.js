@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Button, Icon, Image, Item, Label, Modal, Form} from 'semantic-ui-react';
-import UsersApi from '../../src/Api/UsersApi';
-import AuthApi from '../../src/Api/AuthApi';
+import RolesApi from '../../src/Api/RolesApi';
 import RegistrationUserForm from '../form/RegistrationUserForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 
@@ -13,17 +12,66 @@ export default class RolesScreen extends Component {
         super(props);
         this.state = {
             global_state: props.global_state,
-            errors: []
+            errors: [],
+            roles: []
         };
+        this.initialize();
+    }
+
+    initialize() {
+        RolesApi.getList().then((response) => {
+            this.setState({
+                roles: response.getData()['roles']
+            });
+        });
     }
 
     render() {
 
-        const {errors, users, modal_registration_is_open} = this.state;
+        const {errors, roles} = this.state;
+
+        let rolesViews = [];
+
+        roles.forEach((role) => {
+
+            let label = (<Label size="large" color={role.color}>{role.name}</Label>);
+            rolesViews.push(
+                <Item>
+                    <Item.Content>
+                        <Item.Header>{label}</Item.Header>
+                
+                        <Item.Description>
+                
+                            <Button onClick={() => {
+                                    this.setState({
+                                        user_id_for_update: role.key,
+                                        modal_edit_user_is_open: true
+                                    });
+                                        }} basic color='blue' size='mini'>
+                                <Icon name='edit' />
+                                Изменить    
+                            </Button>                        
+                
+                            <Button onClick={() => {
+                                    this.setState({
+                                        modal_delete_user_is_open: true
+                                    });
+                                        }} basic color='red' size='mini'>
+                                <Icon name='remove' />
+                                Удалить
+                            </Button>
+                
+                        </Item.Description>
+                    </Item.Content>
+                </Item>
+                );
+        });
 
         return (
             <Container>
-                RolesScreen
+                <Item.Group divided>
+                    {rolesViews}
+                </Item.Group>
             </Container>
             );
     }
