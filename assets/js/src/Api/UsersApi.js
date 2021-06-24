@@ -48,6 +48,35 @@ export default class UsersApi {
         })
     }
     
+    /**
+     * Измениить данные пользователя
+     */
+    static async set(id, data) {
+        
+        data['change_user_form[_csrf_token]'] = GlobalData.csrf['change_user_form'];
+        
+        const response = await fetch(`/api/users/set/${id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(data).toString()
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
     
     /**
      * Удалить пользователя

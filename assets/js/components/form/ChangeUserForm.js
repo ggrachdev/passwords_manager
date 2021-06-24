@@ -20,25 +20,27 @@ export default class ChangeUserForm extends Component {
             user_id: props.user_id,
             errors: props.errors || [],
             selected_roles: []
-        };``
+        };
 
-        this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
+        this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {
+        };
 
         this.changeRolesRadioHandler = (e, valueData) => {
-            
+
             const value = valueData.value;
-            
-            let nowSelectedRoles = [...this.state.user_data.roles];
-            
+
+            let nowSelectedRoles = [...this.state.selected_roles];
+
             let newSelectedRoles = nowSelectedRoles.includes(value) ? _.without(nowSelectedRoles, value) : _.concat(nowSelectedRoles, value);
-            
+
             this.setState({
                 selected_roles: newSelectedRoles
             })
         };
-        
+
         UsersApi.get(props.user_id).then((response) => {
             this.setState({
+                selected_roles: response.getData()['user']['roles'],
                 user_data: response.getData()['user']
             });
         });
@@ -56,19 +58,19 @@ export default class ChangeUserForm extends Component {
 
         const renderRadioRoles = () => {
             let viewRadio = [];
-            
+
             roles.forEach((role) => {
                 viewRadio.push(
                     <Form.Field>
                         <Radio 
                             label={role.name} 
-                            name={`registration_user_form[role][${role.key}]`}
-                            checked={this.state.user_data.roles.includes(role.key)} 
+                            name={`change_user_form[role][${role.key}]`}
+                            checked={this.state.selected_roles.includes(role.key)} 
                             onClick={this.changeRolesRadioHandler} 
                             value={role.key} 
                         />
                     </Form.Field>
-                );
+                    );
             });
             return viewRadio;
         };
@@ -81,7 +83,7 @@ export default class ChangeUserForm extends Component {
                     <Form.Input fluid 
                                 label="Email:" 
                                 required="true" 
-                                name="registration_user_form[email]" 
+                                name="change_user_form[email]" 
                                 type="email" 
                                 value={user_data.email} 
                                 placeholder="Введите email" />
@@ -89,33 +91,31 @@ export default class ChangeUserForm extends Component {
                                 label="Отчество:" 
                                 value={user_data.middle_name} 
                                 required="true" 
-                                name="registration_user_form[middle_name]" 
+                                name="change_user_form[middle_name]" 
                                 type="text" 
                                 placeholder="Введите отчество" />
                     <Form.Input fluid 
                                 label="Имя:" 
                                 value={user_data.first_name} 
                                 required="true" 
-                                name="registration_user_form[first_name]" 
+                                name="change_user_form[first_name]" 
                                 type="text" 
                                 placeholder="Введите имя" />
                     <Form.Input fluid 
                                 label="Фамилия:" 
                                 value={user_data.second_name} 
                                 required="true" 
-                                name="registration_user_form[second_name]" 
+                                name="change_user_form[second_name]" 
                                 type="text" 
                                 placeholder="Введите фамилию" />
                     <Form.Input fluid 
                                 label="Введите пароль для его изменения:" 
-                                required="true" 
-                                name="registration_user_form[password]" 
+                                name="change_user_form[password]" 
                                 type="text" 
                                 placeholder="Введите пароль" />
                     <Form.Input fluid 
                                 label="Повторите пароль для его изменения:" 
-                                required="true" 
-                                name="registration_user_form[re_password]" 
+                                name="change_user_form[re_password]" 
                                 type="text" 
                                 placeholder="Повторите пароль" />
                     {renderRadioRoles()}

@@ -26,9 +26,11 @@ export default class UsersScreen extends Component {
         
         this.onSubmitChangeForm = (e) => {
             const dataForm = (new FormSerializer(e.target)).getObject();
-            if(dataForm['registration_user_form[password]'] === dataForm['registration_user_form[re_password]'])
+            if(dataForm['change_user_form[password]'] === dataForm['change_user_form[re_password]'])
             {
-                
+                UsersApi.set(this.state.user_id_for_update, dataForm).then((response) => {
+                    location.reload();
+                });
             }
             else
             {

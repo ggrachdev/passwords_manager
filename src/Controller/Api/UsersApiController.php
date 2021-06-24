@@ -8,11 +8,78 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
 use App\Entity\Role;
 use App\Utils\Api\Response\ApiResponse;
+use Symfony\Component\HttpFoundation\Request;
+use App\Form\ChangeUserFormType;
+use App\Utils\Form\ErrorsHelper;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UsersApiController extends AbstractController {
 
     /**
-     * @Route("/api/users/remove/{id}/", name="users_api_remove_user")
+     * Изменение данных пользователя
+     * @Route("/api/users/set/{id}/", requirements={"id"="\d+"}, name="users_api_change_data")
+     */
+    public function changeDataUser(UserPasswordEncoderInterface $encoder, Request $request, $id): Response {
+        $apiResponse = new ApiResponse();
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new Exception('Has not access. Need auth');
+            }
+
+            $nowUser = $this->getUser();
+
+            if ($id !== $nowUser->getId()) {
+                if (!$this->isGranted('ROLE_ADMIN')) {
+                    throw new Exception('Has not access');
+                }
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository(User::class);
+            $changedUser = $userRepository->find($id);
+
+            if ($changedUser === null) {
+                throw new Exception("Not found user with id = $id");
+            }
+
+            $changeForm = $this->createForm(ChangeUserFormType::class, $changedUser);
+            $changeForm->handleRequest($request);
+
+            if (!$changeForm->isSubmitted()) {
+                throw new Exception('Has not data');
+            }
+
+            if (!$changeForm->isValid()) {
+                throw new Exception(ErrorsHelper::getErrorMessages($changeForm));
+            }
+
+            if ($request->request->get('change_user_form')['password']) {
+
+                if ($request->request->get('change_user_form')['password'] != $request->request->get('change_user_form')['re_password']) {
+                    throw new Exception('Passwords not equal');
+                }
+
+                $pass = $encoder->encodePassword($changedUser, $request->request->get('change_user_form')['password']);
+                $changedUser->setPassword($pass);
+            }
+            
+            $changedUser->setRoles(array_values($request->request->get('change_user_form')['role']));
+
+            $em->persist($changedUser);
+            $em->flush();
+
+            $apiResponse->setSuccess();
+        } catch (Exception $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+
+        return $apiResponse->generate();
+    }
+
+    /**
+     * @Route("/api/users/remove/{id}/", requirements={"id"="\d+"}, name="users_api_remove_user")
      */
     public function removeUser($id): Response {
         $apiResponse = new ApiResponse();

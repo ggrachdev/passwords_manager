@@ -24,8 +24,9 @@
     <body>
         <script>
         var GlobalData = {
-            'csrf': {
+            csrf: {
                 authenticate: '{{ csrf_token('authenticate') }}',
+                change_user_form: '{{ csrf_token('change_user_form') }}',
                 registration_user_form: '{{ csrf_token('registration_user_form') }}'
             } 
         };

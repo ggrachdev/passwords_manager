@@ -10,33 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\User;
 use App\Utils\Api\Response\ApiResponse;
 use App\Form\RegistrationUserFormType;
+use App\Utils\Form\ErrorsHelper;
 
 class RegistrationUserApiController extends AbstractController {
-
-    private function getErrorMessages(\Symfony\Component\Form\Form $form) {
-        $errors = array();
-
-        foreach ($form->getErrors() as $key => $error) {
-            if ($form->isRoot()) {
-                $errors['#'][] = $error->getMessage();
-            } else {
-                $errors[] = $error->getMessage();
-            }
-        }
-
-        foreach ($form->all() as $child) {
-            if (!$child->isValid()) {
-                $errors[$child->getName()] = $this->getErrorMessages($child);
-            }
-        }
-
-        return $errors;
-    }
 
     /**
      * @Route("/api/auth/registration/", name="registration_user_api")
      */
-    public function index(UserPasswordEncoderInterface $encoder, Request $request): Response {
+    public function registrationUser(UserPasswordEncoderInterface $encoder, Request $request): Response {
         $apiResponse = new ApiResponse();
 
         if ($this->isGranted('ROLE_ADMIN')) {
@@ -56,7 +37,7 @@ class RegistrationUserApiController extends AbstractController {
                     $apiResponse->setSuccess();
                 } else {
                     $apiResponse->setFail();
-                    $apiResponse->setErrors(var_export($this->getErrorMessages($registrationForm), true));
+                    $apiResponse->setErrors(var_export(ErrorsHelper::getErrorMessages($registrationForm), true));
                 }
             } else {
                 $apiResponse->setFail();
