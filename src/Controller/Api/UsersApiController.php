@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\ChangeUserFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class UsersApiController extends AbstractController {
 
@@ -23,14 +24,14 @@ class UsersApiController extends AbstractController {
         $apiResponse = new ApiResponse();
         try {
             if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-                throw new Exception('Has not access. Need auth');
+                throw new AccessDeniedException('Has not access. Need auth');
             }
 
             $nowUser = $this->getUser();
 
             if ($id !== $nowUser->getId()) {
                 if (!$this->isGranted('ROLE_ADMIN')) {
-                    throw new Exception('Has not access');
+                    throw new AccessDeniedException('Has not access');
                 }
             }
 
@@ -39,24 +40,24 @@ class UsersApiController extends AbstractController {
             $changedUser = $userRepository->find($id);
 
             if ($changedUser === null) {
-                throw new Exception("Not found user with id = $id");
+                throw new AccessDeniedException("Not found user with id = $id");
             }
 
             $changeForm = $this->createForm(ChangeUserFormType::class, $changedUser);
             $changeForm->handleRequest($request);
 
             if (!$changeForm->isSubmitted()) {
-                throw new Exception('Has not data');
+                throw new AccessDeniedException('Has not data');
             }
 
             if (!$changeForm->isValid()) {
-                throw new Exception(ErrorsHelper::getErrorMessages($changeForm));
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($changeForm));
             }
 
             if ($request->request->get('change_user_form')['password']) {
 
                 if ($request->request->get('change_user_form')['password'] != $request->request->get('change_user_form')['re_password']) {
-                    throw new Exception('Passwords not equal');
+                    throw new AccessDeniedException('Passwords not equal');
                 }
 
                 $pass = $encoder->encodePassword($changedUser, $request->request->get('change_user_form')['password']);

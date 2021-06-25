@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Button, Icon, Image, Item, Label, Modal, Form} from 'semantic-ui-react';
 import RolesApi from '../../src/Api/RolesApi';
 import RegistrationUserForm from '../form/RegistrationUserForm';
+import AddRoleForm from '../form/AddRoleForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 
 const equal = require('deep-equal');
@@ -13,8 +14,21 @@ export default class RolesScreen extends Component {
         this.state = {
             global_state: props.global_state,
             errors: [],
-            roles: []
+            roles: [],
+            modal_add_role_is_open: false
         };
+
+        this.onAddRoleForm = (e) => {
+            const dataForm = (new FormSerializer(e.target)).getObject();
+
+            RolesApi.add(dataForm).then((response) => {
+                this.setState({
+                    modal_add_role_is_open: false
+                });
+                this.initialize();
+            });
+        };
+
         this.initialize();
     }
 
@@ -28,7 +42,7 @@ export default class RolesScreen extends Component {
 
     render() {
 
-        const {errors, roles} = this.state;
+        const {errors, roles, modal_add_role_is_open} = this.state;
 
         const rolesViews = [];
 
@@ -50,7 +64,7 @@ export default class RolesScreen extends Component {
                         <Icon name='edit' />
                         Изменить    
                     </Button>
-                );
+                    );
 
                 buttons.push(
                     <Button onClick={() => {
@@ -61,7 +75,7 @@ export default class RolesScreen extends Component {
                         <Icon name='remove' />
                         Удалить
                     </Button>
-                );
+                    );
             }
 
             rolesViews.push(
@@ -74,7 +88,7 @@ export default class RolesScreen extends Component {
                         </Item.Description>
                     </Item.Content>
                 </Item>
-            );
+                );
         });
 
         return (
@@ -84,15 +98,27 @@ export default class RolesScreen extends Component {
                 </Item.Group>
             
                 <Modal 
+                    open={modal_add_role_is_open} 
                     trigger={
-                        <Button>Добавить роль</Button>
+                        <Button onClick={() => {
+                            this.setState({
+                                modal_add_role_is_open: true
+                            })
+                        }}>
+                            Добавить роль
+                        </Button>
                     }>
             
                     <Modal.Header>Добавить роль</Modal.Header>
                     <Modal.Content>
+                        <AddRoleForm onSubmit={this.onAddRoleForm} />
                     </Modal.Content>
                     <Modal.Actions>
-                        <Button>
+                        <Button onClick={() => {
+                            this.setState({
+                                modal_add_role_is_open: false
+                            })
+                        }}>
                             Закрыть окно
                         </Button>
                     </Modal.Actions>

@@ -13,7 +13,6 @@ class Role
 
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      * @ORM\Column(type="string", length=255)
      */
     private $role_key;

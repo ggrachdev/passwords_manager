@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Radio } from 'semantic-ui-react'
+import { Form } from 'semantic-ui-react'
 
 export default class AddRoleForm extends Component {
 
@@ -21,41 +21,24 @@ export default class AddRoleForm extends Component {
             <React.Fragment>
                 <Form autoComplete="off" onSubmit={this.onSubmit}>
                     <Form.Input fluid 
-                        label="Email:" 
+                        label="Идентификатор роли:" 
                         required="true" 
-                        name="change_user_form[email]" 
-                        type="email" 
-                        placeholder="Введите email" />
+                        name="add_role_form[role_key]" 
+                        type="text" 
+                        placeholder="Введите идентификатор роли" />
                     <Form.Input fluid 
-                        label="Отчество:" 
+                        label="Название роли:" 
                         required="true" 
-                        name="change_user_form[middle_name]" 
+                        name="add_role_form[name]" 
                         type="text" 
-                        placeholder="Введите отчество" />
+                        placeholder="Введите название роли" />
                     <Form.Input fluid 
-                        label="Имя:" 
+                        label="Цвет роли:" 
                         required="true" 
-                        name="change_user_form[first_name]" 
+                        name="add_role_form[color]" 
                         type="text" 
-                        placeholder="Введите имя" />
-                    <Form.Input fluid 
-                        label="Фамилия:" 
-                        required="true" 
-                        name="change_user_form[second_name]" 
-                        type="text" 
-                        placeholder="Введите фамилию" />
-                    <Form.Input fluid 
-                        label="Введите пароль для его изменения:" 
-                        name="change_user_form[password]" 
-                        type="text" 
-                        placeholder="Введите пароль" />
-                    <Form.Input fluid 
-                        label="Повторите пароль для его изменения:" 
-                        name="change_user_form[re_password]" 
-                        type="text" 
-                        placeholder="Повторите пароль" />
-                    {renderRadioRoles()}
-                    <Form.Button>Изменить данные</Form.Button>
+                        placeholder="Введите цвет роли" />
+                    <Form.Button>Добавить роль</Form.Button>
                 </Form>
             </React.Fragment>
         );
