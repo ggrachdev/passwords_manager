@@ -36,13 +36,6 @@ export default class LoginScreen extends Component {
 
     componentDidUpdate(prevProps) {
 
-        if (!equal(prevProps.global_state, this.props.global_state))
-        {
-            this.setState({
-                global_state: this.props.global_state
-            });
-        }
-
         if (!equal(prevProps.errors, this.props.errors))
         {
             this.setState({

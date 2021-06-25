@@ -51,8 +51,8 @@ export default class UsersScreen extends Component {
                         modal_registration_is_open: false
                     });
                     this.initialize();
-                }).catch((response) => {
-                    alert(response);
+                }).catch((e) => {
+                    alert(e);
                 });
             } else
             {
