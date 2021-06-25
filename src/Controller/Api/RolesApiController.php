@@ -18,6 +18,7 @@ class RolesApiController extends AbstractController {
      * @Route("/api/roles/add/", name="roles_api_add")
      */
     public function add(Request $request): Response {
+        
         $apiResponse = new ApiResponse();
 
         try {
@@ -55,12 +56,56 @@ class RolesApiController extends AbstractController {
     }
 
     /**
+     * @Route("/api/roles/get/{id}/", requirements={"id"="^(!all)$"}, name="roles_api_get")
+     */
+    public function get($id): Response {
+        
+        $apiResponse = new ApiResponse();
+        
+        try {
+            
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access');
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $roleRepository = $em->getRepository(Role::class);
+            $role = $roleRepository->find($id);
+            
+            if($role === null)
+            {
+                throw new AccessDeniedException("Hot found role with id = $id");
+            }
+            else
+            {
+                $apiResponse->setSuccess();
+                $apiResponse->setData([
+                    'role' => [
+                        'key' => $role->getRoleKey(),
+                        'color' => $role->getColor(),
+                        'name' => $role->getName()
+                    ]
+                ]);
+            }
+                
+            
+        } catch (Exception $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/api/roles/get/all/", name="roles_api_get_all")
      */
     public function getAll(): Response {
         $apiResponse = new ApiResponse();
 
-        if ($this->isGranted('ROLE_ADMIN')) {
+        if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 
             $em = $this->getDoctrine()->getManager();
             $roleRepository = $em->getRepository(Role::class);
