@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Menu, Icon, Container } from 'semantic-ui-react';
-import LoginScreen from '../screen/LoginScreen';
 
 const equal = require('deep-equal');
 
@@ -10,8 +9,16 @@ export default class MainMenu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            path: props.path,
+            path: location.pathname,
             global_state: props.global_state
+        };
+        
+        this.handlers = {
+            changeMenuItem: (e) => {
+                this.setState({
+                    path: e.target.getAttribute("href") 
+                });
+            }  
         };
     }
 
@@ -23,25 +30,18 @@ export default class MainMenu extends Component {
                 global_state: this.props.global_state
             });
         }
-
-        if (!equal(prevProps.path, this.props.path))
-        {
-            this.setState({
-                path: this.props.path
-            });
-        }
     }
-
-    render() {
-
+    
+    renderMenu()
+    {
         const {path, global_state} = this.state;
-
+        
         let menu = [];
 
         if (global_state.user_is_auth)
         {
             menu.push(<Menu.Item 
-                name='cabinet' to='/cabinet/' onClick={() => {this.setState({ path: '/cabinet/' });}} 
+                name='cabinet' to='/cabinet/' onClick={this.handlers.changeMenuItem} 
                 as={ Link }
                 active={path === '/cabinet/'}>
                 <Icon name='user circle' />
@@ -49,7 +49,7 @@ export default class MainMenu extends Component {
             </Menu.Item>);
         
             menu.push(<Menu.Item 
-                name='cabinet' to='/projects/' onClick={() => {this.setState({ path: '/projects/' });}} 
+                name='cabinet' to='/projects/' onClick={this.handlers.changeMenuItem} 
                 as={ Link }
                 active={path === '/projects/'}>
                 <Icon name='briefcase' />
@@ -57,7 +57,7 @@ export default class MainMenu extends Component {
             </Menu.Item>);
         
             menu.push(<Menu.Item 
-                name='cabinet' to='/history/' onClick={() => {this.setState({ path: '/history/' });}} 
+                name='cabinet' to='/history/' onClick={this.handlers.changeMenuItem} 
                 as={ Link }
                 active={path === '/history/'}>
                 <Icon name='history' />
@@ -67,7 +67,7 @@ export default class MainMenu extends Component {
             if(global_state.user_roles.includes('ROLE_ADMIN'))
             {
                 menu.push(<Menu.Item 
-                    name='users' to='/users/' onClick={() => {this.setState({ path: '/users/' });}} 
+                    name='users' to='/users/' onClick={this.handlers.changeMenuItem} 
                     as={ Link }
                     active={path === '/users/'}>
                     <Icon name='user' />
@@ -75,7 +75,7 @@ export default class MainMenu extends Component {
                 </Menu.Item>);
             
                 menu.push(<Menu.Item 
-                    name='roles' to='/roles/' onClick={(e) => { console.log(e); this.setState({ path: '/roles/' });}} 
+                    name='roles' to='/roles/' onClick={this.handlers.changeMenuItem} 
                     as={ Link }
                     active={path === '/roles/'}>
                     <Icon name='users' />
@@ -92,19 +92,24 @@ export default class MainMenu extends Component {
         } else
         {
             menu.push(<Menu.Item 
-                name='login' onClick={() => {this.setState({ path: '/login/'});}} 
+                name='login' onClick={this.handlers.changeMenuItem} 
                 active={path === '/'}>  
                 <Icon name='sign-in' />
                 Вход
             </Menu.Item>);
         }
+        
+        return menu;
+    }
+
+    render() {
 
         return (
             <Menu inverted color='blue'>
                 <Container>
-                    {menu}
+                    {this.renderMenu()}
                 </Container>
             </Menu>
-            );
+        );
     }
 }

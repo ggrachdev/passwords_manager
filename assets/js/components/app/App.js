@@ -14,12 +14,6 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
-            /**
-             * Текущий путь
-             */
-            path: location.pathname,
-
             /**
              * Получены ли первичные данные для инициализации приложения
              */
@@ -40,16 +34,14 @@ export default class App extends Component {
 
     render() {
 
-        const {path, app_is_initialized, global_state} = this.state;
+        const {app_is_initialized, global_state} = this.state;
 
         if (app_is_initialized)
         {
             return (
                 <Router>
-                    <MainMenu global_state={global_state} path={path}/>
-                    
+                    <MainMenu global_state={global_state}/>
                     <br/>
-                    
                     <Switch>
                         <Route path="/cabinet/">
                             <CabinetScreen global_state={global_state}/>
@@ -64,9 +56,7 @@ export default class App extends Component {
                             <LoginScreen global_state={global_state}/>
                         </Route>
                     </Switch>
-                    
                     <br/>
-                    
                 </Router>
             );
         } else

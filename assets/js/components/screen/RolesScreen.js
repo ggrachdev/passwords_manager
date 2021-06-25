@@ -30,41 +30,51 @@ export default class RolesScreen extends Component {
 
         const {errors, roles} = this.state;
 
-        let rolesViews = [];
+        const rolesViews = [];
 
         roles.forEach((role) => {
 
-            let label = (<Label size="large" color={role.color}>{role.name}</Label>);
+            const label = (<Label size="large" color={role.color}>{role.name}</Label>);
+
+            const buttons = [];
+
+            if (!['ROLE_ADMIN', 'ROLE_USER'].includes(role.key))
+            {
+                buttons.push(
+                    <Button onClick={() => {
+                            this.setState({
+                                user_id_for_update: role.key,
+                                modal_edit_user_is_open: true
+                            });
+                                }} basic color='blue' size='mini'>
+                        <Icon name='edit' />
+                        Изменить    
+                    </Button>
+                );
+
+                buttons.push(
+                    <Button onClick={() => {
+                            this.setState({
+                                modal_delete_user_is_open: true
+                            });
+                                }} basic color='red' size='mini'>
+                        <Icon name='remove' />
+                        Удалить
+                    </Button>
+                );
+            }
+
             rolesViews.push(
                 <Item>
                     <Item.Content>
                         <Item.Header>{label}</Item.Header>
                 
                         <Item.Description>
-                
-                            <Button onClick={() => {
-                                    this.setState({
-                                        user_id_for_update: role.key,
-                                        modal_edit_user_is_open: true
-                                    });
-                                        }} basic color='blue' size='mini'>
-                                <Icon name='edit' />
-                                Изменить    
-                            </Button>                        
-                
-                            <Button onClick={() => {
-                                    this.setState({
-                                        modal_delete_user_is_open: true
-                                    });
-                                        }} basic color='red' size='mini'>
-                                <Icon name='remove' />
-                                Удалить
-                            </Button>
-                
+                            {buttons}
                         </Item.Description>
                     </Item.Content>
                 </Item>
-                );
+            );
         });
 
         return (
@@ -72,6 +82,21 @@ export default class RolesScreen extends Component {
                 <Item.Group divided>
                     {rolesViews}
                 </Item.Group>
+            
+                <Modal 
+                    trigger={
+                        <Button>Добавить роль</Button>
+                    }>
+            
+                    <Modal.Header>Добавить роль</Modal.Header>
+                    <Modal.Content>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button>
+                            Закрыть окно
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
             </Container>
             );
     }

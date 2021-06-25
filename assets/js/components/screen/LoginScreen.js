@@ -11,7 +11,6 @@ export default class LoginScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            path: location.pathname,
             errors: []
         };
 
@@ -22,7 +21,7 @@ export default class LoginScreen extends Component {
                 this.setState({
                     errors: []
                 });
-            }).catch((response) => {
+            }).catch((event) => {
                 this.setState({
                     errors: [
                         {
@@ -54,7 +53,7 @@ export default class LoginScreen extends Component {
 
     render() {
 
-        const {path, errors} = this.state;
+        const {errors} = this.state;
 
         return (
             <React.Fragment>
@@ -62,6 +61,6 @@ export default class LoginScreen extends Component {
                     <LoginForm errors={errors} onSubmit={this.onSubmitLoginForm}/>
                 </Container>
             </React.Fragment>
-            );
+        );
     }
 }

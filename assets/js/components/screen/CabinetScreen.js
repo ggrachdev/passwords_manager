@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header } from 'semantic-ui-react';
-import LoginForm from '../form/LoginForm';
-import FormSerializer from '../../src/FormSerializer/FormSerializer';
-import AuthApi from '../../src/Api/AuthApi';
+import { Container } from 'semantic-ui-react';
 
 const equal = require('deep-equal');
 
@@ -12,7 +9,6 @@ export default class CabinetScreen extends Component {
         super(props);
         this.state = {
             global_state: props.global_state,
-            path: location.pathname,
             errors: []
         };
     }
@@ -29,7 +25,7 @@ export default class CabinetScreen extends Component {
 
     render() {
 
-        const {path, errors} = this.state;
+        const {errors} = this.state;
 
         return (
             <React.Fragment>
@@ -37,6 +33,6 @@ export default class CabinetScreen extends Component {
                     Cabinet
                 </Container>
             </React.Fragment>
-            );
+        );
     }
 }
