@@ -56,6 +56,33 @@ class RolesApiController extends AbstractController {
     }
 
     /**
+     * @Route("/api/roles/remove/{key}/", name="roles_api_remove")
+     */
+    public function removeUser($key): Response {
+        $apiResponse = new ApiResponse();
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $em = $this->getDoctrine()->getManager();
+            $roleRepository = $em->getRepository(Role::class);
+            $roleForRemove = $roleRepository->find($key);
+
+            if ($roleForRemove != null) {
+                $em->remove($roleForRemove);
+                $em->flush();
+                $apiResponse->setSuccess();
+            } else {
+                $apiResponse->setFail();
+                $apiResponse->setErrors("User with id = $key not found");
+            }
+        } else {
+            $apiResponse->setFail();
+            $apiResponse->setErrors('Has not access');
+        }
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/api/roles/get/{id}/", requirements={"id"="^(!all)$"}, name="roles_api_get")
      */
     public function get($id): Response {
@@ -109,7 +136,7 @@ class RolesApiController extends AbstractController {
 
             $em = $this->getDoctrine()->getManager();
             $roleRepository = $em->getRepository(Role::class);
-            $rolesDb = $roleRepository->findAll();
+            $rolesDb = $roleRepository->findBy([], ['name' => 'ASC']);
 
             if ($rolesDb === null) {
                 $apiResponse->setFail();

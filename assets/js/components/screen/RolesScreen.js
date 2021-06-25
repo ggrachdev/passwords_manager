@@ -15,7 +15,10 @@ export default class RolesScreen extends Component {
             global_state: props.global_state,
             errors: [],
             roles: [],
-            modal_add_role_is_open: false
+            modal_add_role_is_open: false,
+            modal_delete_role_is_open: false,
+            role_name_for_delete: null,
+            role_key_for_delete: null
         };
 
         this.onAddRoleForm = (e) => {
@@ -42,13 +45,13 @@ export default class RolesScreen extends Component {
 
     render() {
 
-        const {errors, roles, modal_add_role_is_open} = this.state;
+        const {errors, roles, modal_add_role_is_open, modal_delete_role_is_open, role_name_for_delete} = this.state;
 
         const rolesViews = [];
 
         roles.forEach((role) => {
 
-            const label = (<Label size="large" color={role.color}>{role.name}</Label>);
+            const label = (<Label size="large" color={role.color} style={{ backgroundColor: role.color, color: '#ffffff' }}>{role.name}</Label>);
 
             const buttons = [];
 
@@ -60,22 +63,24 @@ export default class RolesScreen extends Component {
                                 user_id_for_update: role.key,
                                 modal_edit_user_is_open: true
                             });
-                                }} basic color='blue' size='mini'>
+                    }} basic color='blue' size='mini'>
                         <Icon name='edit' />
                         Изменить    
                     </Button>
-                    );
+                );
 
                 buttons.push(
                     <Button onClick={() => {
-                            this.setState({
-                                modal_delete_user_is_open: true
-                            });
-                                }} basic color='red' size='mini'>
+                        this.setState({
+                            role_name_for_delete: role.name,
+                            role_key_for_delete: role.key,
+                            modal_delete_role_is_open: true
+                        });
+                    }} basic color='red' size='mini'>
                         <Icon name='remove' />
                         Удалить
                     </Button>
-                    );
+                );
             }
 
             rolesViews.push(
@@ -88,7 +93,7 @@ export default class RolesScreen extends Component {
                         </Item.Description>
                     </Item.Content>
                 </Item>
-                );
+            );
         });
 
         return (
@@ -123,6 +128,38 @@ export default class RolesScreen extends Component {
                         </Button>
                     </Modal.Actions>
                 </Modal>
+            
+                <Modal
+                    open={modal_delete_role_is_open} 
+                    header={`Вы действительно хотите удалить роль - ${role_name_for_delete}?`}
+                    actions={
+                        [
+                            {
+                                key: 'no',
+                                content: 'Нет',
+                                positive: false,
+                                onClick: () => {
+                                    this.setState({
+                                        modal_delete_role_is_open: false
+                                    })
+                                }
+                            },
+                            {
+                                key: 'done',
+                                content: 'Да',
+                                positive: true,
+                                onClick: () => {
+                                    RolesApi.remove(this.state.role_key_for_delete).then(() => {
+                                        this.setState({
+                                            modal_delete_role_is_open: false
+                                        });
+                                        this.initialize();
+                                    });
+                                }
+                            }
+                        ]
+                    }
+                    />
             </Container>
             );
     }

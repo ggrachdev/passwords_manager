@@ -98,7 +98,7 @@ export default class UsersScreen extends Component {
             const labels = [];
 
             user.roles_full.forEach((roleData) => {
-                labels.push(<Label color={roleData.color}>{roleData.name}</Label>);
+                labels.push(<Label color={roleData.color} style={{ backgroundColor: roleData.color, color: '#ffffff' }}>{roleData.name}</Label>);
             });
 
             usersView.push(
