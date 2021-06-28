@@ -25,6 +25,7 @@ class GlobalStateApiController extends AbstractController {
             $userSecondName = $user->getSecondName();
             $userMiddleName = $user->getMiddleName();
             $userRoles = $user->getRoles();
+            $userId = $user->getId();
         }
 
         $response = [

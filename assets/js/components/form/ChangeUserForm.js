@@ -85,25 +85,25 @@ export default class ChangeUserForm extends Component {
                         required="true" 
                         name="change_user_form[email]" 
                         type="email" 
-                        value={user_data.email} 
+                        defaultValue={user_data.email} 
                         placeholder="Введите email" />
                     <Form.Input fluid 
                         label="Отчество:" 
-                        value={user_data.middle_name} 
+                        defaultValue={user_data.middle_name} 
                         required="true" 
                         name="change_user_form[middle_name]" 
                         type="text" 
                         placeholder="Введите отчество" />
                     <Form.Input fluid 
                         label="Имя:" 
-                        value={user_data.first_name} 
+                        defaultValue={user_data.first_name} 
                         required="true" 
                         name="change_user_form[first_name]" 
                         type="text" 
                         placeholder="Введите имя" />
                     <Form.Input fluid 
                         label="Фамилия:" 
-                        value={user_data.second_name} 
+                        defaultValue={user_data.second_name} 
                         required="true" 
                         name="change_user_form[second_name]" 
                         type="text" 

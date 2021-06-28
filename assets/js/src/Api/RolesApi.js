@@ -95,6 +95,8 @@ export default class RolesApi {
      */
     static async update(data, keyRole) {
         
+        data['change_role_form[_csrf_token]'] = GlobalData.csrf['change_role_form'];
+        
         const response = await fetch(`/api/roles/update/${keyRole}/`, {
             method: 'POST',
             headers: {

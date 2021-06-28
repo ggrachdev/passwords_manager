@@ -34,7 +34,7 @@ export default class RolesScreen extends Component {
 
             RolesApi.update(dataForm, this.state.role_key_for_update).then((response) => {
                 this.setState({
-                    modal_add_role_is_open: false
+                    modal_update_role_is_open: false
                 });
                 
                 Toastify({
@@ -99,22 +99,22 @@ export default class RolesScreen extends Component {
             const label = (<Label size="large" color={role.color} style={{ backgroundColor: role.color, color: '#ffffff' }}>{role.name}</Label>);
 
             const buttons = [];
+            
+            buttons.push(
+                <Button onClick={() => {
+                    this.setState({
+                        role_name_for_update: role.name,
+                        role_key_for_update: role.key,
+                        modal_update_role_is_open: true
+                    });
+                }} basic color='blue' size='mini'>
+                    <Icon name='edit' />
+                    Изменить    
+                </Button>
+            );
 
             if (!['ROLE_ADMIN', 'ROLE_USER'].includes(role.key))
             {
-                buttons.push(
-                    <Button onClick={() => {
-                        this.setState({
-                            role_name_for_update: role.name,
-                            role_key_for_update: role.key,
-                            modal_update_role_is_open: true
-                        });
-                    }} basic color='blue' size='mini'>
-                        <Icon name='edit' />
-                        Изменить    
-                    </Button>
-                );
-
                 buttons.push(
                     <Button onClick={() => {
                         this.setState({

@@ -11,6 +11,7 @@ use App\Form\AddRoleFormType;
 use Symfony\Component\HttpFoundation\Request;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Form\ChangeRoleFormType;
 
 class RolesApiController extends AbstractController {
 
@@ -78,6 +79,49 @@ class RolesApiController extends AbstractController {
             $apiResponse->setErrors('Has not access');
         }
 
+        return $apiResponse->generate();
+    }
+    /**
+     * Изменение данных пользователя
+     * @Route("/api/roles/update/{key}/", name="roles_api_change")
+     */
+    public function changeRole(Request $request, $key): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                throw new AccessDeniedException('Has not access');
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $roleRepository = $em->getRepository(Role::class);
+            $changedRole = $roleRepository->find($key);
+            
+            if ($changedRole === null) {
+                throw new AccessDeniedException("Not found role with key = $key");
+            }
+            
+            $changeForm = $this->createForm(ChangeRoleFormType::class, $changedRole);
+            $changeForm->handleRequest($request);
+            
+            if (!$changeForm->isSubmitted()) {
+                throw new AccessDeniedException('Has not data');
+            }
+
+            if (!$changeForm->isValid()) {
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($changeForm));
+            }
+            
+            $em->persist($changedRole);
+            $em->flush();
+
+            $apiResponse->setSuccess();
+                
+        } catch (Exception $ex) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($ex->getMessage());
+        }
+        
         return $apiResponse->generate();
     }
 
