@@ -5,6 +5,8 @@ import LoginScreen from '../screen/LoginScreen';
 import CabinetScreen from '../screen/CabinetScreen';
 import UsersScreen from '../screen/UsersScreen';
 import RolesScreen from '../screen/RolesScreen';
+import ProjectsScreen from '../screen/ProjectsScreen';
+import HistoryScreen from '../screen/HistoryScreen';
 import MainMenu from '../main-menu/main-menu';
 import { Container, Loader, Dimmer } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
@@ -51,6 +53,12 @@ export default class App extends Component {
                         </Route>
                         <Route path="/roles/">
                             <RolesScreen global_state={global_state}/>
+                        </Route>
+                        <Route path="/projects/">
+                            <ProjectsScreen global_state={global_state}/>
+                        </Route>
+                        <Route path="/history/">
+                            <HistoryScreen global_state={global_state}/>
                         </Route>
                         <Route path="/">
                             <LoginScreen global_state={global_state}/>
