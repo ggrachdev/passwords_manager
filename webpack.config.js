@@ -23,10 +23,8 @@ Encore
         config.useBuiltIns = 'usage';
         config.corejs = 3;
     })
-
     // enables Sass/SCSS support
-    //.enableSassLoader()
-
+    .enableSassLoader()
     .enableReactPreset()
 
     // uncomment to get integrity="..." attributes on your script & link tags

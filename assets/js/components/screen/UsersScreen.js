@@ -5,6 +5,7 @@ import AuthApi from '../../src/Api/AuthApi';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import RegistrationUserForm from '../form/RegistrationUserForm';
 import ChangeUserForm from '../form/ChangeUserForm';
+import Toastify from 'toastify-js';
 
 const equal = require('deep-equal');
 
@@ -38,7 +39,11 @@ export default class UsersScreen extends Component {
                 });
             } else
             {
-                alert('Пароли не совпадают');
+                Toastify({
+                    text: "Пароли не совпадают",
+                    backgroundColor: "darkred",
+                    duration: 3000
+                }).showToast();
             }
         };
 
@@ -50,13 +55,28 @@ export default class UsersScreen extends Component {
                     this.setState({
                         modal_registration_is_open: false
                     });
+                    
+                    Toastify({
+                        text: "Пользователь успешно зарегистрирован",
+                        backgroundColor: "green",
+                        duration: 3000
+                    }).showToast();
+                    
                     this.initialize();
                 }).catch((e) => {
-                    alert(e);
+                    Toastify({
+                        text: "Не удалось зарегистрировать пользователя",
+                        backgroundColor: "darkred",
+                        duration: 3000
+                    }).showToast();
                 });
             } else
             {
-                alert('Пароли не совпадают');
+                Toastify({
+                    text: "Пароли не совпадают",
+                    backgroundColor: "darkred",
+                    duration: 3000
+                }).showToast();
             }
         };
 
@@ -212,7 +232,22 @@ export default class UsersScreen extends Component {
                                         this.setState({
                                             modal_delete_user_is_open: false
                                         });
+                    
+                                        Toastify({
+                                            text: `Пользователь ${user_name_for_delete} успешно удален`,
+                                            backgroundColor: "green",
+                                            duration: 3000
+                                        }).showToast();
+                    
                                         this.initialize();
+                                    }).catch(() => {
+                    
+                                        Toastify({
+                                            text: `Не удалось удалить пользователя - ${user_name_for_delete}`,
+                                            backgroundColor: "darkred",
+                                            duration: 3000
+                                        }).showToast();
+                                        
                                     });
                                 }
                             }

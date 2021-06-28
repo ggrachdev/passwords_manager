@@ -4,6 +4,7 @@ import RolesApi from '../../src/Api/RolesApi';
 import RegistrationUserForm from '../form/RegistrationUserForm';
 import AddRoleForm from '../form/AddRoleForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
+import Toastify from 'toastify-js';
 
 const equal = require('deep-equal');
 
@@ -28,7 +29,20 @@ export default class RolesScreen extends Component {
                 this.setState({
                     modal_add_role_is_open: false
                 });
+                
+                Toastify({
+                    text: "Роль успешно добавлена",
+                    backgroundColor: "green",
+                    duration: 3000
+                }).showToast();
+                
                 this.initialize();
+            }).catch(() => {
+                Toastify({
+                    text: "Не удалось добавить роль",
+                    backgroundColor: "darkred",
+                    duration: 3000
+                }).showToast();
             });
         };
 
@@ -141,7 +155,7 @@ export default class RolesScreen extends Component {
                                 onClick: () => {
                                     this.setState({
                                         modal_delete_role_is_open: false
-                                    })
+                                    });
                                 }
                             },
                             {
@@ -150,6 +164,12 @@ export default class RolesScreen extends Component {
                                 positive: true,
                                 onClick: () => {
                                     RolesApi.remove(this.state.role_key_for_delete).then(() => {
+                                        Toastify({
+                                            text: `Роль ${role_name_for_delete} успешно удалена`,
+                                            backgroundColor: "green",
+                                            duration: 3000
+                                        }).showToast();
+                                        
                                         this.setState({
                                             modal_delete_role_is_open: false
                                         });

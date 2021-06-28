@@ -10,6 +10,14 @@ object-assign
   All rights reserved.
 */
 
+/*!
+ * Toastify js 1.11.0
+ * https://github.com/apvarun/toastify-js
+ * @license MIT licensed
+ *
+ * Copyright (C) 2018 Varun A P
+ */
+
 /**
  * @license
  * Lodash <https://lodash.com/>
