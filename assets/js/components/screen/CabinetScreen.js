@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container } from 'semantic-ui-react';
+import { Container, Header } from 'semantic-ui-react';
 import ChangeUserForm from '../form/ChangeUserForm';
 import UsersApi from '../../src/Api/UsersApi';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
@@ -20,7 +20,7 @@ export default class CabinetScreen extends Component {
             const dataForm = (new FormSerializer(e.target)).getObject();
             if (dataForm['change_user_form[password]'] === dataForm['change_user_form[re_password]'])
             {
-                UsersApi.set(this.state.user_id_for_update, dataForm).then((response) => {
+                UsersApi.set(this.state.global_state.user_id, dataForm).then((response) => {
                     this.setState({
                         modal_edit_user_is_open: false
                     });
@@ -70,7 +70,8 @@ export default class CabinetScreen extends Component {
         return (
             <React.Fragment>
                 <Container>
-                    <ChangeUserForm user_id={global_state.user_id} onSubmit={this.onSubmitUserChangeForm} />
+                    <Header as='h1'>Ваши данные:</Header>
+                    <ChangeUserForm withoutRoles user_id={global_state.user_id} onSubmit={this.onSubmitUserChangeForm} />
                 </Container>
             </React.Fragment>
         );

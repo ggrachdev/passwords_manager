@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Button, Icon, Item, Label, Modal, Form} from 'semantic-ui-react';
+import { Container, Button, Icon, Item, Label, Modal, Form, Header} from 'semantic-ui-react';
 import UsersApi from '../../src/Api/UsersApi';
 import AuthApi from '../../src/Api/AuthApi';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
@@ -188,6 +188,8 @@ export default class UsersScreen extends Component {
 
         return (
             <Container>
+                <Header as='h1'>Пользователи:</Header>
+                
                 <Item.Group divided>
                     {usersView}
                 </Item.Group>

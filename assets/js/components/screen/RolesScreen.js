@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Button, Icon, Image, Item, Label, Modal, Form} from 'semantic-ui-react';
+import { Container, Button, Icon, Image, Item, Label, Modal, Form, Header} from 'semantic-ui-react';
 import RolesApi from '../../src/Api/RolesApi';
 import RegistrationUserForm from '../form/RegistrationUserForm';
 import AddRoleForm from '../form/AddRoleForm';
@@ -231,6 +231,8 @@ export default class RolesScreen extends Component {
 
         return (
             <Container>
+                <Header as='h1'>Роли:</Header>
+        
                 <Item.Group divided>
                     {RolesList}
                 </Item.Group>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Radio } from 'semantic-ui-react'
+import { Form, Radio, Header } from 'semantic-ui-react'
 import RolesApi from '../../src/Api/RolesApi';
 import UsersApi from '../../src/Api/UsersApi';
 
@@ -19,6 +19,7 @@ export default class ChangeUserForm extends Component {
                 roles: []
             },
             user_id: props.user_id,
+            without_roles: 'withoutRoles' in props,
             errors: props.errors || [],
             selected_roles: []
         };
@@ -26,6 +27,8 @@ export default class ChangeUserForm extends Component {
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
 
         this.changeRolesRadioHandler = (e, valueData) => {
+
+            if(this.state.without_roles === true) return;
 
             const value = valueData.value;
 
@@ -54,28 +57,47 @@ export default class ChangeUserForm extends Component {
 
     render() {
 
-        const {errors, all_roles_list, user_data} = this.state;
+        const {errors, all_roles_list, user_data, without_roles} = this.state;
 
         const renderRadioRoles = () => {
             const viewRadio = [];
 
             all_roles_list.forEach((role) => {
-                viewRadio.push(
-                    <Form.Field>
-                        <Radio 
-                            label={role.name} 
-                            name={`change_user_form[role][${role.key}]`}
-                            checked={this.state.selected_roles.includes(role.key)} 
-                            onClick={this.changeRolesRadioHandler} 
-                            value={role.key} 
-                        />
-                    </Form.Field>
-                );
+                
+                if(without_roles)
+                {
+                    viewRadio.push(
+                        <Form.Field>
+                            <Radio 
+                                readOnly 
+                                label={role.name} 
+                                name={`change_user_form[role][${role.key}]`}
+                                checked={this.state.selected_roles.includes(role.key)} 
+                                onClick={this.changeRolesRadioHandler} 
+                                value={role.key} 
+                            />
+                        </Form.Field>
+                    );
+                }
+                else
+                {
+                    viewRadio.push(
+                        <Form.Field>
+                            <Radio 
+                                label={role.name} 
+                                name={`change_user_form[role][${role.key}]`}
+                                checked={this.state.selected_roles.includes(role.key)} 
+                                onClick={this.changeRolesRadioHandler} 
+                                value={role.key} 
+                            />
+                        </Form.Field>
+                    );
+                }
             });
             return viewRadio;
         };
 
-        const ButtonSubmit = <Form.Button>Изменить данные</Form.Button>;
+        const ButtonSubmit = <Form.Button>Изменить данные:</Form.Button>;
 
         return (
             <React.Fragment>
@@ -83,6 +105,7 @@ export default class ChangeUserForm extends Component {
                     <Form.Input fluid 
                         label="Email:" 
                         required="true" 
+                        readOnly={without_roles}
                         name="change_user_form[email]" 
                         type="email" 
                         defaultValue={user_data.email} 
@@ -118,6 +141,7 @@ export default class ChangeUserForm extends Component {
                         name="change_user_form[re_password]" 
                         type="text" 
                         placeholder="Повторите пароль" />
+                    <Header as='h4'>Группы пользователя:</Header>
                     {renderRadioRoles()}
                     {ButtonSubmit}
                 </Form>
