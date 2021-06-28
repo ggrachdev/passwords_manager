@@ -33,8 +33,22 @@ export default class UsersScreen extends Component {
                     this.setState({
                         modal_edit_user_is_open: false
                     });
+                    
+                    Toastify({
+                        text: `Данные пользователя успешно изменены`,
+                        backgroundColor: "green",
+                        duration: 3000
+                    }).showToast();
+                    
                     this.initialize();
                 }).catch(() => {
+                    
+                    Toastify({
+                        text: "При изменении данных что-то пошло не так",
+                        backgroundColor: "darkred",
+                        duration: 3000
+                    }).showToast();
+                
                     location.reload();
                 });
             } else
