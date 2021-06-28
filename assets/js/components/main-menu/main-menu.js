@@ -49,7 +49,7 @@ export default class MainMenu extends Component {
             </Menu.Item>);
         
             menu.push(<Menu.Item 
-                name='cabinet' to='/projects/' onClick={this.handlers.changeMenuItem} 
+                name='projects' to='/projects/' onClick={this.handlers.changeMenuItem} 
                 as={ Link }
                 active={path === '/projects/'}>
                 <Icon name='briefcase' />
@@ -57,7 +57,7 @@ export default class MainMenu extends Component {
             </Menu.Item>);
         
             menu.push(<Menu.Item 
-                name='cabinet' to='/history/' onClick={this.handlers.changeMenuItem} 
+                name='history' to='/history/' onClick={this.handlers.changeMenuItem} 
                 as={ Link }
                 active={path === '/history/'}>
                 <Icon name='history' />
