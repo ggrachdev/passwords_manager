@@ -18,17 +18,17 @@ class RolesApiController extends AbstractController {
      * @Route("/api/roles/add/", name="roles_api_add")
      */
     public function add(Request $request): Response {
-        
+
         $apiResponse = new ApiResponse();
 
         try {
-            
+
             if (!$this->isGranted('ROLE_ADMIN')) {
                 throw new AccessDeniedException('Has not access');
             }
 
             $newRole = new Role();
-            
+
             $addRoleForm = $this->createForm(AddRoleFormType::class, $newRole);
             $addRoleForm->handleRequest($request);
 
@@ -39,18 +39,17 @@ class RolesApiController extends AbstractController {
             if (!$addRoleForm->isValid()) {
                 throw new AccessDeniedException(ErrorsHelper::getErrorMessages($addRoleForm));
             }
-            
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($newRole);
             $em->flush();
-            
+
             $apiResponse->setSuccess();
-            
         } catch (Exception $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         }
-            
+
 
         return $apiResponse->generate();
     }
@@ -83,28 +82,29 @@ class RolesApiController extends AbstractController {
     }
 
     /**
-     * @Route("/api/roles/get/{id}/", requirements={"id"="^(!all)$"}, name="roles_api_get")
+     * @Route("/api/roles/get/{id}/", name="roles_api_get")
      */
     public function get($id): Response {
-        
+
+        if ($id === 'all') {
+            return $this->forward(self::class.'::getAll');
+        }
+
         $apiResponse = new ApiResponse();
-        
+
         try {
-            
+
             if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
                 throw new AccessDeniedException('Has not access');
             }
-            
+
             $em = $this->getDoctrine()->getManager();
             $roleRepository = $em->getRepository(Role::class);
             $role = $roleRepository->find($id);
-            
-            if($role === null)
-            {
+
+            if ($role === null) {
                 throw new AccessDeniedException("Hot found role with id = $id");
-            }
-            else
-            {
+            } else {
                 $apiResponse->setSuccess();
                 $apiResponse->setData([
                     'role' => [
@@ -114,8 +114,6 @@ class RolesApiController extends AbstractController {
                     ]
                 ]);
             }
-                
-            
         } catch (Exception $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());

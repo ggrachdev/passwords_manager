@@ -27,6 +27,26 @@ export default class RolesApi {
         })
     }
     
+    static async get(key) {
+
+        const response = await fetch(`/api/roles/get/${key}/`, {
+            method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+
+            const response = new ResponseAdapter(responseObj);
+
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
     static async getList() {
 
         const response = await fetch('/api/roles/get/all/', {
@@ -47,14 +67,40 @@ export default class RolesApi {
         })
     }
     
-    
     /**
      * Удалить роль
      */
-    static async remove(key) {
+    static async remove(keyRole) {
         
-        const response = await fetch(`/api/roles/remove/${key}/`, {
+        const response = await fetch(`/api/roles/remove/${keyRole}/`, {
             method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
+    /**
+     * Изменить роль
+     */
+    static async update(data, keyRole) {
+        
+        const response = await fetch(`/api/roles/update/${keyRole}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(data).toString()
         });
 
         const responseObj = await response.json();

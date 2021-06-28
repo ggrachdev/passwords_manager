@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react'
+import RolesApi from '../../src/Api/RolesApi';
 
 export default class ChangeRoleForm extends Component {
 
@@ -8,15 +9,26 @@ export default class ChangeRoleForm extends Component {
         
         this.state = {
             errors: props.errors || [],
-            id_role_for_change: props.id_role_for_change
+            key_role_for_change: props.keyRoleForChange,
+            role_data: {
+                key: null,
+                name: null,
+                color: null
+            }
         };
-
+        
+        RolesApi.get(this.state.key_role_for_change).then((response) => {
+            this.setState({
+                role_data: response.getData()['role']
+            });
+        });
+        
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
     }
 
     render() {
 
-        const {errors} = this.state;
+        const {errors, role_data} = this.state;
 
         return (
             <React.Fragment>
@@ -24,22 +36,25 @@ export default class ChangeRoleForm extends Component {
                     <Form.Input fluid 
                         label="Идентификатор роли:" 
                         required="true" 
-                        name="add_role_form[role_key]" 
+                        value={role_data.key} 
+                        name="change_role_form[role_key]" 
                         type="text" 
                         placeholder="Введите идентификатор роли" />
                     <Form.Input fluid 
                         label="Название роли:" 
+                        value={role_data.name} 
                         required="true" 
-                        name="add_role_form[name]" 
+                        name="change_role_form[name]" 
                         type="text" 
                         placeholder="Введите название роли" />
                     <Form.Input fluid 
                         label="Цвет роли:" 
+                        value={role_data.color} 
                         required="true" 
-                        name="add_role_form[color]" 
+                        name="change_role_form[color]" 
                         type="text" 
                         placeholder="Введите цвет роли" />
-                    <Form.Button>Добавить роль</Form.Button>
+                    <Form.Button>Изменить роль</Form.Button>
                 </Form>
             </React.Fragment>
         );
