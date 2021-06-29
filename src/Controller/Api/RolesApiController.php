@@ -46,7 +46,7 @@ class RolesApiController extends AbstractController {
             $em->flush();
 
             $apiResponse->setSuccess();
-        } catch (Exception $exc) {
+        } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         }
@@ -117,7 +117,7 @@ class RolesApiController extends AbstractController {
 
             $apiResponse->setSuccess();
                 
-        } catch (Exception $ex) {
+        } catch (AccessDeniedException $ex) {
             $apiResponse->setFail();
             $apiResponse->setErrors($ex->getMessage());
         }
@@ -158,7 +158,7 @@ class RolesApiController extends AbstractController {
                     ]
                 ]);
             }
-        } catch (Exception $exc) {
+        } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         }

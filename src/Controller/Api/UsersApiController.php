@@ -81,7 +81,7 @@ class UsersApiController extends AbstractController {
             $em->flush();
 
             $apiResponse->setSuccess();
-        } catch (Exception $exc) {
+        } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         }
