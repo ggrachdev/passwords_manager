@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Api\Response\ApiResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Entity\Project;
 
 class ProjectsApiController extends AbstractController {
 
@@ -19,6 +20,43 @@ class ProjectsApiController extends AbstractController {
          try {
             if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
                 throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $projectRepository = $em->getRepository(Project::class);
+            $projectsDb = $projectRepository->findBy([], ['name' => 'ASC']);
+            
+            if ($projectsDb === null) {
+                $apiResponse->setFail();
+                $apiResponse->setErrors('Not found projects');
+            }
+            else
+            {
+                $projects = [];
+                
+                foreach ($projectsDb as $project) {
+                    $projects[] = [
+                        'name' => $project->getName(),
+                        'id' => $project->getId(),
+                        'folders' => [
+                            [
+                                'name' => 'ФТП',
+                                'id' => 123
+                            ],
+                            [
+                                'name' => 'Хостинг',
+                                'id' => 123
+                            ],
+                            [
+                                'name' => 'Прочее',
+                                'id' => 123
+                            ],
+                        ]
+                    ];
+                }
+                
+                $apiResponse->setSuccess();
+                $apiResponse->setData(['projects' => $projects]);
             }
             
          } catch (AccessDeniedException $exc) {
