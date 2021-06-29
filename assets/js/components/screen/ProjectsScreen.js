@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Container, Header, Menu, Grid, Table, Icon, Input } from 'semantic-ui-react';
+import { Container, Header, Menu, Grid, Table, Icon, Input, Popup } from 'semantic-ui-react';
 import ProjectsApi from '../../src/Api/ProjectsApi';
+import PasswordsApi from '../../src/Api/PasswordsApi';
 import Search from '../../src/Search/Search';
+import Toastify from 'toastify-js';
 
 const equal = require('deep-equal');
 
@@ -14,12 +16,20 @@ export default class ProjectsScreen extends Component {
             activeFolder: null,
             activeProject: null,
             projects: [],
+            passwords: [],
             searchString: '',
+            searchStringPasswords: ''
         };
 
         this.onChangeSearchProjects = (e) => {
             this.setState({
                 searchString: e.target.value
+            });
+        };
+
+        this.onChangeSearchPasswords = (e) => {
+            this.setState({
+                searchStringPasswords: e.target.value
             });
         };
 
@@ -29,6 +39,38 @@ export default class ProjectsScreen extends Component {
             });
         });
 
+        this.renderPasswords = () => {
+            const passwords = [];
+
+            const searchString = this.state.searchStringPasswords;
+
+            this.state.passwords.forEach((password) => {
+
+                if (searchString.length > 0)
+                {
+                    if (
+                        !Search.string(password.name, searchString) && 
+                        !Search.string(password.description, searchString) &&
+                        !Search.string(password.login, searchString)
+                    ) {
+                        return;
+                    };
+                }
+
+                passwords.push(
+                    <Table.Row>
+                        <Table.Cell>{password.name}</Table.Cell>
+                        <Table.Cell>{password.login}</Table.Cell>
+                        <Table.Cell>{password.password}</Table.Cell>
+                        <Table.Cell>{password.description}</Table.Cell>
+                    </Table.Row>
+                    );
+            });
+
+            return passwords;
+
+        };
+
         this.renderMenu = () => {
             const menu = [];
             const searchString = this.state.searchString;
@@ -36,34 +78,52 @@ export default class ProjectsScreen extends Component {
             this.state.projects.forEach((project) => {
 
                 const folders = [];
-                
+
                 let projectIsSearched = Search.string(project.name, searchString);
                 let folderIsSearched = false;
 
                 project.folders.forEach((folder) => {
-                    
-                    if(folderIsSearched === false)
+
+                    if (folderIsSearched === false)
                     {
                         folderIsSearched = Search.string(folder.name, searchString);
                     }
 
+                    const isActiveFolder = this.state.activeFolder === folder.name && this.state.activeProject === project.name;
+
                     folders.push(
                         <Menu.Item
                             name={folder.name} 
-                            active={this.state.activeFolder === folder.name && this.state.activeProject === project.name}
+                            active={isActiveFolder}
                             onClick={() => {
-                                    this.setState({
-                                        activeProject: project.name,
-                                        activeFolder: folder.name
+
+                                    if (isActiveFolder)
+                                        return;
+
+                                    PasswordsApi.getForFolder(folder.id).then((response) => {
+                                        this.setState({
+                                            activeProject: project.name,
+                                            activeFolder: folder.name,
+                                            passwords: response.getData()['passwords']
+                                        });
+
+                                        if (response.getData()['passwords'].length === 0)
+                                        {
+                                            Toastify({
+                                                text: `Не найдено паролей для папки - ${folder.name}`,
+                                                backgroundColor: "darkred",
+                                                duration: 3000
+                                        }).showToast();
+                                        }
                                     });
                                 }}
                             />
                         );
                 });
-                
-                if(searchString.length > 0)
+
+                if (searchString.length > 0)
                 {
-                    if(!projectIsSearched && !folderIsSearched)
+                    if (!projectIsSearched && !folderIsSearched)
                     {
                         return;
                     }
@@ -72,7 +132,8 @@ export default class ProjectsScreen extends Component {
                 menu.push(
                     <Menu.Item>
                         <Menu.Header>
-                            {project.name} <Icon className='icon_edit_project' size='small' color='grey' link name='edit' /><Icon className='icon_edit_project' size='small' color='grey' link name='add circle' />
+                            {project.name} <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                            <Icon content='Добавить папку' className='icon_project' size='small' color='grey' link name='add circle' />
                         </Menu.Header>
                         <Menu.Menu>
                             {folders}
@@ -87,21 +148,6 @@ export default class ProjectsScreen extends Component {
     render() {
 
         const {errors, activeFolder} = this.state;
-
-        const tableBody = [];
-
-        for (var i = 0; i <= 50; i++)
-        {
-            tableBody.push(
-                <Table.Row>
-                    <Table.Cell>Пароль от ФТП {i}</Table.Cell>
-                    <Table.Cell>testLogin</Table.Cell>
-                    <Table.Cell>password</Table.Cell>
-                    <Table.Cell>Заходить через порт 22</Table.Cell>
-                </Table.Row>
-                );
-        }
-
         const PasswordsTable = () => (
                 <Table celled>
                     <Table.Header>
@@ -114,7 +160,7 @@ export default class ProjectsScreen extends Component {
                     </Table.Header>
                 
                     <Table.Body>
-                        {tableBody}
+                        {this.renderPasswords()}
                     </Table.Body>
                 </Table>
                 );
@@ -122,7 +168,10 @@ export default class ProjectsScreen extends Component {
         return (
             <React.Fragment>
                 <Container>
-                    <Header as='h1'>Проекты:</Header>
+                    <Header as='h1'>
+                        Проекты: 
+                        <Popup content='Добавить новый проект' trigger={(<Icon className='icon_add-new-project' style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} /> 
+                    </Header>
                     <Grid divided>
                         <Grid.Row>
                             <Grid.Column width={4}>
@@ -132,6 +181,7 @@ export default class ProjectsScreen extends Component {
                                 </Menu>
                             </Grid.Column>
                             <Grid.Column width={12}>
+                                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' />
                                 {PasswordsTable()}
                             </Grid.Column>
                         </Grid.Row>
@@ -139,6 +189,6 @@ export default class ProjectsScreen extends Component {
             
                 </Container>
             </React.Fragment>
-            );
+        );
     }
 }

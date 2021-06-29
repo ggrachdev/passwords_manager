@@ -6,12 +6,18 @@ body {
     box-shadow: unset;
 }
 
-i.icon.icon_edit_project {
+i.icon.icon_project {
     position: relative;
     bottom: 2px;
-    margin-left: 5px;
 }
 
 .w100p {
     width: 100% !important;
+}
+
+.icon_add-new-project {
+    font-size: 17px !important;
+    position: relative;
+    bottom: 2px;
+    margin-right: 5px;
 }
