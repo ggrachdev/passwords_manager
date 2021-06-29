@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Header, Menu, Grid, Table, Icon, Input } from 'semantic-ui-react';
 import ProjectsApi from '../../src/Api/ProjectsApi';
+import Search from '../../src/Search/Search';
 
 const equal = require('deep-equal');
 
@@ -13,9 +14,15 @@ export default class ProjectsScreen extends Component {
             activeFolder: null,
             activeProject: null,
             projects: [],
-            search: '',
+            searchString: '',
         };
-        
+
+        this.onChangeSearchProjects = (e) => {
+            this.setState({
+                searchString: e.target.value
+            });
+        };
+
         ProjectsApi.getList().then((response) => {
             this.setState({
                 projects: response.getData()['projects']
@@ -24,26 +31,43 @@ export default class ProjectsScreen extends Component {
 
         this.renderMenu = () => {
             const menu = [];
+            const searchString = this.state.searchString;
 
             this.state.projects.forEach((project) => {
 
                 const folders = [];
+                
+                let projectIsSearched = Search.string(project.name, searchString);
+                let folderIsSearched = false;
 
                 project.folders.forEach((folder) => {
                     
+                    if(folderIsSearched === false)
+                    {
+                        folderIsSearched = Search.string(folder.name, searchString);
+                    }
+
                     folders.push(
                         <Menu.Item
                             name={folder.name} 
                             active={this.state.activeFolder === folder.name && this.state.activeProject === project.name}
                             onClick={() => {
-                                this.setState({
-                                    activeProject: project.name,
-                                    activeFolder: folder.name
-                                });
-                            }}
-                        />
-                    );
+                                    this.setState({
+                                        activeProject: project.name,
+                                        activeFolder: folder.name
+                                    });
+                                }}
+                            />
+                        );
                 });
+                
+                if(searchString.length > 0)
+                {
+                    if(!projectIsSearched && !folderIsSearched)
+                    {
+                        return;
+                    }
+                }
 
                 menu.push(
                     <Menu.Item>
@@ -55,7 +79,7 @@ export default class ProjectsScreen extends Component {
                         </Menu.Menu>
                     </Menu.Item>);
             });
-            
+
             return menu;
         };
     }
@@ -63,10 +87,10 @@ export default class ProjectsScreen extends Component {
     render() {
 
         const {errors, activeFolder} = this.state;
-        
+
         const tableBody = [];
-        
-        for(var i = 0; i <= 50; i++)
+
+        for (var i = 0; i <= 50; i++)
         {
             tableBody.push(
                 <Table.Row>
@@ -75,25 +99,25 @@ export default class ProjectsScreen extends Component {
                     <Table.Cell>password</Table.Cell>
                     <Table.Cell>Заходить через порт 22</Table.Cell>
                 </Table.Row>
-            );
+                );
         }
 
         const PasswordsTable = () => (
-            <Table celled>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell>Название</Table.HeaderCell>
-                        <Table.HeaderCell>Логин</Table.HeaderCell>
-                        <Table.HeaderCell>Пароль</Table.HeaderCell>
-                        <Table.HeaderCell>Пояснение</Table.HeaderCell>
-                    </Table.Row>
-                </Table.Header>
-
-                <Table.Body>
-                    {tableBody}
-                </Table.Body>
-            </Table>
-        );
+                <Table celled>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Название</Table.HeaderCell>
+                            <Table.HeaderCell>Логин</Table.HeaderCell>
+                            <Table.HeaderCell>Пароль</Table.HeaderCell>
+                            <Table.HeaderCell>Пояснение</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                
+                    <Table.Body>
+                        {tableBody}
+                    </Table.Body>
+                </Table>
+                );
 
         return (
             <React.Fragment>
@@ -102,7 +126,7 @@ export default class ProjectsScreen extends Component {
                     <Grid divided>
                         <Grid.Row>
                             <Grid.Column width={4}>
-                                <Input className='w100p' placeholder='Поиск...' />
+                                <Input onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск...' />
                                 <Menu size='large' vertical className='w100p'>
                                     {this.renderMenu()}
                                 </Menu>
