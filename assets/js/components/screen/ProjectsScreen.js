@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Header, Menu, Grid, Table, Icon, Input } from 'semantic-ui-react';
+import ProjectsApi from '../../src/Api/ProjectsApi';
 
 const equal = require('deep-equal');
 
@@ -9,77 +10,17 @@ export default class ProjectsScreen extends Component {
         super(props);
         this.state = {
             errors: [],
-            activeItem: 'enterprise',
-            projects: [
-                {
-                    name: 'Academ18',
-                    folders: [
-                        {
-                            name: 'FTP'
-                        },
-                        {
-                            name: 'Панели управления'
-                        },
-                        {
-                            name: 'Админ-панели'
-                        }
-                    ]
-                },
-                {
-                    name: 'mreal18',
-                    folders: [
-                        {
-                            name: 'фтп'
-                        },
-                        {
-                            name: 'Сервер'
-                        },
-                        {
-                            name: 'Админ-панель'
-                        },
-                        {
-                            name: 'Лотинфо'
-                        }
-                    ]
-                },
-                {
-                    name: 'Домашний доктор',
-                    folders: [
-                        {
-                            name: 'фтп'
-                        },
-                        {
-                            name: 'Сервер'
-                        },
-                        {
-                            name: 'Админ-панель'
-                        },
-                        {
-                            name: 'Лотинфо'
-                        }
-                    ]
-                },
-                {
-                    name: 'хрс18',
-                    folders: [
-                        {
-                            name: 'фтп'
-                        },
-                        {
-                            name: 'Сервер'
-                        },
-                        {
-                            name: 'Админ-панель'
-                        },
-                        {
-                            name: 'Лотинфо'
-                        }
-                    ]
-                },
-            ]
+            activeFolder: null,
+            activeProject: null,
+            projects: [],
+            search: '',
         };
-
-        this.handleItemClick = (e, { name }) => this.setState({activeItem: name});
+        
+        ProjectsApi.getList().then((response) => {
+            this.setState({
+                projects: response.getData()['projects']
+            });
+        });
 
         this.renderMenu = () => {
             const menu = [];
@@ -89,11 +30,19 @@ export default class ProjectsScreen extends Component {
                 const folders = [];
 
                 project.folders.forEach((folder) => {
-                    folders.push(<Menu.Item
-                        name={folder.name}
-                        active={this.state.activeItem === folder.name}
-                        onClick={this.handleItemClick}
-                    />);
+                    
+                    folders.push(
+                        <Menu.Item
+                            name={folder.name} 
+                            active={this.state.activeFolder === folder.name && this.state.activeProject === project.name}
+                            onClick={() => {
+                                this.setState({
+                                    activeProject: project.name,
+                                    activeFolder: folder.name
+                                });
+                            }}
+                        />
+                    );
                 });
 
                 menu.push(
@@ -113,7 +62,7 @@ export default class ProjectsScreen extends Component {
 
     render() {
 
-        const {errors, activeItem} = this.state;
+        const {errors, activeFolder} = this.state;
         
         const tableBody = [];
         

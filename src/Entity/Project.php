@@ -54,12 +54,12 @@ class Project
     /**
      * @return Collection|ProjectFolder[]
      */
-    public function getProject(): Collection
+    public function getProjectFolders(): Collection
     {
         return $this->project;
     }
 
-    public function addProject(ProjectFolder $project): self
+    public function addProjectFolder(ProjectFolder $project): self
     {
         if (!$this->project->contains($project)) {
             $this->project[] = $project;
