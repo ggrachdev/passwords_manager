@@ -4,6 +4,7 @@ import ProjectsApi from '../../src/Api/ProjectsApi';
 import PasswordsApi from '../../src/Api/PasswordsApi';
 import Search from '../../src/Search/Search';
 import PasswordsTable from '../passwords-table/passwords-table';
+import ProjectsMenu from '../projects-menu/projects-menu';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import AddProjectForm from '../form/AddProjectForm';
 import AddFolderForm from '../form/AddFolderForm';
@@ -16,101 +17,44 @@ export default class ProjectsScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            errors: [],
-            activeFolder: null,
             activeProject: null,
-            projects: [],
-            passwords: [],
-            modal_add_project_is_open: false,
-            modal_add_folder_is_open: false,
+            activeFolder: null,
+            
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
-            searchString: ''
+            
+            projects: [],
+            passwords: [],
+            
+            modal_add_folder_is_open: false,
+            modal_add_project_is_open: false
         };
-
-        this.onChangeSearchProjects = (e) => {
+        
+        this.onClickIconAddFolder = (e, project) => {
             this.setState({
-                searchString: e.target.value
+                modal_add_folder_is_open: true,
+                name_project_for_add_folder: project.name,
+                id_project_for_add_folder: project.id
             });
         };
-
-        this.renderMenu = () => {
-            const menu = [];
-            const searchString = this.state.searchString;
-
-            this.state.projects.forEach((project) => {
-
-                const folders = [];
-
-                let projectIsSearched = Search.string(project.name, searchString);
-                let folderIsSearched = false;
-
-                project.folders.forEach((folder) => {
-
-                    if (folderIsSearched === false)
-                    {
-                        folderIsSearched = Search.string(folder.name, searchString);
-                    }
-
-                    const isActiveFolder = this.state.activeFolder === folder.id && this.state.activeProject === project.name;
-
-                    folders.push(
-                        <Menu.Item
-                            name={folder.name} 
-                            active={isActiveFolder}
-                            onClick={() => {
-
-                                    if (isActiveFolder)
-                                        return;
-
-                                    PasswordsApi.getForFolder(folder.id).then((response) => {
-                                        this.setState({
-                                            activeProject: project.name,
-                                            activeFolder: folder.id,
-                                            passwords: response.getData()['passwords']
-                                        });
-
-                                        if (response.getData()['passwords'].length === 0)
-                                        {
-                                            Toastify({
-                                                text: `Не найдено паролей для папки - ${folder.name}`,
-                                                background: "darkred",
-                                                duration: 3000
-                                            }).showToast();
-                                        }
-                                    });
-                                }}
-                            />
-                        );
+        
+        this.onChangeFolderProject = (e, folder, project) => {
+            PasswordsApi.getForFolder(folder.id).then((response) => {
+                this.setState({
+                    activeProject: project.name,
+                    activeFolder: folder.id,
+                    passwords: response.getData()['passwords']
                 });
 
-                if (searchString.length > 0)
+                if (response.getData()['passwords'].length === 0)
                 {
-                    if (!projectIsSearched && !folderIsSearched)
-                    {
-                        return;
-                    }
+                    Toastify({
+                        text: `Не найдено паролей для папки - ${folder.name}`,
+                        backgroundColor: "#8b0000",
+                        duration: 3000
+                    }).showToast();
                 }
-
-                menu.push(
-                    <Menu.Item>
-                        <Menu.Header>
-                            {project.name} <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
-                            <Icon onClick={() => {
-                                this.setState({
-                                    modal_add_folder_is_open: true,
-                                    name_project_for_add_folder: project.name,
-                                    id_project_for_add_folder: project.id
-                                });
-                            }} content='Добавить папку' className='icon_project' size='small' color='grey' link name='add circle' />
-                        </Menu.Header>
-                        <Menu.Menu>
-                            {folders}
-                        </Menu.Menu>
-                    </Menu.Item>);
             });
-
-            return menu;
         };
         
         this.initialize();
@@ -126,8 +70,6 @@ export default class ProjectsScreen extends Component {
 
     render() {
 
-        const {errors, activeFolder} = this.state;
-
         return (
             <React.Fragment>
                 <Container>
@@ -142,10 +84,12 @@ export default class ProjectsScreen extends Component {
                     <Grid divided>
                         <Grid.Row>
                             <Grid.Column width={4}>
-                                <Input onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск...' />
-                                <Menu size='large' vertical className='w100p'>
-                                    {this.renderMenu()}
-                                </Menu>
+                                <ProjectsMenu 
+                                    activeProject={this.state.activeProject} 
+                                    activeFolder={this.state.activeFolder} 
+                                    onChangeFolderProject={this.onChangeFolderProject} 
+                                    onClickIconAddFolder={this.onClickIconAddFolder} 
+                                    projects={this.state.projects} />
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 <PasswordsTable passwords={this.state.passwords}/>
