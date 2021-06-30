@@ -4,6 +4,9 @@ export default class Search {
 
         if (typeof from === 'string' && typeof need === 'string')
         {
+            from = from.trim();
+            need = need.trim();
+            
             if (need.length > 0)
             {
                 isSearched = (from.toLowerCase().indexOf(need.toLowerCase()) !== -1);
