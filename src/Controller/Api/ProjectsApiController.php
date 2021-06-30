@@ -8,11 +8,63 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Api\Response\ApiResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Entity\Project;
+use App\Entity\ProjectFolder;
 use App\Form\AddProjectFormType;
+use App\Form\AddFolderFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\HttpFoundation\Request;
 
 class ProjectsApiController extends AbstractController {
+
+    /**
+     * @Route("/projects/add/folder/{project_id}/", name="projects_api_add_folder")
+     */
+    public function addFolder(Request $request, $project_id): Response {
+        $apiResponse = new ApiResponse();
+
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $folder = new ProjectFolder();
+
+            $form = $this->createForm(AddFolderFormType::class, $folder);
+            $form->handleRequest($request);
+
+            if (!$form->isSubmitted()) {
+                throw new AccessDeniedException('Has not data');
+            }
+
+            if (!$form->isValid()) {
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            
+            $projectRepository = $em->getRepository(Project::class);
+            
+            $project = $projectRepository->find($project_id);
+            
+            if($project === null)
+            {
+                throw new AccessDeniedException("Has found project with id = $project_id");
+            }
+            
+            $folder->setProject($project);
+            
+            $em->persist($folder);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
 
     /**
      * @Route("/projects/add/", name="projects_api_add")
