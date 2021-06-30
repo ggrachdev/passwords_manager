@@ -105,7 +105,7 @@ export default class MainMenu extends Component {
     render() {
 
         return (
-            <Menu inverted color='blue'>
+            <Menu inverted style={{backgroundColor: '#3b5eaf'}}>
                 <Container>
                     {this.renderMenu()}
                 </Container>
