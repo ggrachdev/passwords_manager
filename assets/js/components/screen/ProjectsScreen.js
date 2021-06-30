@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Container, Header, Menu, Grid, Table, Icon, Input, Popup, Modal, Button } from 'semantic-ui-react';
+import { Container, Header, Menu, Grid, Icon, Input, Popup, Modal, Button } from 'semantic-ui-react';
 import ProjectsApi from '../../src/Api/ProjectsApi';
 import PasswordsApi from '../../src/Api/PasswordsApi';
 import Search from '../../src/Search/Search';
+import PasswordsTable from '../passwords-table/passwords-table';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import AddProjectForm from '../form/AddProjectForm';
 import AddFolderForm from '../form/AddFolderForm';
@@ -24,52 +25,13 @@ export default class ProjectsScreen extends Component {
             modal_add_folder_is_open: false,
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
-            searchString: '',
-            searchStringPasswords: ''
+            searchString: ''
         };
 
         this.onChangeSearchProjects = (e) => {
             this.setState({
                 searchString: e.target.value
             });
-        };
-
-        this.onChangeSearchPasswords = (e) => {
-            this.setState({
-                searchStringPasswords: e.target.value
-            });
-        };
-
-        this.renderPasswords = () => {
-            const passwords = [];
-
-            const searchString = this.state.searchStringPasswords;
-
-            this.state.passwords.forEach((password) => {
-
-                if (searchString.length > 0)
-                {
-                    if (
-                        !Search.string(password.name, searchString) && 
-                        !Search.string(password.description, searchString) &&
-                        !Search.string(password.login, searchString)
-                    ) {
-                        return;
-                    };
-                }
-
-                passwords.push(
-                    <Table.Row>
-                        <Table.Cell>{password.name}</Table.Cell>
-                        <Table.Cell>{password.login}</Table.Cell>
-                        <Table.Cell>{password.password}</Table.Cell>
-                        <Table.Cell>{password.description}</Table.Cell>
-                    </Table.Row>
-                    );
-            });
-
-            return passwords;
-
         };
 
         this.renderMenu = () => {
@@ -112,7 +74,7 @@ export default class ProjectsScreen extends Component {
                                         {
                                             Toastify({
                                                 text: `Не найдено паролей для папки - ${folder.name}`,
-                                                backgroundColor: "darkred",
+                                                background: "darkred",
                                                 duration: 3000
                                             }).showToast();
                                         }
@@ -165,22 +127,6 @@ export default class ProjectsScreen extends Component {
     render() {
 
         const {errors, activeFolder} = this.state;
-        const PasswordsTable = () => (
-                <Table celled>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>Название</Table.HeaderCell>
-                            <Table.HeaderCell>Логин</Table.HeaderCell>
-                            <Table.HeaderCell>Пароль</Table.HeaderCell>
-                            <Table.HeaderCell>Пояснение</Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
-                
-                    <Table.Body>
-                        {this.renderPasswords()}
-                    </Table.Body>
-                </Table>
-                );
 
         return (
             <React.Fragment>
@@ -202,8 +148,7 @@ export default class ProjectsScreen extends Component {
                                 </Menu>
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' />
-                                {PasswordsTable()}
+                                <PasswordsTable passwords={this.state.passwords}/>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
