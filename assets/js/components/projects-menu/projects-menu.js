@@ -107,12 +107,15 @@ export default class ProjectsMenu extends Component {
     }
     
     render() {
+        
+        const menu = this.renderMenu();
         return (
             <React.Fragment>
                 <Input onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск...' />
-                <Menu size='large' vertical className='w100p'>
-                    {this.renderMenu()}
+                <Menu style={{display: (menu.length == 0 ? 'none' : '')}} size='large' vertical className='w100p'>
+                    {menu}
                 </Menu>
+                <Header as="h5" style={{display: (menu.length == 0 ? '' : 'none')}}>Не найдено проектов</Header>
             </React.Fragment>
         );
     }

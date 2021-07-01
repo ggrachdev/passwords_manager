@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
-import { Menu, Icon, Container, Input, Table } from 'semantic-ui-react';
+import { Menu, Icon, Container, Input, Table, Button } from 'semantic-ui-react';
 import Search from '../../src/Search/Search';
 
 const equal = require('deep-equal');
@@ -43,8 +43,11 @@ export default class PasswordsTable extends Component {
                         <Table.Cell>{password.login}</Table.Cell>
                         <Table.Cell>{password.password}</Table.Cell>
                         <Table.Cell>{password.description}</Table.Cell>
+                        <Table.Cell textAlign="center">
+                            <Icon size='small' color='grey' link name='edit' />
+                        </Table.Cell>
                     </Table.Row>
-                    );
+                );
             });
 
             return passwords;
@@ -63,21 +66,25 @@ export default class PasswordsTable extends Component {
     }
     
     render() {
+        
+        const Passwords = this.renderPasswords();
+        
         return (
             <React.Fragment>
-                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' />
-                <Table celled>
+                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' /> <Button positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>
+                <Table style={{display: (Passwords.length == 0 ? 'none' : '')}} celled>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Название</Table.HeaderCell>
                             <Table.HeaderCell>Логин</Table.HeaderCell>
                             <Table.HeaderCell>Пароль</Table.HeaderCell>
                             <Table.HeaderCell>Пояснение</Table.HeaderCell>
+                            <Table.HeaderCell></Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
 
                     <Table.Body>
-                        {this.renderPasswords()}
+                        {Passwords}
                     </Table.Body>
                 </Table>
             </React.Fragment>

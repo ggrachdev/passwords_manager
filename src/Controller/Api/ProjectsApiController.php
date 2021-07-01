@@ -41,23 +41,21 @@ class ProjectsApiController extends AbstractController {
             }
 
             $em = $this->getDoctrine()->getManager();
-            
+
             $projectRepository = $em->getRepository(Project::class);
-            
+
             $project = $projectRepository->find($project_id);
-            
-            if($project === null)
-            {
+
+            if ($project === null) {
                 throw new AccessDeniedException("Has found project with id = $project_id");
             }
-            
+
             $folder->setProject($project);
-            
+
             $em->persist($folder);
             $em->flush();
-            
+
             $apiResponse->setSuccess();
-            
         } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
@@ -93,9 +91,8 @@ class ProjectsApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $em->persist($project);
             $em->flush();
-            
+
             $apiResponse->setSuccess();
-            
         } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
@@ -137,6 +134,10 @@ class ProjectsApiController extends AbstractController {
                                 'id' => $folder->getId()
                             ];
                         };
+
+                        usort($folders, function ($a, $b) {
+                            return ($a['name'] > $b['name']);
+                        });
                     }
 
                     $projects[] = [

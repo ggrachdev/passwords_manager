@@ -27,7 +27,8 @@ export default class ProjectsScreen extends Component {
             passwords: [],
             
             modal_add_folder_is_open: false,
-            modal_add_project_is_open: false
+            modal_add_project_is_open: false,
+            modal_change_project_is_open: false
         };
         
         this.onClickIconAddFolder = (e, project) => {
@@ -50,7 +51,9 @@ export default class ProjectsScreen extends Component {
                 {
                     Toastify({
                         text: `Не найдено паролей для папки - ${folder.name}`,
-                        backgroundColor: "#8b0000",
+                        style: {
+                            background: "darkred"
+                        },
                         duration: 3000
                     }).showToast();
                 }
@@ -110,7 +113,9 @@ export default class ProjectsScreen extends Component {
                                 
                                 Toastify({
                                     text: `Проект успешно создан`,
-                                    backgroundColor: "green",
+                                    style: {
+                                        background: "green"
+                                    },
                                     duration: 3000
                                 }).showToast();
                                 
@@ -123,7 +128,9 @@ export default class ProjectsScreen extends Component {
                             }).catch(() => {
                                 Toastify({
                                     text: `Не удалось добавить проект`,
-                                    backgroundColor: "darkred",
+                                    style: {
+                                        background: "darkred"
+                                    },
                                     duration: 3000
                                 }).showToast();
                             });
@@ -133,6 +140,25 @@ export default class ProjectsScreen extends Component {
                         <Button onClick={() => {
                             this.setState({
                                 modal_add_project_is_open: false
+                            });
+                        }}>
+                            Закрыть окно
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
+            
+                <Modal 
+                    open={this.state.modal_change_project_is_open} >
+                    <Modal.Header>Изменить проект</Modal.Header>
+                    <Modal.Content>
+                        <AddProjectForm onSubmit={(e) => {
+                            const dataForm = (new FormSerializer(e.target)).getObject();
+                        }} />
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button onClick={() => {
+                            this.setState({
+                                modal_change_project_is_open: false
                             });
                         }}>
                             Закрыть окно
@@ -151,7 +177,9 @@ export default class ProjectsScreen extends Component {
                                 
                                 Toastify({
                                     text: `Папка успешно создана`,
-                                    backgroundColor: "green",
+                                    style: {
+                                        background: "green"
+                                    },
                                     duration: 3000
                                 }).showToast();
                                 
@@ -164,7 +192,9 @@ export default class ProjectsScreen extends Component {
                             }).catch(() => {
                                 Toastify({
                                     text: `Не удалось добавить папку`,
-                                    backgroundColor: "darkred",
+                                    style: {
+                                        background: "darkred"
+                                    },
                                     duration: 3000
                                 }).showToast();
                             });
