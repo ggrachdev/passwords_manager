@@ -50,7 +50,9 @@ export default class ProjectsMenu extends Component {
                             onClick={(e) => {
                                 this.state.onChangeFolderProject(e, folder, project);
                             }}
-                        />
+                        >
+                            {folder.name} <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                        </Menu.Item>
                     );
                 });
 
@@ -68,7 +70,7 @@ export default class ProjectsMenu extends Component {
                             {project.name} <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
                             <Icon onClick={(e) => {
                                 this.state.onClickIconAddFolder(e, project);
-                            }} content='Добавить папку' className='icon_project' size='small' color='grey' link name='add circle' />
+                            }} className='icon_project' size='small' color='grey' link name='add circle' />
                         </Menu.Header>
                         <Menu.Menu>
                             {folders}
