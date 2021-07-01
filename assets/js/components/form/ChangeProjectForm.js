@@ -27,7 +27,7 @@ export default class ChangeProjectForm extends Component {
                         name="change_project_form[name]" 
                         type="text" 
                         placeholder="Введите название проекта" />
-                    <Form.Button>Изменить Проект</Form.Button>
+                    <Form.Button positive>Изменить Проект</Form.Button>
                 </Form>
             </React.Fragment>
         );

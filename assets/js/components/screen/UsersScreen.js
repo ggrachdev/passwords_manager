@@ -197,7 +197,7 @@ export default class UsersScreen extends Component {
                 <Modal 
                     open={modal_registration_is_open} 
                     trigger={
-                        <Button onClick={this.openModalAddUser}>Добавить пользователя</Button>
+                        <Button positive onClick={this.openModalAddUser}>Добавить пользователя</Button>
                     }>
             
                     <Modal.Header>Добавить пользователя</Modal.Header>

@@ -26,7 +26,7 @@ export default class AddProjectForm extends Component {
                         name="add_project_form[name]" 
                         type="text" 
                         placeholder="Введите название проекта" />
-                    <Form.Button>Добавить Проект</Form.Button>
+                    <Form.Button positive>Добавить Проект</Form.Button>
                 </Form>
             </React.Fragment>
         );

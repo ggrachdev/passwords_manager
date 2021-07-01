@@ -26,7 +26,7 @@ export default class AddFolderForm extends Component {
                         name="add_folder_form[name]" 
                         type="text" 
                         placeholder="Введите название папки" />
-                    <Form.Button>Добавить папку</Form.Button>
+                    <Form.Button positive>Добавить папку</Form.Button>
                 </Form>
             </React.Fragment>
         );

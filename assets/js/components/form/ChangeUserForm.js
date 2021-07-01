@@ -97,8 +97,6 @@ export default class ChangeUserForm extends Component {
             return viewRadio;
         };
 
-        const ButtonSubmit = <Form.Button>Изменить данные:</Form.Button>;
-
         return (
             <React.Fragment>
                 <Form autoComplete="off" onSubmit={this.onSubmit}>
@@ -143,7 +141,7 @@ export default class ChangeUserForm extends Component {
                         placeholder="Повторите пароль" />
                     <Header as='h4'>Группы пользователя:</Header>
                     {renderRadioRoles()}
-                    {ButtonSubmit}
+                    <Form.Button positive>Изменить данные:</Form.Button>
                 </Form>
             </React.Fragment>
         );

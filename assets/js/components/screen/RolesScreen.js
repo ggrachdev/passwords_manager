@@ -164,7 +164,7 @@ export default class RolesScreen extends Component {
             <Modal 
                 open={modal_add_role_is_open} 
                 trigger={
-                    <Button onClick={() => {
+                    <Button positive onClick={() => {
                         this.setState({
                             modal_add_role_is_open: true
                         })

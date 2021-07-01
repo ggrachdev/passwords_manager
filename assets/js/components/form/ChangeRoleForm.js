@@ -55,7 +55,7 @@ export default class ChangeRoleForm extends Component {
                         name="change_role_form[color]" 
                         type="text" 
                         placeholder="Введите цвет роли" />
-                    <Form.Button>Изменить роль</Form.Button>
+                    <Form.Button positive>Изменить роль</Form.Button>
                 </Form>
             </React.Fragment>
         );

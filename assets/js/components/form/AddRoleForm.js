@@ -38,7 +38,7 @@ export default class AddRoleForm extends Component {
                         name="add_role_form[color]" 
                         type="text" 
                         placeholder="Введите цвет роли" />
-                    <Form.Button>Добавить роль</Form.Button>
+                    <Form.Button positive>Добавить роль</Form.Button>
                 </Form>
             </React.Fragment>
         );

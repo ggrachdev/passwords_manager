@@ -96,7 +96,7 @@ export default class RegistrationUserForm extends Component {
                         type="text" 
                         placeholder="Повторите пароль" />
                     {renderRadioRoles()}
-                    <Form.Button>Зарегистрировать пользователя</Form.Button>
+                    <Form.Button positive>Зарегистрировать пользователя</Form.Button>
                 </Form>
             </React.Fragment>
         );

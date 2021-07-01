@@ -56,7 +56,7 @@ export default class LoginForm extends Component {
                         required 
                         type="password" 
                         placeholder="Введите пароль" />
-                    <Form.Button>Войти</Form.Button>
+                    <Form.Button positive>Войти</Form.Button>
                     {Errors}
                 </Form>
             </React.Fragment>
