@@ -22,6 +22,7 @@ export default class ProjectsScreen extends Component {
 
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
+            id_project_for_change: null,
 
             projects: [],
             passwords: [],
@@ -36,6 +37,13 @@ export default class ProjectsScreen extends Component {
                 modal_add_folder_is_open: true,
                 name_project_for_add_folder: project.name,
                 id_project_for_add_folder: project.id
+            });
+        };
+
+        this.onClickIconEditProject = (e, project) => {
+            this.setState({
+                id_project_for_change: project.id,
+                modal_change_project_is_open: true
             });
         };
 
@@ -83,6 +91,7 @@ export default class ProjectsScreen extends Component {
                         <Grid.Row>
                             <Grid.Column width={4}>
                                 <ProjectsMenu 
+                                    onClickIconEditProject={this.onClickIconEditProject}
                                     activeProject={this.state.activeProject} 
                                     activeFolder={this.state.activeFolder} 
                                     onChangeFolderProject={this.onChangeFolderProject} 
@@ -102,21 +111,21 @@ export default class ProjectsScreen extends Component {
                     <Modal.Header>Добавить проект</Modal.Header>
                     <Modal.Content>
                         <AddProjectForm onSubmit={(e) => {
-                                const dataForm = (new FormSerializer(e.target)).getObject();
+                            const dataForm = (new FormSerializer(e.target)).getObject();
 
-                                ProjectsApi.add(dataForm).then((response) => {
+                            ProjectsApi.add(dataForm).then((response) => {
 
-                                    Toasts.success(`Проект успешно создан`);
+                                Toasts.success(`Проект успешно создан`);
 
-                                    this.setState({
-                                        modal_add_project_is_open: false
-                                    });
-
-                                    this.initialize();
-
-                                }).catch(() => {
-                                    Toasts.error(`Не удалось добавить проект`);
+                                this.setState({
+                                    modal_add_project_is_open: false
                                 });
+
+                                this.initialize();
+
+                            }).catch(() => {
+                                Toasts.error(`Не удалось добавить проект`);
+                            });
                         }} />
                     </Modal.Content>
                     <Modal.Actions>
@@ -134,7 +143,7 @@ export default class ProjectsScreen extends Component {
                     open={this.state.modal_change_project_is_open} >
                     <Modal.Header>Изменить проект</Modal.Header>
                     <Modal.Content>
-                        <AddProjectForm onSubmit={(e) => {
+                        <ChangeProjectForm projectId={this.state.id_project_for_change} onSubmit={(e) => {
                             const dataForm = (new FormSerializer(e.target)).getObject();
                         }} />
                     </Modal.Content>

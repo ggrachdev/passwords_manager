@@ -102,6 +102,62 @@ class ProjectsApiController extends AbstractController {
     }
 
     /**
+     * @Route("/projects/get/{id}/", name="projects_api_get_from_id")
+     */
+    public function get($id): Response {
+        if ($id === 'all') {
+            return $this->forward(self::class.'::getAll');
+        }
+        
+        $apiResponse = new ApiResponse();
+
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $projectRepository = $em->getRepository(Project::class);
+            $project = $projectRepository->find($id);
+
+            if ($project === null) {
+                $apiResponse->setFail();
+                $apiResponse->setErrors("Not found project with id = $id");
+            } else {
+                $foldersDb = $project->getProjectFolders();
+
+                $folders = [];
+
+                if (!empty($foldersDb)) {
+                    
+                    foreach ($foldersDb as $folder) {
+                        $folders[] = [
+                            'name' => $folder->getName(),
+                            'id' => $folder->getId()
+                        ];
+                    }
+
+                    usort($folders, function ($a, $b) {
+                        return ($a['name'] > $b['name']);
+                    });
+                }
+
+                $apiResponse->setSuccess();
+                $apiResponse->setData(['project' => [
+                    'name' => $project->getName(),
+                    'id' => $project->getId(),
+                    'folders' => $folders
+                ]]);
+            }
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/projects/get/all/", name="projects_api_get_all")
      */
     public function getAll(): Response {

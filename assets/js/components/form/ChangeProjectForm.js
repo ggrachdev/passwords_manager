@@ -8,7 +8,7 @@ export default class ChangeProjectForm extends Component {
         
         this.state = {
             errors: props.errors || [],
-            id_project_change: props.id_project_change
+            projectId: props.projectId
         };
 
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};

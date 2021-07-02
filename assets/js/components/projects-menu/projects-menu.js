@@ -13,6 +13,7 @@ export default class ProjectsMenu extends Component {
             activeFolder: props.activeFolder,
             projects: props.projects,
             onClickIconAddFolder: props.onClickIconAddFolder,
+            onClickIconEditProject: props.onClickIconEditProject,
             onChangeFolderProject: props.onChangeFolderProject,
             searchString: ''
         };
@@ -51,7 +52,8 @@ export default class ProjectsMenu extends Component {
                                 this.state.onChangeFolderProject(e, folder, project);
                             }}
                         >
-                            {folder.name} <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                            {folder.name} 
+                            <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
                         </Menu.Item>
                     );
                 });
@@ -68,7 +70,8 @@ export default class ProjectsMenu extends Component {
                     <Menu.Item>
                         <Menu.Header>
                             {project.name} 
-                            <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                            <Icon onClick={(e) => { this.state.onClickIconEditProject(e, project); }} content='Редактировать проект' style={{marginLeft: '5px'}} 
+                            className='icon_project' size='small' color='grey' link name='edit' />
                             <Icon onClick={(e) => { this.state.onClickIconAddFolder(e, project); }} className='icon_project' size='small' color='grey' link name='add circle' />
                         </Menu.Header>
                         <Menu.Menu>
