@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Menu, Grid, Icon, Input, Popup, Modal, Button } from 'semantic-ui-react';
+import { Container, Header,  Grid, Icon, Input, Popup, Modal, Button } from 'semantic-ui-react';
 import ProjectsApi from '../../src/Api/ProjectsApi';
 import PasswordsApi from '../../src/Api/PasswordsApi';
 import Search from '../../src/Search/Search';
@@ -8,6 +8,7 @@ import ProjectsMenu from '../projects-menu/projects-menu';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import AddProjectForm from '../form/AddProjectForm';
 import AddFolderForm from '../form/AddFolderForm';
+import ChangeProjectForm from '../form/ChangeProjectForm';
 import Toasts from '../../src/Toasts/Toasts';
 
 const equal = require('deep-equal');
@@ -45,6 +46,15 @@ export default class ProjectsScreen extends Component {
                 id_project_for_change: project.id,
                 modal_change_project_is_open: true
             });
+        };
+
+        this.onClickRemoveProject = (e, project) => {
+            e.preventDefault();
+            
+            if(confirm(`Вы действительно хотите удалить проект - ${project.name} ?. Все папки и пароли этого проекта будут удалены`))
+            {
+                
+            }
         };
 
         this.onChangeFolderProject = (e, folder, project) => {
@@ -130,9 +140,9 @@ export default class ProjectsScreen extends Component {
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={() => {
-                                this.setState({
-                                    modal_add_project_is_open: false
-                                });
+                            this.setState({
+                                modal_add_project_is_open: false
+                            });
                         }}>
                             Закрыть окно
                         </Button>
@@ -143,9 +153,22 @@ export default class ProjectsScreen extends Component {
                     open={this.state.modal_change_project_is_open} >
                     <Modal.Header>Изменить проект</Modal.Header>
                     <Modal.Content>
-                        <ChangeProjectForm projectId={this.state.id_project_for_change} onSubmit={(e) => {
-                            const dataForm = (new FormSerializer(e.target)).getObject();
-                        }} />
+                        <ChangeProjectForm 
+                            projectId={this.state.id_project_for_change} 
+                            onClickRemoveProject={this.onClickRemoveProject} 
+                            onSubmit={(e) => {
+                                const dataForm = (new FormSerializer(e.target)).getObject();
+                                
+                                ProjectsApi.update(this.state.id_project_for_change, dataForm).then((response) => {
+                                    Toasts.success('Проект успешно изменен');
+                                    this.setState({
+                                        modal_change_project_is_open: false
+                                    });
+                                    this.initialize();
+                                }).catch(() => {
+                                    Toasts.error('Не удалось изменить проект');
+                                });
+                            }} />
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={() => {

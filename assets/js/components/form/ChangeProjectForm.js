@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react'
+import ProjectsApi from '../../src/Api/ProjectsApi';
 
 export default class ChangeProjectForm extends Component {
 
@@ -8,8 +9,19 @@ export default class ChangeProjectForm extends Component {
         
         this.state = {
             errors: props.errors || [],
-            projectId: props.projectId
+            projectId: props.projectId,
+            onClickRemoveProject: props.onClickRemoveProject,
+            projectData: {
+                name: null,
+                id: null
+            }
         };
+        
+        ProjectsApi.get(props.projectId).then((response) => {
+            this.setState({
+                projectData: response.getData()['project']
+            });
+        });
 
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
     }
@@ -24,10 +36,12 @@ export default class ChangeProjectForm extends Component {
                     <Form.Input fluid 
                         label="Название проекта:" 
                         required="true" 
+                        defaultValue={this.state.projectData.name} 
                         name="change_project_form[name]" 
                         type="text" 
                         placeholder="Введите название проекта" />
                     <Form.Button positive>Изменить Проект</Form.Button>
+                    <Form.Button onClick={(e) => {e.preventDefault(); this.state.onClickRemoveProject(e, this.state.projectData);}} negative>Удалить Проект</Form.Button>
                 </Form>
             </React.Fragment>
         );

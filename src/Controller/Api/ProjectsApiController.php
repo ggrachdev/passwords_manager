@@ -11,6 +11,7 @@ use App\Entity\Project;
 use App\Entity\ProjectFolder;
 use App\Form\AddProjectFormType;
 use App\Form\AddFolderFormType;
+use App\Form\ChangeProjectFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -102,13 +103,61 @@ class ProjectsApiController extends AbstractController {
     }
 
     /**
+     * @Route("/projects/update/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_update", methods={"POST","HEAD"})
+     */
+    public function update(Request $request, $project_id): Response {
+        $apiResponse = new ApiResponse();
+
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $projectRequest = new Project();
+
+            $form = $this->createForm(ChangeProjectFormType::class, $projectRequest);
+            $form->handleRequest($request);
+            
+            if (!$form->isSubmitted()) {
+                throw new AccessDeniedException('Has not data');
+            }
+
+            if (!$form->isValid()) {
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $projectRepository = $em->getRepository(Project::class);
+
+            $project = $projectRepository->find($project_id);
+            
+            if($project === null)
+            {
+                throw new AccessDeniedException("Not found project with id = $project_id");
+            }
+            
+            $project->setName($projectRequest->getName());
+            $em->persist($project);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/projects/get/{id}/", name="projects_api_get_from_id")
      */
     public function get($id): Response {
         if ($id === 'all') {
-            return $this->forward(self::class.'::getAll');
+            return $this->forward(self::class . '::getAll');
         }
-        
+
         $apiResponse = new ApiResponse();
 
         try {
@@ -129,7 +178,7 @@ class ProjectsApiController extends AbstractController {
                 $folders = [];
 
                 if (!empty($foldersDb)) {
-                    
+
                     foreach ($foldersDb as $folder) {
                         $folders[] = [
                             'name' => $folder->getName(),
@@ -144,9 +193,9 @@ class ProjectsApiController extends AbstractController {
 
                 $apiResponse->setSuccess();
                 $apiResponse->setData(['project' => [
-                    'name' => $project->getName(),
-                    'id' => $project->getId(),
-                    'folders' => $folders
+                        'name' => $project->getName(),
+                        'id' => $project->getId(),
+                        'folders' => $folders
                 ]]);
             }
         } catch (AccessDeniedException $exc) {

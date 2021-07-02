@@ -28,6 +28,35 @@ export default class ProjectsApi {
         })
     }
         
+    /**
+     * Обновить проект
+     */
+    static async update(project_id, data) {
+        
+        data['change_project_form[_csrf_token]'] = GlobalData.csrf['change_project_form'];
+
+        const response = await fetch(`/projects/update/${project_id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(data).toString()
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+
+            const response = new ResponseAdapter(responseObj);
+
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+        
     static async add(data) {
         
         data['add_project_form[_csrf_token]'] = GlobalData.csrf['add_project_form'];
@@ -55,7 +84,30 @@ export default class ProjectsApi {
     }
     
     /**
-     * Получить проекта
+     * Удалить проект
+     */
+    static async remove(project_id) {
+        
+        const response = await fetch(`/projects/remove/${project_id}/`, {
+            method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
+    /**
+     * Получить проект
      */
     static async get(project_id) {
         
