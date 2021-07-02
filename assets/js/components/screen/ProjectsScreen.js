@@ -41,16 +41,17 @@ export default class ProjectsScreen extends Component {
 
         this.onChangeFolderProject = (e, folder, project) => {
             PasswordsApi.getForFolder(folder.id).then((response) => {
-                this.setState({
-                    activeProject: project.name,
-                    activeFolder: folder.id,
-                    passwords: response.getData()['passwords']
-                });
 
-                if (response.getData()['passwords'].length === 0)
+                if (response.getData()['passwords'].length === 0 && this.state.activeFolder != folder.id)
                 {
                     Toasts.error(`Не найдено паролей для папки - ${folder.name}`);
                 }
+                
+                this.setState({
+                    activeProject: project.id,
+                    activeFolder: folder.id,
+                    passwords: response.getData()['passwords']
+                });
             });
         };
 
@@ -73,11 +74,10 @@ export default class ProjectsScreen extends Component {
                     <Header as='h1'>
                         Проекты: 
                         <Popup content='Добавить новый проект' 
-                        trigger={(<Icon onClick={() => {
-                            this.setState({
-                                modal_add_project_is_open: true
-                            });
-                        }} className='icon_add-new-project' style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} /> 
+                        trigger={(<Icon onClick={() => { this.setState({ modal_add_project_is_open: true }); }} 
+                        className='icon_add-new-project' 
+                        style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
+                    /> 
                     </Header>
                     <Grid divided>
                         <Grid.Row>
@@ -124,7 +124,7 @@ export default class ProjectsScreen extends Component {
                                 this.setState({
                                     modal_add_project_is_open: false
                                 });
-                                    }}>
+                        }}>
                             Закрыть окно
                         </Button>
                     </Modal.Actions>
@@ -140,10 +140,10 @@ export default class ProjectsScreen extends Component {
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={() => {
-                                this.setState({
-                                    modal_change_project_is_open: false
-                                });
-                                    }}>
+                            this.setState({
+                                modal_change_project_is_open: false
+                            });
+                        }}>
                             Закрыть окно
                         </Button>
                     </Modal.Actions>
@@ -154,34 +154,34 @@ export default class ProjectsScreen extends Component {
                     <Modal.Header>Добавить папку в проект - {this.state.name_project_for_add_folder}</Modal.Header>
                     <Modal.Content>
                         <AddFolderForm onSubmit={(e) => {
-                                const dataForm = (new FormSerializer(e.target)).getObject();
+                            const dataForm = (new FormSerializer(e.target)).getObject();
 
-                                ProjectsApi.addFolder(this.state.id_project_for_add_folder, dataForm).then((response) => {
+                            ProjectsApi.addFolder(this.state.id_project_for_add_folder, dataForm).then((response) => {
 
-                                    Toasts.success(`Папка успешно создана`);
+                                Toasts.success(`Папка успешно создана`);
 
-                                    this.setState({
-                                        modal_add_folder_is_open: false
-                                    });
-
-                                    this.initialize();
-
-                                }).catch(() => {
-                                    Toasts.error(`Не удалось добавить папку`);
+                                this.setState({
+                                    modal_add_folder_is_open: false
                                 });
+
+                                this.initialize();
+
+                            }).catch(() => {
+                                Toasts.error(`Не удалось добавить папку`);
+                            });
                         }} />
                     </Modal.Content>
                     <Modal.Actions>
                         <Button onClick={() => {
-                                this.setState({
-                                    modal_add_folder_is_open: false
-                                });
+                            this.setState({
+                                modal_add_folder_is_open: false
+                            });
                         }}>
                             Закрыть окно
                         </Button>
                     </Modal.Actions>
                 </Modal>
             </React.Fragment>
-            );
+        );
     }
 }

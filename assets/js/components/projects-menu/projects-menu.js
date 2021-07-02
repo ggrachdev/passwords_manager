@@ -41,7 +41,7 @@ export default class ProjectsMenu extends Component {
                         folderIsSearched = Search.string(folder.name, searchString);
                     }
 
-                    const isActiveFolder = this.state.activeFolder === folder.id && this.state.activeProject === project.name;
+                    const isActiveFolder = this.state.activeFolder === folder.id && this.state.activeProject === project.id;
 
                     folders.push(
                         <Menu.Item
@@ -67,10 +67,9 @@ export default class ProjectsMenu extends Component {
                 menu.push(
                     <Menu.Item>
                         <Menu.Header>
-                            {project.name} <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
-                            <Icon onClick={(e) => {
-                                this.state.onClickIconAddFolder(e, project);
-                            }} className='icon_project' size='small' color='grey' link name='add circle' />
+                            {project.name} 
+                            <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                            <Icon onClick={(e) => { this.state.onClickIconAddFolder(e, project); }} className='icon_project' size='small' color='grey' link name='add circle' />
                         </Menu.Header>
                         <Menu.Menu>
                             {folders}
