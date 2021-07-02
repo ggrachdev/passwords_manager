@@ -10,6 +10,7 @@ export default class PasswordsTable extends Component {
         super(props);
         this.state = {
             passwords: props.passwords,
+            onClickAddPasswordButton: props.onClickAddPasswordButton,
             searchStringPasswords: ''
         };
 
@@ -71,7 +72,8 @@ export default class PasswordsTable extends Component {
         
         return (
             <React.Fragment>
-                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' /> <Button positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>
+                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' /> 
+                <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>
                 <Table style={{display: (Passwords.length == 0 ? 'none' : '')}} celled>
                     <Table.Header>
                         <Table.Row>
