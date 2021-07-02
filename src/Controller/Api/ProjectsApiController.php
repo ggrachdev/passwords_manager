@@ -105,6 +105,39 @@ class ProjectsApiController extends AbstractController {
 
     
     /**
+     * @Route("/folders/remove/{id}/", requirements={"id"="\d+"}, name="folders_api_remove", methods={"GET"})
+     */
+    public function removeFolder($id): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $foldersRepository = $em->getRepository(ProjectFolder::class);
+            $folder = $foldersRepository->find($id);
+
+            if ($folder === null) {
+                throw new AccessDeniedException("Has found folders with id = $id");
+            }
+            
+            $em->remove($folder);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
+
+    
+    /**
      * @Route("/projects/remove/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_remove", methods={"GET"})
      */
     public function remove($project_id): Response {

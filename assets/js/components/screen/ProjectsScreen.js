@@ -67,7 +67,7 @@ export default class ProjectsScreen extends Component {
                     Toasts.error(`Проект ${folder.name} успешно удален`);
                     
                     this.setState({
-                        modal_change_project_is_open: false
+                        modal_change_folder_is_open: false
                     });
 
                     this.initialize();
@@ -109,6 +109,9 @@ export default class ProjectsScreen extends Component {
                     activeFolder: folder.id,
                     passwords: response.getData()['passwords']
                 });
+            }).catch(() => {
+                Toasts.error(`Не удалось загрузить папку - ${folder.name}`);
+                this.initialize();
             });
         };
 
@@ -120,6 +123,9 @@ export default class ProjectsScreen extends Component {
             this.setState({
                 projects: response.getData()['projects']
             });
+        }).catch(() => {
+            Toasts.error(`Не получить данные о проектах`);
+            this.initialize();
         });
     }
 
