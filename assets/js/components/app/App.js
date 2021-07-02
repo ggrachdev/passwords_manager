@@ -28,6 +28,11 @@ export default class App extends Component {
         StateApi.get().then((data) => {
             this.setState({
                 global_state: data,
+                // Режим разработки
+                app_in_development_mode: true,
+                
+                // id'ы пользователей для которых доступен режим разработки
+                available_user_ids_for_development_mode: [4],
                 app_is_initialized: true
             });
         });
@@ -36,15 +41,40 @@ export default class App extends Component {
 
     render() {
 
-        const {app_is_initialized, global_state} = this.state;
+        const {app_is_initialized, global_state, app_in_development_mode} = this.state;
 
         if (app_is_initialized)
         {
-            return (
-                <Router>
-                    <MainMenu global_state={global_state}/>
-                    <br/>
-                    <Switch>
+
+            if (
+                app_in_development_mode && 
+                this.state.global_state.user_is_auth == true &&
+                !this.state.available_user_ids_for_development_mode.includes(this.state.global_state.user_id)
+            )
+            {
+                setTimeout(() => {
+                    location.reload();
+                }, 30000);
+                
+                return (
+                    <React.Fragment>
+                        <br/>
+                        <br/>
+                        <Container>
+                            <Dimmer active inverted>
+                                <Loader inverted>Идут технические работы. Страница обновится автоматически</Loader>
+                            </Dimmer>
+                        </Container>
+                    </React.Fragment>
+                );
+            } else
+            {
+
+                return (
+                    <Router>
+                        <MainMenu global_state={global_state}/>
+                        <br/>
+                        <Switch>
                         <Route path="/cabinet/">
                             <CabinetScreen global_state={global_state}/>
                         </Route>
@@ -63,10 +93,11 @@ export default class App extends Component {
                         <Route path="/">
                             <LoginScreen global_state={global_state}/>
                         </Route>
-                    </Switch>
-                    <br/>
-                </Router>
-            );
+                        </Switch>
+                        <br/>
+                    </Router>
+                    );
+            }
         } else
         {
             return (
@@ -79,7 +110,7 @@ export default class App extends Component {
                         </Dimmer>
                     </Container>
                 </React.Fragment>
-            );
+                );
         }
     }
 }
