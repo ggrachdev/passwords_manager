@@ -10,6 +10,7 @@ import AddProjectForm from '../form/AddProjectForm';
 import AddFolderForm from '../form/AddFolderForm';
 import ChangeFolderForm from '../form/ChangeFolderForm';
 import ChangeProjectForm from '../form/ChangeProjectForm';
+import ModalAddProject from '../modal/modal-add-project';
 import Toasts from '../../src/Toasts/Toasts';
 
 const equal = require('deep-equal');
@@ -114,6 +115,25 @@ export default class ProjectsScreen extends Component {
                 this.initialize();
             });
         };
+        
+        this.onSubmitFormAddProject = (e) => {
+            const dataForm = (new FormSerializer(e.target)).getObject();
+            ProjectsApi.add(dataForm).then((response) => {
+                Toasts.success(`Проект успешно создан`);
+                this.setState({
+                    modal_add_project_is_open: false
+                });
+                this.initialize();
+            }).catch(() => {
+                Toasts.error(`Не удалось добавить проект`);
+            });
+        };
+        
+       this.onClickCloseModalAddProject = () => {
+            this.setState({
+                modal_add_project_is_open: false
+            });
+        };
 
         this.initialize();
     }
@@ -128,72 +148,16 @@ export default class ProjectsScreen extends Component {
             this.initialize();
         });
     }
-
-    render() {
-
+    
+    renderModals() {
         return (
             <React.Fragment>
-                <Container>
-                    <Header as='h1'>
-                        Проекты: 
-                        <Popup content='Добавить новый проект' 
-                        trigger={(<Icon onClick={() => { this.setState({ modal_add_project_is_open: true }); }} 
-                        className='icon_add-new-project' 
-                        style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
-                    /> 
-                    </Header>
-                    <Grid divided>
-                        <Grid.Row>
-                            <Grid.Column width={4}>
-                                <ProjectsMenu 
-                                    onClickIconEditFolder={this.onClickIconEditFolder} 
-                                    onClickIconEditProject={this.onClickIconEditProject}
-                                    activeProject={this.state.activeProject} 
-                                    activeFolder={this.state.activeFolder} 
-                                    onChangeFolderProject={this.onChangeFolderProject} 
-                                    onClickIconAddFolder={this.onClickIconAddFolder} 
-                                    projects={this.state.projects} />
-                            </Grid.Column>
-                            <Grid.Column width={12}>
-                                <PasswordsTable passwords={this.state.passwords}/>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-            
-                </Container>
-            
-                <Modal 
-                    open={this.state.modal_add_project_is_open} >
-                    <Modal.Header>Добавить проект</Modal.Header>
-                    <Modal.Content>
-                        <AddProjectForm onSubmit={(e) => {
-                            const dataForm = (new FormSerializer(e.target)).getObject();
-
-                            ProjectsApi.add(dataForm).then((response) => {
-
-                                Toasts.success(`Проект успешно создан`);
-
-                                this.setState({
-                                    modal_add_project_is_open: false
-                                });
-
-                                this.initialize();
-
-                            }).catch(() => {
-                                Toasts.error(`Не удалось добавить проект`);
-                            });
-                        }} />
-                    </Modal.Content>
-                    <Modal.Actions>
-                        <Button onClick={() => {
-                            this.setState({
-                                modal_add_project_is_open: false
-                            });
-                        }}>
-                            Закрыть окно
-                        </Button>
-                    </Modal.Actions>
-                </Modal>
+        
+                <ModalAddProject 
+                    onSubmit={this.onSubmitFormAddProject} 
+                    onClickClose={this.onClickCloseModalAddProject}
+                    open={this.state.modal_add_project_is_open} 
+                />
             
                 <Modal 
                     open={this.state.modal_change_project_is_open} >
@@ -291,6 +255,42 @@ export default class ProjectsScreen extends Component {
                         </Button>
                     </Modal.Actions>
                 </Modal>
+            </React.Fragment>
+        );
+    }
+
+    render() {
+
+        return (
+            <React.Fragment>
+                <Container>
+                    <Header as='h1'>
+                        Проекты: 
+                        <Popup content='Добавить новый проект' 
+                        trigger={(<Icon onClick={() => { this.setState({ modal_add_project_is_open: true }); }} 
+                        className='icon_add-new-project' 
+                        style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
+                    /> 
+                    </Header>
+                    <Grid divided>
+                        <Grid.Row>
+                            <Grid.Column width={4}>
+                                <ProjectsMenu 
+                                    onClickIconEditFolder={this.onClickIconEditFolder} 
+                                    onClickIconEditProject={this.onClickIconEditProject}
+                                    activeProject={this.state.activeProject} 
+                                    activeFolder={this.state.activeFolder} 
+                                    onChangeFolderProject={this.onChangeFolderProject} 
+                                    onClickIconAddFolder={this.onClickIconAddFolder} 
+                                    projects={this.state.projects} />
+                            </Grid.Column>
+                            <Grid.Column width={12}>
+                                <PasswordsTable passwords={this.state.passwords}/>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                    {this.renderModals()}
+                </Container>
             </React.Fragment>
         );
     }
