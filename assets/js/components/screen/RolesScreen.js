@@ -5,7 +5,7 @@ import RegistrationUserForm from '../form/RegistrationUserForm';
 import AddRoleForm from '../form/AddRoleForm';
 import ChangeRoleForm from '../form/ChangeRoleForm';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
-import Toastify from 'toastify-js';
+import Toasts from '../../src/Toasts/Toasts';
 
 const equal = require('deep-equal');
 
@@ -37,19 +37,11 @@ export default class RolesScreen extends Component {
                     modal_update_role_is_open: false
                 });
                 
-                Toastify({
-                    text: "Роль успешно изменена",
-                    backgroundColor: "green",
-                    duration: 3000
-                }).showToast();
+                Toasts.success("Роль успешно изменена");
                 
                 this.initialize();
             }).catch(() => {
-                Toastify({
-                    text: "Не удалось изменить роль",
-                    backgroundColor: "darkred",
-                    duration: 3000
-                }).showToast();
+                Toasts.error("Не удалось изменить роль");
             });
         };
 
@@ -61,19 +53,11 @@ export default class RolesScreen extends Component {
                     modal_add_role_is_open: false
                 });
                 
-                Toastify({
-                    text: "Роль успешно добавлена",
-                    backgroundColor: "green",
-                    duration: 3000
-                }).showToast();
+                Toasts.success("Роль успешно добавлена");
                 
                 this.initialize();
             }).catch(() => {
-                Toastify({
-                    text: "Не удалось добавить роль",
-                    backgroundColor: "darkred",
-                    duration: 3000
-                }).showToast();
+                Toasts.error("Не удалось добавить роль");
             });
         };
 
@@ -211,11 +195,8 @@ export default class RolesScreen extends Component {
                             positive: true,
                             onClick: () => {
                                 RolesApi.remove(this.state.role_key_for_delete).then(() => {
-                                    Toastify({
-                                        text: `Роль ${role_name_for_delete} успешно удалена`,
-                                        backgroundColor: "green",
-                                        duration: 3000
-                                    }).showToast();
+                                    
+                                    Toasts.success(`Роль ${role_name_for_delete} успешно удалена`);
 
                                     this.setState({
                                         modal_delete_role_is_open: false

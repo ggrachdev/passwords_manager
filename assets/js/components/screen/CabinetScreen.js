@@ -3,7 +3,7 @@ import { Container, Header } from 'semantic-ui-react';
 import ChangeUserForm from '../form/ChangeUserForm';
 import UsersApi from '../../src/Api/UsersApi';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
-import Toastify from 'toastify-js';
+import Toasts from '../../src/Toasts/Toasts';
 
 const equal = require('deep-equal');
 
@@ -25,30 +25,18 @@ export default class CabinetScreen extends Component {
                         modal_edit_user_is_open: false
                     });
                     
-                    Toastify({
-                        text: `Данные пользователя успешно изменены`,
-                        backgroundColor: "green",
-                        duration: 3000
-                    }).showToast();
+                    Toasts.success(`Данные пользователя успешно изменены`);
                     
                     this.initialize();
                 }).catch(() => {
                     
-                    Toastify({
-                        text: "При изменении данных что-то пошло не так",
-                        backgroundColor: "darkred",
-                        duration: 3000
-                    }).showToast();
+                    Toasts.error("При изменении данных что-то пошло не так");
                 
                     location.reload();
                 });
             } else
             {
-                Toastify({
-                    text: "Пароли не совпадают",
-                    backgroundColor: "darkred",
-                    duration: 3000
-                }).showToast();
+                Toasts.error("Пароли не совпадают");
             }
         };
     }

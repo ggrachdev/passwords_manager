@@ -10,6 +10,7 @@ import HistoryScreen from '../screen/HistoryScreen';
 import MainMenu from '../main-menu/main-menu';
 import { Container, Loader, Dimmer } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
+import { ToastContainer } from 'react-toastify';
 
 export default class App extends Component {
 
@@ -95,8 +96,9 @@ export default class App extends Component {
                         </Route>
                         </Switch>
                         <br/>
+                        <ToastContainer />
                     </Router>
-                    );
+                );
             }
         } else
         {
@@ -110,7 +112,7 @@ export default class App extends Component {
                         </Dimmer>
                     </Container>
                 </React.Fragment>
-                );
+            );
         }
     }
 }

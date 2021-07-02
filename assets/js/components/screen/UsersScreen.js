@@ -5,7 +5,7 @@ import AuthApi from '../../src/Api/AuthApi';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import RegistrationUserForm from '../form/RegistrationUserForm';
 import ChangeUserForm from '../form/ChangeUserForm';
-import Toastify from 'toastify-js';
+import Toasts from '../../src/Toasts/Toasts';
 
 const equal = require('deep-equal');
 
@@ -34,30 +34,18 @@ export default class UsersScreen extends Component {
                         modal_edit_user_is_open: false
                     });
                     
-                    Toastify({
-                        text: `Данные пользователя успешно изменены`,
-                        backgroundColor: "green",
-                        duration: 3000
-                    }).showToast();
+                    Toasts.success(`Данные пользователя успешно изменены`);
                     
                     this.initialize();
                 }).catch(() => {
                     
-                    Toastify({
-                        text: "При изменении данных что-то пошло не так",
-                        backgroundColor: "darkred",
-                        duration: 3000
-                    }).showToast();
+                    Toasts.error("При изменении данных что-то пошло не так");
                 
                     location.reload();
                 });
             } else
             {
-                Toastify({
-                    text: "Пароли не совпадают",
-                    backgroundColor: "darkred",
-                    duration: 3000
-                }).showToast();
+                Toasts.error("Пароли не совпадают");
             }
         };
 
@@ -70,27 +58,15 @@ export default class UsersScreen extends Component {
                         modal_registration_is_open: false
                     });
                     
-                    Toastify({
-                        text: "Пользователь успешно зарегистрирован",
-                        backgroundColor: "green",
-                        duration: 3000
-                    }).showToast();
+                    Toasts.success("Пользователь успешно зарегистрирован");
                     
                     this.initialize();
                 }).catch((e) => {
-                    Toastify({
-                        text: "Не удалось зарегистрировать пользователя",
-                        backgroundColor: "darkred",
-                        duration: 3000
-                    }).showToast();
+                    Toasts.error("Не удалось зарегистрировать пользователя");
                 });
             } else
             {
-                Toastify({
-                    text: "Пароли не совпадают",
-                    backgroundColor: "darkred",
-                    duration: 3000
-                }).showToast();
+                Toasts.error("Пароли не совпадают");
             }
         };
 
@@ -248,21 +224,13 @@ export default class UsersScreen extends Component {
                                         this.setState({
                                             modal_delete_user_is_open: false
                                         });
-                    
-                                        Toastify({
-                                            text: `Пользователь ${user_name_for_delete} успешно удален`,
-                                            backgroundColor: "green",
-                                            duration: 3000
-                                        }).showToast();
+                                        
+                                        Toasts.success(`Пользователь ${user_name_for_delete} успешно удален`);
                     
                                         this.initialize();
                                     }).catch(() => {
-                    
-                                        Toastify({
-                                            text: `Не удалось удалить пользователя - ${user_name_for_delete}`,
-                                            backgroundColor: "darkred",
-                                            duration: 3000
-                                        }).showToast();
+                                        
+                                        Toasts.success(`Не удалось удалить пользователя - ${user_name_for_delete}`);
                                         
                                     });
                                 }
