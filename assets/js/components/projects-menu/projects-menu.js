@@ -12,6 +12,7 @@ export default class ProjectsMenu extends Component {
             activeProject: props.activeProject,
             activeFolder: props.activeFolder,
             projects: props.projects,
+            onClickIconEditFolder: props.onClickIconEditFolder,
             onClickIconAddFolder: props.onClickIconAddFolder,
             onClickIconEditProject: props.onClickIconEditProject,
             onChangeFolderProject: props.onChangeFolderProject,
@@ -46,14 +47,20 @@ export default class ProjectsMenu extends Component {
 
                     folders.push(
                         <Menu.Item
+                            className="menu-projects"
                             name={folder.name} 
-                            active={isActiveFolder} 
-                            onClick={(e) => {
-                                this.state.onChangeFolderProject(e, folder, project);
-                            }}
+                            active={isActiveFolder}
                         >
-                            {folder.name} 
-                            <Icon content='Редактировать проект' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                        
+                            <span className="menu-projects__folder" onClick={(e) => {
+                                e.preventDefault();
+                                this.state.onChangeFolderProject(e, folder, project);
+                            }}>{folder.name}
+                            </span>
+                            
+                            <Icon onClick={(e) => {
+                                this.state.onClickIconEditFolder(e, folder);
+                            }} content='Редактировать папку' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
                         </Menu.Item>
                     );
                 });

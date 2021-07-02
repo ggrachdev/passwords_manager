@@ -8,6 +8,7 @@ import ProjectsMenu from '../projects-menu/projects-menu';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
 import AddProjectForm from '../form/AddProjectForm';
 import AddFolderForm from '../form/AddFolderForm';
+import ChangeFolderForm from '../form/ChangeFolderForm';
 import ChangeProjectForm from '../form/ChangeProjectForm';
 import Toasts from '../../src/Toasts/Toasts';
 
@@ -24,13 +25,22 @@ export default class ProjectsScreen extends Component {
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
             id_project_for_change: null,
+            id_folder_for_change: null,
 
             projects: [],
             passwords: [],
 
             modal_add_folder_is_open: false,
             modal_add_project_is_open: false,
-            modal_change_project_is_open: false
+            modal_change_project_is_open: false,
+            modal_change_folder_is_open: false
+        };
+
+        this.onClickIconEditFolder = (e, folder) => {
+            this.setState({
+                modal_change_folder_is_open: true,
+                id_folder_for_change: folder.id
+            });
         };
 
         this.onClickIconAddFolder = (e, project) => {
@@ -46,6 +56,25 @@ export default class ProjectsScreen extends Component {
                 id_project_for_change: project.id,
                 modal_change_project_is_open: true
             });
+        };
+
+        this.onClickRemoveFolder = (e, folder) => {
+            e.preventDefault();
+            
+            if(confirm(`Вы действительно хотите удалить папку - ${folder.name} ? Все пароли этой папки будут удалены`))
+            {
+                ProjectsApi.removeFolder(folder.id).then((response) => {
+                    Toasts.error(`Проект ${folder.name} успешно удален`);
+                    
+                    this.setState({
+                        modal_change_project_is_open: false
+                    });
+
+                    this.initialize();
+                }).catch(() => {
+                    Toasts.error(`Не удалось удалить папку - ${folder.name}`);
+                });
+            }
         };
 
         this.onClickRemoveProject = (e, project) => {
@@ -111,6 +140,7 @@ export default class ProjectsScreen extends Component {
                         <Grid.Row>
                             <Grid.Column width={4}>
                                 <ProjectsMenu 
+                                    onClickIconEditFolder={this.onClickIconEditFolder} 
                                     onClickIconEditProject={this.onClickIconEditProject}
                                     activeProject={this.state.activeProject} 
                                     activeFolder={this.state.activeFolder} 
@@ -184,6 +214,38 @@ export default class ProjectsScreen extends Component {
                         <Button onClick={() => {
                             this.setState({
                                 modal_change_project_is_open: false
+                            });
+                        }}>
+                            Закрыть окно
+                        </Button>
+                    </Modal.Actions>
+                </Modal>
+            
+                <Modal 
+                    open={this.state.modal_change_folder_is_open} >
+                    <Modal.Header>Изменить папку</Modal.Header>
+                    <Modal.Content>
+                        <ChangeFolderForm 
+                            folderId={this.state.id_folder_for_change} 
+                            onClickRemoveFolder={this.onClickRemoveFolder} 
+                            onSubmit={(e) => {
+                                const dataForm = (new FormSerializer(e.target)).getObject();
+                                
+                                ProjectsApi.updateFolder(this.state.id_folder_for_change, dataForm).then((response) => {
+                                    Toasts.success('Папка успешно изменена');
+                                    this.setState({
+                                        modal_change_folder_is_open: false
+                                    });
+                                    this.initialize();
+                                }).catch(() => {
+                                    Toasts.error('Не удалось изменить папку');
+                                });
+                            }} />
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button onClick={() => {
+                            this.setState({
+                                modal_change_folder_is_open: false
                             });
                         }}>
                             Закрыть окно

@@ -12,6 +12,7 @@ use App\Entity\ProjectFolder;
 use App\Form\AddProjectFormType;
 use App\Form\AddFolderFormType;
 use App\Form\ChangeProjectFormType;
+use App\Form\ChangeFolderFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -132,7 +133,53 @@ class ProjectsApiController extends AbstractController {
             $apiResponse->setErrors($exc->getMessage());
         }
 
+        return $apiResponse->generate();
+    }
+    
+    /**
+     * @Route("/folders/update/{folder_id}/", requirements={"folder_id"="\d+"}, name="folder_api_update", methods={"POST"})
+     */
+    public function updateFolder(Request $request, $folder_id): Response {
+        $apiResponse = new ApiResponse();
 
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $folderRequest = new ProjectFolder();
+
+            $form = $this->createForm(ChangeFolderFormType::class, $folderRequest);
+            $form->handleRequest($request);
+            
+            if (!$form->isSubmitted()) {
+                throw new AccessDeniedException('Has not data');
+            }
+
+            if (!$form->isValid()) {
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $folderRepository = $em->getRepository(ProjectFolder::class);
+
+            $folder = $folderRepository->find($folder_id);
+            
+            if($folder === null)
+            {
+                throw new AccessDeniedException("Not found folder with id = $folder_id");
+            }
+            
+            $folder->setName($folderRequest->getName());
+            $em->persist($folder);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
 
         return $apiResponse->generate();
     }
@@ -177,6 +224,41 @@ class ProjectsApiController extends AbstractController {
             
             $apiResponse->setSuccess();
             
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
+
+    /**
+     * @Route("/folders/get/{id}/", requirements={"project_id"="\d+"}, name="folders_api_get_from_id")
+     */
+    public function getFolder($id): Response {
+
+        $apiResponse = new ApiResponse();
+
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $folderRepository = $em->getRepository(ProjectFolder::class);
+            $folder = $folderRepository->find($id);
+
+            if ($folder === null) {
+                $apiResponse->setFail();
+                $apiResponse->setErrors("Not found folder with id = $id");
+            } else {
+
+                $apiResponse->setSuccess();
+                $apiResponse->setData(['folder' => [
+                        'name' => $folder->getName(),
+                        'id' => $folder->getId()
+                ]]);
+            }
         } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());

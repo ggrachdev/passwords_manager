@@ -57,6 +57,35 @@ export default class ProjectsApi {
         })
     }
         
+    /**
+     * Обновить папку
+     */
+    static async updateFolder(id, data) {
+        
+        data['change_folder_form[_csrf_token]'] = GlobalData.csrf['change_folder_form'];
+
+        const response = await fetch(`/folders/update/${id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(data).toString()
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+
+            const response = new ResponseAdapter(responseObj);
+
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+        
     static async add(data) {
         
         data['add_project_form[_csrf_token]'] = GlobalData.csrf['add_project_form'];
@@ -89,6 +118,52 @@ export default class ProjectsApi {
     static async remove(project_id) {
         
         const response = await fetch(`/projects/remove/${project_id}/`, {
+            method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
+    /**
+     * Удалить папку
+     */
+    static async removeFolder(folder_id) {
+        
+        const response = await fetch(`/folders/remove/${folder_id}/`, {
+            method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
+    /**
+     * Получиь папку
+     */
+    static async getFolder(id) {
+        
+        const response = await fetch(`/folders/get/${id}/`, {
             method: 'GET'
         });
 
