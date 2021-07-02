@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ProjectsApiController extends AbstractController {
 
     /**
-     * @Route("/projects/add/folder/{project_id}/", name="projects_api_add_folder")
+     * @Route("/projects/add/folder/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_add_folder")
      */
     public function addFolder(Request $request, $project_id): Response {
         $apiResponse = new ApiResponse();
@@ -102,8 +102,43 @@ class ProjectsApiController extends AbstractController {
         return $apiResponse->generate();
     }
 
+    
     /**
-     * @Route("/projects/update/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_update", methods={"POST","HEAD"})
+     * @Route("/projects/remove/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_remove", methods={"GET"})
+     */
+    public function remove($project_id): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $projectRepository = $em->getRepository(Project::class);
+            $project = $projectRepository->find($project_id);
+
+            if ($project === null) {
+                throw new AccessDeniedException("Has found project with id = $project_id");
+            }
+            
+            $em->remove($project);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+
+
+        return $apiResponse->generate();
+    }
+    
+    /**
+     * @Route("/projects/update/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_update", methods={"POST"})
      */
     public function update(Request $request, $project_id): Response {
         $apiResponse = new ApiResponse();

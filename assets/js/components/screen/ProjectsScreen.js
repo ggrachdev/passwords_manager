@@ -51,9 +51,19 @@ export default class ProjectsScreen extends Component {
         this.onClickRemoveProject = (e, project) => {
             e.preventDefault();
             
-            if(confirm(`Вы действительно хотите удалить проект - ${project.name} ?. Все папки и пароли этого проекта будут удалены`))
+            if(confirm(`Вы действительно хотите удалить проект - ${project.name} ? Все папки и пароли этого проекта будут удалены`))
             {
-                
+                ProjectsApi.remove(project.id).then((response) => {
+                    Toasts.error(`Проект ${project.name} успешно удален`);
+                    
+                    this.setState({
+                        modal_change_project_is_open: false
+                    });
+
+                    this.initialize();
+                }).catch(() => {
+                    Toasts.error(`Не удалось удалить проект - ${project.name}`);
+                });
             }
         };
 
