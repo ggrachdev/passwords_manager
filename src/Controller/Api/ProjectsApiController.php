@@ -15,9 +15,25 @@ use App\Form\ChangeProjectFormType;
 use App\Form\ChangeFolderFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\HttpFoundation\Request;
+use App\Utils\Security\Encryption\EncryptionFacade;
 
 class ProjectsApiController extends AbstractController {
 
+    /**
+     * @Route("/test/", name="test")
+     */
+    public function test(Request $request): Response {
+
+        $encrypted = EncryptionFacade::encrypt('test string');
+        echo $encrypted;
+        
+        $decrypted = EncryptionFacade::decrypt($encrypted);
+        echo '<br>';
+        echo $decrypted;
+        
+        die;
+    }
+    
     /**
      * @Route("/projects/add/folder/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_add_folder")
      */

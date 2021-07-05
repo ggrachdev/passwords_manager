@@ -14,6 +14,7 @@ use App\Form\AddPasswordFormType;
 use App\Form\ChangePasswordFormType;
 use App\Entity\ProjectFolder;
 use App\Entity\Password;
+use App\Utils\Security\Encryption\EncryptionFacade;
 
 class PasswordsApiController extends AbstractController {
     
@@ -52,8 +53,8 @@ class PasswordsApiController extends AbstractController {
             }
             
             $password->setName($passwordRequest->getName());
-            $password->setLogin($passwordRequest->getLogin());
-            $password->setPassword($passwordRequest->getPassword());
+            $password->setLogin(EncryptionFacade::encrypt($passwordRequest->getLogin()));
+            $password->setPassword(EncryptionFacade::encrypt($passwordRequest->getPassword()));
             $password->setDescription($passwordRequest->getDescription());
             $em->persist($password);
             $em->flush();
@@ -134,6 +135,16 @@ class PasswordsApiController extends AbstractController {
                 throw new AccessDeniedException("Not found folder with id = $folderId");
             }
             $password->setFolder($folder);
+            $password->setPassword(
+                EncryptionFacade::encrypt(
+                    $password->getPassword()
+                )
+            );
+            $password->setLogin(
+                EncryptionFacade::encrypt(
+                    $password->getLogin()
+                )
+            );
             $em->persist($password);
             $em->flush();
             
@@ -174,8 +185,8 @@ class PasswordsApiController extends AbstractController {
             $apiResponse->setData(['password' => [
                 'name' => $password->getName(),
                 'id' => $password->getId(),
-                'password' => $password->getPassword(),
-                'login' => $password->getLogin(),
+                'login' => EncryptionFacade::decrypt( $password->getLogin() ),
+                'password' => EncryptionFacade::decrypt( $password->getPassword() ),
                 'description' => $password->getDescription(),
                 'folder_id' => $password->getFolder()->getId()
             ]]);
@@ -218,8 +229,8 @@ class PasswordsApiController extends AbstractController {
                         $passwords[] = [
                             'id' => $password->getId(),
                             'name' => $password->getName(),
-                            'login' => $password->getLogin(),
-                            'password' => $password->getPassword(),
+                            'login' => EncryptionFacade::decrypt( $password->getLogin() ),
+                            'password' => EncryptionFacade::decrypt( $password->getPassword() ),
                             'description' => $password->getDescription(),
                         ];
                     }
