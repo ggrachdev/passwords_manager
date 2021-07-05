@@ -11,10 +11,62 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use App\Form\AddPasswordFormType;
+use App\Form\ChangePasswordFormType;
 use App\Entity\ProjectFolder;
 use App\Entity\Password;
 
 class PasswordsApiController extends AbstractController {
+    
+    /**
+     * @Route("/passwords/update/{id}/", requirements={"id"="\d+"}, name="passwords_api_update", methods={"POST"})
+     */
+    public function update(Request $request, $id): Response {
+        $apiResponse = new ApiResponse();
+
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $passwordRequest = new Password();
+
+            $form = $this->createForm(ChangePasswordFormType::class, $passwordRequest);
+            $form->handleRequest($request);
+            
+            if (!$form->isSubmitted()) {
+                throw new AccessDeniedException('Has not data');
+            }
+
+            if (!$form->isValid()) {
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $passwordRepository = $em->getRepository(Password::class);
+
+            $password = $passwordRepository->find($id);
+            
+            if($password === null)
+            {
+                throw new AccessDeniedException("Not found password with id = $id");
+            }
+            
+            $password->setName($passwordRequest->getName());
+            $password->setLogin($passwordRequest->getLogin());
+            $password->setPassword($passwordRequest->getPassword());
+            $password->setDescription($passwordRequest->getDescription());
+            $em->persist($password);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
 
     /**
      * @Route("/passwords/add/{folderId}/", name="passwords_api_add")

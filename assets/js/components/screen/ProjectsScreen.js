@@ -166,11 +166,6 @@ export default class ProjectsScreen extends Component {
             });
         };
         
-        this.onSubmitFormChangePassword = (e) => {
-            const data = new FormSerializer(e.target).getObject();
-            console.log(data);
-        };
-        
         this.onSubmitFormAddPassword = (e) => {
             const data = new FormSerializer(e.target).getObject();
             PasswordsApi.add(this.state.activeFolder, data).then(() => {
@@ -202,6 +197,17 @@ export default class ProjectsScreen extends Component {
         this.onClickCloseModalAddPassword = (e) => {
             this.setState({
                 modal_add_password_is_open: false
+            });
+        };
+        
+        this.onSubmitFormChangePassword = (e) => {
+            const data = new FormSerializer(e.target).getObject();
+            PasswordsApi.update(this.state.id_password_for_change, data).then(() => {
+                Toasts.success(`Пароль успешно изменен`);
+                this.onClickCloseModalChangePasword();
+                this.updatePasswords();
+            }).catch(() => {
+                Toasts.error(`Не удалось изменить пароль`);
             });
         };
 

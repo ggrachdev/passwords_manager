@@ -42,7 +42,7 @@ export default class PasswordsApi {
         })
     }
     
-    static async change(passwordId, data) {
+    static async update(passwordId, data) {
         
         data['change_password_form[_csrf_token]'] = GlobalData.csrf['change_password_form'];
         
