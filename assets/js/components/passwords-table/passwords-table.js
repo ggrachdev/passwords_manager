@@ -10,6 +10,7 @@ export default class PasswordsTable extends Component {
         super(props);
         this.state = {
             passwords: props.passwords,
+            activeFolder: props.activeFolder,
             onClickAddPasswordButton: props.onClickAddPasswordButton,
             searchStringPasswords: ''
         };
@@ -64,16 +65,29 @@ export default class PasswordsTable extends Component {
                 passwords: this.props.passwords
             });
         }
+
+        if (!equal(prevProps.activeFolder, this.props.activeFolder))
+        {
+            this.setState({
+                activeFolder: this.props.activeFolder
+            });
+        }
     }
     
     render() {
         
         const Passwords = this.renderPasswords();
+        let ButtonAddPassword = '';
+        
+        if(this.state.activeFolder !== null)
+        {
+            ButtonAddPassword = <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>;
+        }
         
         return (
             <React.Fragment>
                 <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' /> 
-                <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>
+                {ButtonAddPassword}
                 <Table style={{display: (Passwords.length == 0 ? 'none' : '')}} celled>
                     <Table.Header>
                         <Table.Row>

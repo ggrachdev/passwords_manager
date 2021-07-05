@@ -107,24 +107,34 @@ export default class ProjectsScreen extends Component {
                 });
             }
         };
+        
+        this.updatePasswords = () => {
+            PasswordsApi.getForFolder(this.state.activeFolder).then((response) => {
 
-        this.onChangeFolderProject = (e, folder, project) => {
-            PasswordsApi.getForFolder(folder.id).then((response) => {
-
-                if (response.getData()['passwords'].length === 0 && this.state.activeFolder != folder.id)
+                if(response.getData()['passwords'].length === 0)
                 {
-                    Toasts.error(`Не найдено паролей для папки - ${folder.name}`);
+                    Toasts.error(`Не найдено паролей для текущей папки`);
                 }
                 
                 this.setState({
-                    activeProject: project.id,
-                    activeFolder: folder.id,
                     passwords: response.getData()['passwords']
                 });
             }).catch(() => {
-                Toasts.error(`Не удалось загрузить папку - ${folder.name}`);
+                Toasts.error(`Не удалось загрузить папку`);
                 this.initialize();
             });
+        };
+
+        this.onChangeFolderProject = (e, folder, project) => {
+                
+            this.setState({
+                activeProject: project.id,
+                activeFolder: folder.id
+            });
+            
+            setTimeout(() => {
+                this.updatePasswords();
+            }, 300);
         };
         
         this.onSubmitFormAddProject = (e) => {
@@ -154,8 +164,8 @@ export default class ProjectsScreen extends Component {
                     modal_add_password_is_open: false
                 });
                 
-                this.initialize();
-            
+                this.updatePasswords();
+                
                 Toasts.success(`Пароль успешно добавлен`);
             }).catch(() => {
                 Toasts.error(`Не удалось добавить пароль`);
@@ -324,7 +334,11 @@ export default class ProjectsScreen extends Component {
                                     projects={this.state.projects} />
                             </Grid.Column>
                             <Grid.Column width={12}>
-                                <PasswordsTable onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} passwords={this.state.passwords}/>
+                                <PasswordsTable 
+                                onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} 
+                                activeFolder={this.state.activeFolder} 
+                                passwords={this.state.passwords} 
+                            />
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
