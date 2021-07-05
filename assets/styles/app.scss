@@ -1,0 +1,27 @@
+body {
+    background-color: #fff;
+}
+
+.toastify {
+    box-shadow: unset;
+}
+
+i.icon.icon_project {
+    position: relative;
+    bottom: 2px;
+}
+
+.w100p {
+    width: 100% !important;
+}
+
+.icon_add-new-project {
+    font-size: 17px !important;
+    position: relative;
+    bottom: 2px;
+    margin-right: 5px;
+}
+
+.menu-projects__folder {
+    cursor: pointer;
+}

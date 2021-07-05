@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicons/favicon-16x16.png">
+        <link rel="manifest" href="/assets/images/favicons/site.webmanifest">
         <title>
             {% block title %}
-            Security Fred
+            Fred Security
             {% endblock %}
         </title>
         
@@ -17,6 +22,23 @@
         {% endblock %}
     </head>
     <body>
+        <script>
+            var GlobalData = {
+                csrf: {
+                    authenticate: '{{ csrf_token('authenticate') }}',
+                    add_role_form: '{{ csrf_token('add_role_form') }}',
+                    add_password_form: '{{ csrf_token('add_password_form') }}',
+                    add_project_form: '{{ csrf_token('add_project_form') }}',
+                    add_folder_form: '{{ csrf_token('add_folder_form') }}',
+                    change_password_form: '{{ csrf_token('change_password_form') }}',
+                    change_folder_form: '{{ csrf_token('change_folder_form') }}',
+                    change_project_form: '{{ csrf_token('change_project_form') }}',
+                    change_user_form: '{{ csrf_token('change_user_form') }}',
+                    change_role_form: '{{ csrf_token('change_role_form') }}',
+                    registration_user_form: '{{ csrf_token('registration_user_form') }}'
+                } 
+            };
+        </script>
         <div id="app"></div>
         {% block body %}{% endblock %}
     </body>
