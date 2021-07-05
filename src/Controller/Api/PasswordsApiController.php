@@ -65,6 +65,47 @@ class PasswordsApiController extends AbstractController {
     }
 
     /**
+     * @Route("/passwords/get/{id}/", name="passwords_api_get")
+     */
+    public function get($id): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $passwordsRepository = $em->getRepository(Password::class);
+            
+            $password = $passwordsRepository->find($id);
+            
+            if($password === null)
+            {
+                throw new AccessDeniedException("Hot found password with id = $id");
+            }
+            
+            $apiResponse->setSuccess();
+            $apiResponse->setData(['password' => [
+                'name' => $password->getName(),
+                'id' => $password->getId(),
+                'password' => $password->getPassword(),
+                'login' => $password->getLogin(),
+                'description' => $password->getDescription(),
+                'folder_id' => $password->getFolder()->getId()
+            ]]);
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+
+
+        return $apiResponse->generate();
+    }
+
+    /**
      * @Route("/passwords/get/folder/{folderId}/", name="passwords_api_get_for_folder")
      */
     public function getForProjectFolder($folderId): Response {
