@@ -160,6 +160,19 @@ export default class ProjectsScreen extends Component {
             });
         };
         
+       this.onClickRemovePasswordButton = (e) => {
+            if(confirm(`Вы действительно хотите удалить пароль?`))
+            {
+                PasswordsApi.remove(this.state.id_password_for_change).then(() => {
+                    Toasts.success(`Пароль успешно удален`);
+                    this.onClickCloseModalChangePasword();
+                    this.updatePasswords();
+                }).catch(() => {
+                    Toasts.error(`Не удалось удалить пароль`);
+                });
+            }
+        };
+        
        this.onClickCloseModalAddProject = () => {
             this.setState({
                 modal_add_project_is_open: false
@@ -232,6 +245,7 @@ export default class ProjectsScreen extends Component {
                 <ModalChangePassword 
                     idPassword={this.state.id_password_for_change} 
                     onSubmit={this.onSubmitFormChangePassword} 
+                    onClickRemovePasswordButton={this.onClickRemovePasswordButton}
                     onClickClose={this.onClickCloseModalChangePasword}
                     open={this.state.modal_change_password_is_open} 
                 />

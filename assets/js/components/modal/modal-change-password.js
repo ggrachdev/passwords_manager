@@ -11,6 +11,7 @@ export default class ModalChangePassword extends Component {
         this.state = {
             idPassword: props.idPassword,
             onSubmit: props.onSubmit,
+            onClickRemovePasswordButton: props.onClickRemovePasswordButton,
             onClickClose: props.onClickClose,
             open: props.open,
         };
@@ -40,7 +41,7 @@ export default class ModalChangePassword extends Component {
                 open={this.state.open} >
                 <Modal.Header>Изменить пароль</Modal.Header>
                 <Modal.Content>
-                    <ChangePasswordForm idPassword={this.state.idPassword} onSubmit={this.state.onSubmit} />
+                    <ChangePasswordForm onClickRemovePasswordButton={this.state.onClickRemovePasswordButton} idPassword={this.state.idPassword} onSubmit={this.state.onSubmit} />
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.state.onClickClose}>

@@ -68,6 +68,39 @@ class PasswordsApiController extends AbstractController {
         return $apiResponse->generate();
     }
 
+    
+    /**
+     * @Route("/passwords/remove/{id}/", requirements={"id"="\d+"}, name="passwords_api_remove", methods={"GET"})
+     */
+    public function remove($id): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $passwordsRepository = $em->getRepository(Password::class);
+            $password = $passwordsRepository->find($id);
+
+            if ($password === null) {
+                throw new AccessDeniedException("Not found password with id = $id");
+            }
+            
+            $em->remove($password);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+            
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
+
     /**
      * @Route("/passwords/add/{folderId}/", name="passwords_api_add")
      */
@@ -134,7 +167,7 @@ class PasswordsApiController extends AbstractController {
             
             if($password === null)
             {
-                throw new AccessDeniedException("Hot found password with id = $id");
+                throw new AccessDeniedException("Not found password with id = $id");
             }
             
             $apiResponse->setSuccess();

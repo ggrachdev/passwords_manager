@@ -25,7 +25,7 @@ export default class ChangePasswordForm extends Component {
         });
 
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
-        this.onClickRemovePassword = 'onClickRemovePassword' in props ? props['onClickRemovePassword'] : (e) => {};
+        this.onClickRemovePasswordButton = 'onClickRemovePasswordButton' in props ? props['onClickRemovePasswordButton'] : (e) => {};
     }
 
     render() {
@@ -67,7 +67,7 @@ export default class ChangePasswordForm extends Component {
                       />
                      
                     <Form.Button positive>Изменить пароль</Form.Button> 
-                    <Form.Button onClick={this.onClickRemovePassword} negative>Удалить пароль</Form.Button>
+                    <Form.Button onClick={(e) => {e.preventDefault(); this.onClickRemovePasswordButton(e);}} negative>Удалить пароль</Form.Button>
                 </Form>
             </React.Fragment>
         );
