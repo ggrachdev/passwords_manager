@@ -147,7 +147,19 @@ export default class ProjectsScreen extends Component {
         };
         
         this.onSubmitFormAddPassword = (e) => {
+            const data = new FormSerializer(e.target).getObject();
+            PasswordsApi.add(this.state.activeFolder, data).then(() => {
+                
+                this.setState({
+                    modal_add_password_is_open: false
+                });
+                
+                this.initialize();
             
+                Toasts.success(`Пароль успешно добавлен`);
+            }).catch(() => {
+                Toasts.error(`Не удалось добавить пароль`);
+            });
         };
         
         this.onClickCloseModalAddPassword = (e) => {

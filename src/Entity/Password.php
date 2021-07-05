@@ -37,6 +37,12 @@ class Password
      */
     private $description;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ProjectFolder::class, inversedBy="passwords")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $folder;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +92,18 @@ class Password
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getFolder(): ?ProjectFolder
+    {
+        return $this->folder;
+    }
+
+    public function setFolder(?ProjectFolder $folder): self
+    {
+        $this->folder = $folder;
 
         return $this;
     }

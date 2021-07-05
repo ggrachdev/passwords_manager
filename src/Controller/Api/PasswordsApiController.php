@@ -7,9 +7,62 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Api\Response\ApiResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\HttpFoundation\Request;
+use App\Utils\Form\ErrorsHelper;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
+use App\Form\AddPasswordFormType;
 use App\Entity\ProjectFolder;
+use App\Entity\Password;
 
 class PasswordsApiController extends AbstractController {
+
+    /**
+     * @Route("/passwords/add/{folderId}/", name="passwords_api_add")
+     */
+    public function add(Request $request, $folderId): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+            
+            $password = new Password();
+
+            $form = $this->createForm(AddPasswordFormType::class, $password);
+            $form->handleRequest($request);
+            
+            if (!$form->isSubmitted()) {
+                throw new AccessDeniedException('Has not data');
+            }
+
+            if (!$form->isValid()) {
+                throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $folderRepository = $em->getRepository(ProjectFolder::class);
+            $folder = $folderRepository->find($folderId);
+            
+            if($folder === null)
+            {
+                throw new AccessDeniedException("Not found folder with id = $folderId");
+            }
+            $password->setFolder($folder);
+            $em->persist($password);
+            $em->flush();
+            
+            $apiResponse->setSuccess();
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (NoSuchPropertyException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+        return $apiResponse->generate();
+    }
 
     /**
      * @Route("/passwords/get/folder/{folderId}/", name="passwords_api_get_for_folder")
@@ -55,9 +108,7 @@ class PasswordsApiController extends AbstractController {
             $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         }
-
-
-
+        
         return $apiResponse->generate();
     }
 
