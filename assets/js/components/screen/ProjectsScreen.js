@@ -20,6 +20,7 @@ import ChangeProjectForm from '../form/ChangeProjectForm';
 
 import ModalAddProject from '../modal/modal-add-project';
 import ModalAddPassword from '../modal/modal-add-password';
+import ModalChangePassword from '../modal/modal-change-password';
 
 import Toasts from '../../src/Toasts/Toasts';
 
@@ -36,6 +37,7 @@ export default class ProjectsScreen extends Component {
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
             id_project_for_change: null,
+            id_password_for_change: null,
             id_folder_for_change: null,
 
             projects: [],
@@ -45,7 +47,15 @@ export default class ProjectsScreen extends Component {
             modal_add_project_is_open: false,
             modal_change_project_is_open: false,
             modal_change_folder_is_open: false,
+            modal_change_password_is_open: false,
             modal_add_password_is_open: false
+        };
+
+        this.onClickIconEditPassword = (e, password) => {
+            this.setState({
+                id_password_for_change: password.id,
+                modal_change_password_is_open: true
+            });
         };
 
         this.onClickIconEditFolder = (e, folder) => {
@@ -156,6 +166,11 @@ export default class ProjectsScreen extends Component {
             });
         };
         
+        this.onSubmitFormChangePassword = (e) => {
+            const data = new FormSerializer(e.target).getObject();
+            console.log(data);
+        };
+        
         this.onSubmitFormAddPassword = (e) => {
             const data = new FormSerializer(e.target).getObject();
             PasswordsApi.add(this.state.activeFolder, data).then(() => {
@@ -169,6 +184,18 @@ export default class ProjectsScreen extends Component {
                 Toasts.success(`Пароль успешно добавлен`);
             }).catch(() => {
                 Toasts.error(`Не удалось добавить пароль`);
+            });
+        };
+        
+        this.onClickCloseModalChangeProject = (e) => {
+            this.setState({
+                modal_change_project_is_open: false
+            });
+        };
+        
+        this.onClickCloseModalChangePasword = (e) => {
+            this.setState({
+                modal_change_password_is_open: false
             });
         };
         
@@ -195,6 +222,13 @@ export default class ProjectsScreen extends Component {
     renderModals() {
         return (
             <React.Fragment>
+        
+                <ModalChangePassword 
+                    idPassword={this.state.id_password_for_change} 
+                    onSubmit={this.onSubmitFormChangePassword} 
+                    onClickClose={this.onClickCloseModalChangePasword}
+                    open={this.state.modal_change_password_is_open} 
+                />
         
                 <ModalAddProject 
                     onSubmit={this.onSubmitFormAddProject} 
@@ -335,10 +369,11 @@ export default class ProjectsScreen extends Component {
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 <PasswordsTable 
-                                onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} 
-                                activeFolder={this.state.activeFolder} 
-                                passwords={this.state.passwords} 
-                            />
+                                    onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} 
+                                    activeFolder={this.state.activeFolder} 
+                                    onClickIconEditPassword={this.onClickIconEditPassword} 
+                                    passwords={this.state.passwords} 
+                                />
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

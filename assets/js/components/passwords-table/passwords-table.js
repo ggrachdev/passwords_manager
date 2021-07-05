@@ -11,6 +11,7 @@ export default class PasswordsTable extends Component {
         this.state = {
             passwords: props.passwords,
             activeFolder: props.activeFolder,
+            onClickIconEditPassword: props.onClickIconEditPassword,
             onClickAddPasswordButton: props.onClickAddPasswordButton,
             searchStringPasswords: ''
         };
@@ -46,7 +47,7 @@ export default class PasswordsTable extends Component {
                         <Table.Cell>{password.password}</Table.Cell>
                         <Table.Cell>{password.description}</Table.Cell>
                         <Table.Cell textAlign="center">
-                            <Icon size='small' color='grey' link name='edit' />
+                            <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
                         </Table.Cell>
                     </Table.Row>
                 );

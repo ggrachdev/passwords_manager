@@ -44,7 +44,7 @@ export default class AddPasswordForm extends Component {
                         control={TextArea}
                         label='Описание:' 
                         name="add_password_form[description]" 
-                        placeholder='Введите описание доступа' 
+                        placeholder='Введите описание' 
                       />
                      
                     <Form.Button positive>Добавить пароль</Form.Button>

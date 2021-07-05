@@ -343,9 +343,9 @@ class ProjectsApiController extends AbstractController {
 
                 $apiResponse->setSuccess();
                 $apiResponse->setData(['project' => [
-                        'name' => $project->getName(),
-                        'id' => $project->getId(),
-                        'folders' => $folders
+                    'name' => $project->getName(),
+                    'id' => $project->getId(),
+                    'folders' => $folders
                 ]]);
             }
         } catch (AccessDeniedException $exc) {
