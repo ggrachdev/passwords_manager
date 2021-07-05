@@ -144,7 +144,7 @@ export default class ProjectsScreen extends Component {
             
             setTimeout(() => {
                 this.updatePasswords();
-            }, 300);
+            }, 50);
         };
         
         this.onSubmitFormAddProject = (e) => {
@@ -160,7 +160,7 @@ export default class ProjectsScreen extends Component {
             });
         };
         
-       this.onClickRemovePasswordButton = (e) => {
+        this.onClickRemovePasswordButton = (e) => {
             if(confirm(`Вы действительно хотите удалить пароль?`))
             {
                 PasswordsApi.remove(this.state.id_password_for_change).then(() => {
@@ -173,7 +173,7 @@ export default class ProjectsScreen extends Component {
             }
         };
         
-       this.onClickCloseModalAddProject = () => {
+        this.onClickCloseModalAddProject = () => {
             this.setState({
                 modal_add_project_is_open: false
             });
@@ -239,9 +239,10 @@ export default class ProjectsScreen extends Component {
     }
     
     renderModals() {
+        // @todo вынести все в отдельные модалки
         return (
             <React.Fragment>
-        
+                
                 <ModalChangePassword 
                     idPassword={this.state.id_password_for_change} 
                     onSubmit={this.onSubmitFormChangePassword} 
