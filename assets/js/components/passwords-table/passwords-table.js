@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import { Menu, Icon, Container, Input, Table, Button, Popup } from 'semantic-ui-react';
 import Search from '../../src/Search/Search';
-
+import Toasts from '../../src/Toasts/Toasts';
 const equal = require('deep-equal');
 
 export default class PasswordsTable extends Component {
@@ -20,6 +20,19 @@ export default class PasswordsTable extends Component {
             this.setState({
                 searchStringPasswords: e.target.value
             });
+        };
+        
+        this.copyText = (textForCopy) => {
+            console.log(textForCopy);
+            var input = document.createElement("input");
+            input.setAttribute("type", "text");
+            input.setAttribute("value", textForCopy);
+            var child = document.querySelector("body").appendChild(input);
+            child.select();
+            document.execCommand("copy");
+            child.remove();
+            
+            Toasts.success('Текст успешно скопирован');
         };
 
         this.renderPasswords = () => {
@@ -48,8 +61,11 @@ export default class PasswordsTable extends Component {
                             <Table.Cell>
                                 <Popup content='Пароль скомпрометирован' trigger={(<Icon name='attention' />)} /> {password.name}
                             </Table.Cell>
-                            <Table.Cell>{password.login}</Table.Cell>
-                            <Table.Cell>{password.password}</Table.Cell>
+                            <Table.Cell><Icon link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} /> {password.login}</Table.Cell>
+                            <Table.Cell>
+                                <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
+                                <Icon link color='grey' name='eye' onClick={() => { alert(password.password) }} />
+                            </Table.Cell>
                             <Table.Cell>{password.description}</Table.Cell>
                             <Table.Cell textAlign="center">
                                 <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
@@ -66,8 +82,11 @@ export default class PasswordsTable extends Component {
                                 <Table.Cell>
                                     <Popup content='Пароль не актуален' trigger={(<Icon name='question circle' />)} /> {password.name}
                                 </Table.Cell>
-                                <Table.Cell>{password.login}</Table.Cell>
-                                <Table.Cell>{password.password}</Table.Cell>
+                                <Table.Cell><Icon link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} /> {password.login}</Table.Cell>
+                                <Table.Cell>
+                                    <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
+                                    <Icon link color='grey' name='eye' onClick={() => { alert(password.password) }} />
+                                </Table.Cell>
                                 <Table.Cell>{password.description}</Table.Cell>
                                 <Table.Cell textAlign="center">
                                     <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
@@ -80,8 +99,13 @@ export default class PasswordsTable extends Component {
                         passwords.push(
                             <Table.Row>
                                 <Table.Cell>{password.name}</Table.Cell>
-                                <Table.Cell>{password.login}</Table.Cell>
-                                <Table.Cell>{password.password}</Table.Cell>
+                                <Table.Cell>
+                                    <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} /> {password.login}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
+                                    <Icon link color='grey' name='eye' onClick={() => { alert(password.password) }} />
+                                </Table.Cell>
                                 <Table.Cell>{password.description}</Table.Cell>
                                 <Table.Cell textAlign="center">
                                     <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
