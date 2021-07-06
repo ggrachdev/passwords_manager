@@ -185,6 +185,7 @@ class PasswordsApiController extends AbstractController {
             $apiResponse->setData(['password' => [
                 'name' => $password->getName(),
                 'id' => $password->getId(),
+                'tags' => $password->getTags(),
                 'login' => EncryptionFacade::decrypt( $password->getLogin() ),
                 'password' => EncryptionFacade::decrypt( $password->getPassword() ),
                 'description' => $password->getDescription(),
@@ -229,6 +230,7 @@ class PasswordsApiController extends AbstractController {
                         $passwords[] = [
                             'id' => $password->getId(),
                             'name' => $password->getName(),
+                            'tags' => $password->getTags(),
                             'login' => EncryptionFacade::decrypt( $password->getLogin() ),
                             'password' => EncryptionFacade::decrypt( $password->getPassword() ),
                             'description' => $password->getDescription(),
