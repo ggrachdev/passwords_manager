@@ -5,6 +5,10 @@ import Search from '../../src/Search/Search';
 import Toasts from '../../src/Toasts/Toasts';
 const equal = require('deep-equal');
 
+function truncate(str, maxlength) {
+    return (str.length > maxlength) ? str.slice(0, maxlength) + '...' : '...';
+}
+          
 export default class PasswordsTable extends Component {
     constructor(props) {
         super(props);
@@ -23,7 +27,6 @@ export default class PasswordsTable extends Component {
         };
         
         this.copyText = (textForCopy) => {
-            console.log(textForCopy);
             var input = document.createElement("input");
             input.setAttribute("type", "text");
             input.setAttribute("value", textForCopy);
@@ -31,8 +34,7 @@ export default class PasswordsTable extends Component {
             child.select();
             document.execCommand("copy");
             child.remove();
-            
-            Toasts.success('Текст успешно скопирован');
+            Toasts.success('Успешно скопировано');
         };
 
         this.renderPasswords = () => {
@@ -52,68 +54,47 @@ export default class PasswordsTable extends Component {
                         return;
                     };
                 }
-            
                     
+                const bodyPassword = (
+                    <React.Fragment>
+                        <Table.Cell>
+                            { password.tags.includes('compromised') ? ( <Popup content='Пароль скомпрометирован' trigger={(<Icon name='attention' />) } /> ) : '' }
+                            { password.tags.includes('not_working') ? ( <Popup content='Пароль не актуален' trigger={(<Icon name='question circle' />) } /> ) : '' }
+                            {password.name}
+                        </Table.Cell>
+                        <Table.Cell>
+                            <Icon style={{float: 'right'}} link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} />
+                            {password.login}
+                        </Table.Cell>
+                        <Table.Cell>
+                            <Icon style={{float: 'right'}} link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
+                            <Icon style={{float: 'right'}} link color='grey' name='eye' onClick={() => { alert(password.password) }} />
+                            { truncate(password.password, 3) }
+                        </Table.Cell>
+                        <Table.Cell className='display-linebreak'>{password.description}</Table.Cell>
+                        <Table.Cell textAlign="center">
+                            <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
+                        </Table.Cell>
+                    </React.Fragment>
+                );
+            
+            
+                let styleTable = '';
+                
                 if(password.tags.includes('compromised'))
                 {
-                    passwords.push(
-                        <Table.Row negative>
-                            <Table.Cell>
-                                <Popup content='Пароль скомпрометирован' trigger={(<Icon name='attention' />)} /> {password.name}
-                            </Table.Cell>
-                            <Table.Cell><Icon link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} /> {password.login}</Table.Cell>
-                            <Table.Cell>
-                                <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
-                                <Icon link color='grey' name='eye' onClick={() => { alert(password.password) }} />
-                            </Table.Cell>
-                            <Table.Cell>{password.description}</Table.Cell>
-                            <Table.Cell textAlign="center">
-                                <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
-                            </Table.Cell>
-                        </Table.Row>
-                    );
+                    styleTable = 'negative';
                 }
-                else
+                else if(password.tags.includes('not_working'))
                 {
-                    if(password.tags.includes('not_working'))
-                    {
-                        passwords.push(
-                            <Table.Row warning>
-                                <Table.Cell>
-                                    <Popup content='Пароль не актуален' trigger={(<Icon name='question circle' />)} /> {password.name}
-                                </Table.Cell>
-                                <Table.Cell><Icon link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} /> {password.login}</Table.Cell>
-                                <Table.Cell>
-                                    <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
-                                    <Icon link color='grey' name='eye' onClick={() => { alert(password.password) }} />
-                                </Table.Cell>
-                                <Table.Cell>{password.description}</Table.Cell>
-                                <Table.Cell textAlign="center">
-                                    <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
-                                </Table.Cell>
-                            </Table.Row>
-                        );
-                    }
-                    else
-                    {
-                        passwords.push(
-                            <Table.Row>
-                                <Table.Cell>{password.name}</Table.Cell>
-                                <Table.Cell>
-                                    <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} /> {password.login}
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Icon link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
-                                    <Icon link color='grey' name='eye' onClick={() => { alert(password.password) }} />
-                                </Table.Cell>
-                                <Table.Cell>{password.description}</Table.Cell>
-                                <Table.Cell textAlign="center">
-                                    <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
-                                </Table.Cell>
-                            </Table.Row>
-                        );
-                    }
+                    styleTable = 'warning';
                 }
+                
+                passwords.push(
+                    <Table.Row {...{[styleTable]: true}}>
+                        {bodyPassword}
+                    </Table.Row>
+                );
             });
 
             return passwords;

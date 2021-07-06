@@ -26,6 +26,10 @@ i.icon.icon_project {
     cursor: pointer;
 }
 
+.display-linebreak {
+    white-space: pre-line;
+}
+
 @media only screen and (min-width: 1600px) {
     .ui.container {
         margin-left:auto!important;
