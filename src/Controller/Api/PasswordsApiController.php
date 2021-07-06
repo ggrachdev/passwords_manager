@@ -56,6 +56,18 @@ class PasswordsApiController extends AbstractController {
             $password->setLogin(EncryptionFacade::encrypt($passwordRequest->getLogin()));
             $password->setPassword(EncryptionFacade::encrypt($passwordRequest->getPassword()));
             $password->setDescription($passwordRequest->getDescription());
+            
+            if(!empty($request->request->get('change_password_form')['tags']))
+            {
+                $password->setTags(
+                    $request->request->get('change_password_form')['tags']
+                );
+            }
+            else
+            {
+                $password->setTags([]);
+            }
+            
             $em->persist($password);
             $em->flush();
             
@@ -145,6 +157,18 @@ class PasswordsApiController extends AbstractController {
                     $password->getLogin()
                 )
             );
+            
+            if(!empty($request->request->get('add_password_form')['tags']))
+            {
+                $password->setTags(
+                    $request->request->get('add_password_form')['tags']
+                );
+            }
+            else
+            {
+                $password->setTags([]);
+            }
+            
             $em->persist($password);
             $em->flush();
             

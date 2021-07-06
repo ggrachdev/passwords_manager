@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
-import { Menu, Icon, Container, Input, Table, Button } from 'semantic-ui-react';
+import { Menu, Icon, Container, Input, Table, Button, Popup } from 'semantic-ui-react';
 import Search from '../../src/Search/Search';
 
 const equal = require('deep-equal');
@@ -39,18 +39,57 @@ export default class PasswordsTable extends Component {
                         return;
                     };
                 }
-
-                passwords.push(
-                    <Table.Row>
-                        <Table.Cell>{password.name}</Table.Cell>
-                        <Table.Cell>{password.login}</Table.Cell>
-                        <Table.Cell>{password.password}</Table.Cell>
-                        <Table.Cell>{password.description}</Table.Cell>
-                        <Table.Cell textAlign="center">
-                            <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
-                        </Table.Cell>
-                    </Table.Row>
-                );
+            
+                    
+                if(password.tags.includes('compromised'))
+                {
+                    passwords.push(
+                        <Table.Row negative>
+                            <Table.Cell>
+                                <Popup content='Пароль скомпрометирован' trigger={(<Icon name='attention' />)} /> {password.name}
+                            </Table.Cell>
+                            <Table.Cell>{password.login}</Table.Cell>
+                            <Table.Cell>{password.password}</Table.Cell>
+                            <Table.Cell>{password.description}</Table.Cell>
+                            <Table.Cell textAlign="center">
+                                <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
+                            </Table.Cell>
+                        </Table.Row>
+                    );
+                }
+                else
+                {
+                    if(password.tags.includes('not_working'))
+                    {
+                        passwords.push(
+                            <Table.Row warning>
+                                <Table.Cell>
+                                    <Popup content='Пароль не актуален' trigger={(<Icon name='question circle' />)} /> {password.name}
+                                </Table.Cell>
+                                <Table.Cell>{password.login}</Table.Cell>
+                                <Table.Cell>{password.password}</Table.Cell>
+                                <Table.Cell>{password.description}</Table.Cell>
+                                <Table.Cell textAlign="center">
+                                    <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
+                                </Table.Cell>
+                            </Table.Row>
+                        );
+                    }
+                    else
+                    {
+                        passwords.push(
+                            <Table.Row>
+                                <Table.Cell>{password.name}</Table.Cell>
+                                <Table.Cell>{password.login}</Table.Cell>
+                                <Table.Cell>{password.password}</Table.Cell>
+                                <Table.Cell>{password.description}</Table.Cell>
+                                <Table.Cell textAlign="center">
+                                    <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
+                                </Table.Cell>
+                            </Table.Row>
+                        );
+                    }
+                }
             });
 
             return passwords;
