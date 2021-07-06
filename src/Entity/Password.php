@@ -43,6 +43,11 @@ class Password
      */
     private $folder;
 
+    /**
+     * @ORM\Column(type="simple_array", nullable=true)
+     */
+    private $tags = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +109,18 @@ class Password
     public function setFolder(?ProjectFolder $folder): self
     {
         $this->folder = $folder;
+
+        return $this;
+    }
+
+    public function getTags(): ?array
+    {
+        return $this->tags;
+    }
+
+    public function setTags(?array $tags): self
+    {
+        $this->tags = $tags;
 
         return $this;
     }
