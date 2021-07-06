@@ -31,8 +31,8 @@ export default class ProjectsScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeProject: null,
-            activeFolder: null,
+            activeProject: 'projectId' in props ? parseInt(props['projectId']) : null,
+            activeFolder: 'folderId' in props ? parseInt(props['folderId']) : null,
 
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
@@ -119,20 +119,23 @@ export default class ProjectsScreen extends Component {
         };
         
         this.updatePasswords = () => {
-            PasswordsApi.getForFolder(this.state.activeFolder).then((response) => {
+            if(this.state.activeFolder != null)
+            {
+                PasswordsApi.getForFolder(this.state.activeFolder).then((response) => {
 
-                if(response.getData()['passwords'].length === 0)
-                {
-                    Toasts.error(`Не найдено паролей для текущей папки`);
-                }
-                
-                this.setState({
-                    passwords: response.getData()['passwords']
+                    if(response.getData()['passwords'].length === 0)
+                    {
+                        Toasts.error(`Не найдено паролей для текущей папки`);
+                    }
+
+                    this.setState({
+                        passwords: response.getData()['passwords']
+                    });
+                }).catch(() => {
+                    Toasts.error(`Не удалось загрузить папку`);
+                    this.initialize();
                 });
-            }).catch(() => {
-                Toasts.error(`Не удалось загрузить папку`);
-                this.initialize();
-            });
+            }
         };
 
         this.onChangeFolderProject = (e, folder, project) => {
@@ -141,6 +144,8 @@ export default class ProjectsScreen extends Component {
                 activeProject: project.id,
                 activeFolder: folder.id
             });
+            
+            history.pushState({}, 'Fred Security', `/projects/project-${project.id}/folder-${folder.id}/`)
             
             setTimeout(() => {
                 this.updatePasswords();
@@ -225,6 +230,7 @@ export default class ProjectsScreen extends Component {
         };
 
         this.initialize();
+        this.updatePasswords();
     }
 
     initialize() {
