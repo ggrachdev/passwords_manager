@@ -11,6 +11,7 @@ export default class ModalChangePassword extends Component {
         this.state = {
             idPassword: props.idPassword,
             onSubmit: props.onSubmit,
+            canRemovePasswordInActiveFolder: props.canRemovePasswordInActiveFolder,
             onClickRemovePasswordButton: props.onClickRemovePasswordButton,
             onClickClose: props.onClickClose,
             open: props.open,
@@ -19,10 +20,14 @@ export default class ModalChangePassword extends Component {
 
     componentDidUpdate(prevProps) {
 
-        if (!equal(prevProps.open, this.props.open))
+        if (
+            !equal(prevProps.open, this.props.open) ||
+            !equal(prevProps.canRemovePasswordInActiveFolder, this.props.canRemovePasswordInActiveFolder)
+        )
         {
             this.setState({
-                open: this.props.open
+                open: this.props.open,
+                canRemovePasswordInActiveFolder: this.props.canRemovePasswordInActiveFolder
             });
         }
 
@@ -41,7 +46,7 @@ export default class ModalChangePassword extends Component {
                 open={this.state.open} >
                 <Modal.Header>Изменить пароль</Modal.Header>
                 <Modal.Content>
-                    <ChangePasswordForm onClickRemovePasswordButton={this.state.onClickRemovePasswordButton} idPassword={this.state.idPassword} onSubmit={this.state.onSubmit} />
+                    <ChangePasswordForm canRemovePasswordInActiveFolder={this.state.canRemovePasswordInActiveFolder} onClickRemovePasswordButton={this.state.onClickRemovePasswordButton} idPassword={this.state.idPassword} onSubmit={this.state.onSubmit} />
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.state.onClickClose}>

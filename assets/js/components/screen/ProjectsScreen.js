@@ -35,6 +35,8 @@ export default class ProjectsScreen extends Component {
             activeFolder: 'folderId' in props ? parseInt(props['folderId']) : null,
             
             canAddPasswordInActiveFolder: false,
+            canEditPasswordInActiveFolder: false,
+            canRemovePasswordInActiveFolder: false,
             
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
@@ -120,8 +122,13 @@ export default class ProjectsScreen extends Component {
             if(this.state.activeFolder != null)
             {
                 ProjectsApi.getFolder(this.state.activeFolder).then((response) => {
+                    
+                    const permissions = response.getData()['folder']['permissions'];
+                    
                     this.setState({
-                        canAddPasswordInActiveFolder: response.getData()['folder']['permissions']['can_add_password']
+                        canAddPasswordInActiveFolder: permissions['can_add_password'],
+                        canRemovePasswordInActiveFolder: permissions['can_remove_passwords'],
+                        canEditPasswordInActiveFolder: permissions['can_edit_passwords']
                     });
                 }).catch(() => {
                     Toasts.error(`Не удалось загрузить папку`);
@@ -146,6 +153,8 @@ export default class ProjectsScreen extends Component {
             this.setState({
                 activeProject: project.id,
                 canAddPasswordInActiveFolder: folder.permissions.can_add_password,
+                canRemovePasswordInActiveFolder: folder.permissions.can_remove_passwords,
+                canEditPasswordInActiveFolder: folder.permissions.can_edit_passwords, 
                 activeFolder: folder.id
             });
             history.pushState({}, 'Fred Security', `/projects/project-${project.id}/folder-${folder.id}/`)
@@ -251,6 +260,7 @@ export default class ProjectsScreen extends Component {
                 <ModalChangePassword 
                     idPassword={this.state.id_password_for_change} 
                     onSubmit={this.onSubmitFormChangePassword} 
+                    canRemovePasswordInActiveFolder={this.state.canRemovePasswordInActiveFolder} 
                     onClickRemovePasswordButton={this.onClickRemovePasswordButton}
                     onClickClose={this.onClickCloseModalChangePasword}
                     open={this.state.modal_change_password_is_open} 
@@ -397,6 +407,7 @@ export default class ProjectsScreen extends Component {
                                 <PasswordsTable 
                                     onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} 
                                     activeFolder={this.state.activeFolder} 
+                                    canEditPasswordInActiveFolder={this.state.canEditPasswordInActiveFolder} 
                                     canAddPasswordInActiveFolder={this.state.canAddPasswordInActiveFolder} 
                                     onClickIconEditPassword={this.onClickIconEditPassword} 
                                     passwords={this.state.passwords} 

@@ -10,6 +10,7 @@ export default class ChangePasswordForm extends Component {
         this.state = {
             errors: props.errors || [],
             idPassword: props.idPassword,
+            canRemovePasswordInActiveFolder: props.canRemovePasswordInActiveFolder,
             selected_tags: [],
             passwordData: {
                 name: '',
@@ -47,6 +48,10 @@ export default class ChangePasswordForm extends Component {
     render() {
 
         const {errors} = this.state;
+        
+        const ButtonRemovePassword = (this.state.canRemovePasswordInActiveFolder == true) ? (
+            <Form.Button onClick={(e) => {e.preventDefault(); this.onClickRemovePasswordButton(e);}} negative>Удалить пароль</Form.Button>
+        ) : '';
 
         return (
             <React.Fragment>
@@ -103,7 +108,9 @@ export default class ChangePasswordForm extends Component {
                     </Form.Field>
                      
                     <Form.Button positive>Изменить пароль</Form.Button> 
-                    <Form.Button onClick={(e) => {e.preventDefault(); this.onClickRemovePasswordButton(e);}} negative>Удалить пароль</Form.Button>
+                    
+                    {ButtonRemovePassword}
+                    
                 </Form>
             </React.Fragment>
         );

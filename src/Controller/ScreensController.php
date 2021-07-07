@@ -8,8 +8,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\Permission;
 use App\Utils\Permission\UserPermission;
+use App\Utils\Permission\ManagerPermission;
 
 class ScreensController extends AbstractController {
+
+    private $managerPermission;
+    
+    public function __construct(ManagerPermission $mp) 
+    {
+        // Помещаем сервис в поле класса
+        $this->managerPermission = $mp;
+    }
 
     /**
      * @Route("/", name="index")
@@ -23,15 +32,15 @@ class ScreensController extends AbstractController {
     }  
 
     /**
-     * @Route("/test", name="test")
+     * @Route("/test", name="test")`
      */
     public function test(): Response {
         
-        $em = $this->getDoctrine()->getManager();
+//        $this->managerPermission->addPermissionForFolder(36, $this->getUser()->getId(), 'can_watch');
+//        $this->managerPermission->addPermissionForRole('ROLE_ADMIN', 'CAN_ABCD');
+        $this->managerPermission->removeAllForUser($this->getUser()->getId());
         
-        $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
-        
-        dd(999);
+//        $userPermission = new UserPermission($this->getUser(), $repository);
         
         die;
     }  

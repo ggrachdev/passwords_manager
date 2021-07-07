@@ -16,6 +16,7 @@ export default class PasswordsTable extends Component {
             passwords: props.passwords,
             activeFolder: props.activeFolder,
             canAddPasswordInActiveFolder: props.canAddPasswordInActiveFolder,
+            canEditPasswordInActiveFolder: props.canEditPasswordInActiveFolder,
             onClickIconEditPassword: props.onClickIconEditPassword,
             onClickAddPasswordButton: props.onClickAddPasswordButton,
             searchStringPasswords: ''
@@ -28,13 +29,26 @@ export default class PasswordsTable extends Component {
         };
         
         this.copyText = (textForCopy) => {
-            var input = document.createElement("input");
-            input.setAttribute("type", "text");
-            input.setAttribute("value", textForCopy);
-            var child = document.querySelector("body").appendChild(input);
-            child.select();
-            document.execCommand("copy");
-            child.remove();
+            // Step 1: create a textarea element.
+            // It is capable of holding linebreaks (newlines) unlike "input" element
+            const myFluffyTextarea = document.createElement('textarea');
+
+            // Step 2: Store your string in innerHTML of myFluffyTextarea element        
+            myFluffyTextarea.innerHTML = textForCopy;
+
+            // Step3: find an id element within the body to append your myFluffyTextarea there temporarily
+            const parentElement = document.querySelector('body');
+            parentElement.appendChild(myFluffyTextarea);
+
+            // Step 4: Simulate selection of your text from myFluffyTextarea programmatically 
+            myFluffyTextarea.select();
+
+            // Step 5: simulate copy command (ctrl+c)
+            // now your string with newlines should be copied to your clipboard 
+            document.execCommand('copy');
+
+            // Step 6: Now you can get rid of your fluffy textarea element
+            parentElement.removeChild(myFluffyTextarea);
             Toasts.success('Успешно скопировано');
         };
 
@@ -55,6 +69,10 @@ export default class PasswordsTable extends Component {
                         return;
                     };
                 }
+                
+                const buttonEditPassword = (this.state.canEditPasswordInActiveFolder == true) ? (
+                    <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
+                ) : '';
                     
                 const bodyPassword = (
                     <React.Fragment>
@@ -74,7 +92,12 @@ export default class PasswordsTable extends Component {
                         </Table.Cell>
                         <Table.Cell className='display-linebreak'>{password.description}</Table.Cell>
                         <Table.Cell textAlign="center">
-                            <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
+                            {buttonEditPassword}
+                            <Icon link color='grey' name='copy' onClick={() => { 
+                                const folderName = document.querySelector('.active.menu-projects').innerText;
+                                const projectName = document.querySelector('.active.menu-projects').closest('.menu').closest('.item').querySelector('.header').innerText;
+                                this.copyText(`Проект: ${projectName} \\ ${folderName}\n\nНазвание: ${password.name}\n\nЛогин: ${password.login}\n\nПароль: ${password.password}`) }
+                            } />
                         </Table.Cell>
                     </React.Fragment>
                 );
@@ -105,23 +128,17 @@ export default class PasswordsTable extends Component {
 
     componentDidUpdate(prevProps) {
 
-        if (!equal(prevProps.passwords, this.props.passwords))
+        if (
+            !equal(prevProps.passwords, this.props.passwords) ||
+            !equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder) ||
+            !equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder) ||
+            !equal(prevProps.canEditPasswordInActiveFolder, this.props.canEditPasswordInActiveFolder)
+        )
         {
             this.setState({
-                passwords: this.props.passwords
-            });
-        }
-
-        if (!equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder))
-        {
-            this.setState({
-                activeFolder: this.props.activeFolder
-            });
-        }
-
-        if (!equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder))
-        {
-            this.setState({
+                passwords: this.props.passwords,
+                activeFolder: this.props.activeFolder,
+                canEditPasswordInActiveFolder: this.props.canEditPasswordInActiveFolder,
                 canAddPasswordInActiveFolder: this.props.canAddPasswordInActiveFolder
             });
         }
