@@ -15,6 +15,7 @@ export default class PasswordsTable extends Component {
         this.state = {
             passwords: props.passwords,
             activeFolder: props.activeFolder,
+            canAddPasswordInActiveFolder: props.canAddPasswordInActiveFolder,
             onClickIconEditPassword: props.onClickIconEditPassword,
             onClickAddPasswordButton: props.onClickAddPasswordButton,
             searchStringPasswords: ''
@@ -111,10 +112,17 @@ export default class PasswordsTable extends Component {
             });
         }
 
-        if (!equal(prevProps.activeFolder, this.props.activeFolder))
+        if (!equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder))
         {
             this.setState({
                 activeFolder: this.props.activeFolder
+            });
+        }
+
+        if (!equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder))
+        {
+            this.setState({
+                canAddPasswordInActiveFolder: this.props.canAddPasswordInActiveFolder
             });
         }
     }
@@ -124,7 +132,7 @@ export default class PasswordsTable extends Component {
         const Passwords = this.renderPasswords();
         let ButtonAddPassword = '';
         
-        if(this.state.activeFolder !== null)
+        if(this.state.canAddPasswordInActiveFolder == true)
         {
             ButtonAddPassword = <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>;
         }

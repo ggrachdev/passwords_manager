@@ -33,7 +33,9 @@ export default class ProjectsScreen extends Component {
         this.state = {
             activeProject: 'projectId' in props ? parseInt(props['projectId']) : null,
             activeFolder: 'folderId' in props ? parseInt(props['folderId']) : null,
-
+            
+            canAddPasswordInActiveFolder: false,
+            
             name_project_for_add_folder: null,
             id_project_for_add_folder: null,
             id_project_for_change: null,
@@ -87,11 +89,9 @@ export default class ProjectsScreen extends Component {
             {
                 ProjectsApi.removeFolder(folder.id).then((response) => {
                     Toasts.error(`Проект ${folder.name} успешно удален`);
-                    
                     this.setState({
                         modal_change_folder_is_open: false
                     });
-
                     this.initialize();
                 }).catch(() => {
                     Toasts.error(`Не удалось удалить папку - ${folder.name}`);
@@ -106,11 +106,9 @@ export default class ProjectsScreen extends Component {
             {
                 ProjectsApi.remove(project.id).then((response) => {
                     Toasts.error(`Проект ${project.name} успешно удален`);
-                    
                     this.setState({
                         modal_change_project_is_open: false
                     });
-
                     this.initialize();
                 }).catch(() => {
                     Toasts.error(`Не удалось удалить проект - ${project.name}`);
@@ -121,32 +119,36 @@ export default class ProjectsScreen extends Component {
         this.updatePasswords = () => {
             if(this.state.activeFolder != null)
             {
+                ProjectsApi.getFolder(this.state.activeFolder).then((response) => {
+                    this.setState({
+                        canAddPasswordInActiveFolder: response.getData()['folder']['permissions']['can_add_password']
+                    });
+                }).catch(() => {
+                    Toasts.error(`Не удалось загрузить папку`);
+                });
+                
                 PasswordsApi.getForFolder(this.state.activeFolder).then((response) => {
-
                     if(response.getData()['passwords'].length === 0)
                     {
                         Toasts.error(`Не найдено паролей для текущей папки`);
                     }
-
                     this.setState({
                         passwords: response.getData()['passwords']
                     });
                 }).catch(() => {
-                    Toasts.error(`Не удалось загрузить папку`);
+                    Toasts.error(`Не удалось загрузить пароли для текущей папки`);
                     this.initialize();
                 });
             }
         };
 
         this.onChangeFolderProject = (e, folder, project) => {
-                
             this.setState({
                 activeProject: project.id,
+                canAddPasswordInActiveFolder: folder.permissions.can_add_password,
                 activeFolder: folder.id
             });
-            
             history.pushState({}, 'Fred Security', `/projects/project-${project.id}/folder-${folder.id}/`)
-            
             setTimeout(() => {
                 this.updatePasswords();
             }, 50);
@@ -187,13 +189,10 @@ export default class ProjectsScreen extends Component {
         this.onSubmitFormAddPassword = (e) => {
             const data = new FormSerializer(e.target).getObject();
             PasswordsApi.add(this.state.activeFolder, data).then(() => {
-                
                 this.setState({
                     modal_add_password_is_open: false
                 });
-                
                 this.updatePasswords();
-                
                 Toasts.success(`Пароль успешно добавлен`);
             }).catch(() => {
                 Toasts.error(`Не удалось добавить пароль`);
@@ -398,6 +397,7 @@ export default class ProjectsScreen extends Component {
                                 <PasswordsTable 
                                     onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} 
                                     activeFolder={this.state.activeFolder} 
+                                    canAddPasswordInActiveFolder={this.state.canAddPasswordInActiveFolder} 
                                     onClickIconEditPassword={this.onClickIconEditPassword} 
                                     passwords={this.state.passwords} 
                                 />

@@ -13,6 +13,8 @@ use App\Form\ChangeUserFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Utils\Permission\UserPermission;
+use App\Entity\Permission;
 
 class UsersApiController extends AbstractController {
 
@@ -128,6 +130,13 @@ class UsersApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
             $roleRepository = $em->getRepository(Role::class);
+            
+            $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            
+            if(!$userPermission->canWatchUsers() && $id != $this->getUser()->getId()) {
+                $apiResponse->setFail();
+                $apiResponse->setErrors('Has not access');
+            }
 
             $usersDb = [$userRepository->find($id)];
             $rolesDb = $roleRepository->findAll();
@@ -187,6 +196,8 @@ class UsersApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
             $roleRepository = $em->getRepository(Role::class);
+            
+            $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
 
             $usersDb = $userRepository->findAll();
             $rolesDb = $roleRepository->findAll();
@@ -197,10 +208,17 @@ class UsersApiController extends AbstractController {
             } else {
                 $apiResponse->setSuccess();
                 $users = [];
+                
+                $canWatchUsers = $userPermission->canWatchUsers();
 
                 foreach ($usersDb as $user) {
                     $rolesResponse = [];
                     $roles = $user->getRoles();
+                    
+                    if(!$canWatchUsers && $user->getId() != $this->getUser()->getId())
+                    {
+                        continue;
+                    }
 
                     foreach ($roles as $value) {
                         foreach ($rolesDb as $role) {

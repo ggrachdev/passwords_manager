@@ -110,6 +110,42 @@ export default class UsersScreen extends Component {
             user.roles_full.forEach((roleData) => {
                 labels.push(<Label color={roleData.color} style={{ backgroundColor: roleData.color, color: '#ffffff' }}>{roleData.name}</Label>);
             });
+            
+            const ButtonChangeUser = this.state.global_state.permissions.can_edit_users == true ? (
+                <Button 
+                    onClick={() => {
+                        this.setState({
+                        user_id_for_update: user.id,
+                            modal_edit_user_is_open: true
+                        });
+                    }} 
+                    basic color='blue' size='mini'>
+                    <Icon name='edit' />
+                    Изменить                            
+                </Button> 
+            ) : '';
+            
+            const ButtonCompromiseUserPasswords = this.state.global_state.permissions.can_compromise_passwords_users == true ? (
+                <Button basic color='violet' size='mini'>
+                    <Icon name='shield alternate' />
+                    Скомпрометировать пароли
+                </Button>
+            ) : '';
+            
+            const ButtonRemoveUser = this.state.global_state.permissions.can_remove_users == true ? (
+                <Button 
+                    onClick={() => {
+                    this.setState({
+                        user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
+                            user_id_for_delete: user.id,
+                            modal_delete_user_is_open: true
+                        });
+                    }} 
+                    basic color='red' size='mini'>
+                    <Icon name='remove' />
+                    Удалить
+                </Button>
+            ) : '';
 
             usersView.push(
                 <Item>
@@ -122,35 +158,11 @@ export default class UsersScreen extends Component {
                 
                         <Item.Description>
                 
-                            <Button 
-                                onClick={() => {
-                                    this.setState({
-                                    user_id_for_update: user.id,
-                                        modal_edit_user_is_open: true
-                                    });
-                                }} 
-                                basic color='blue' size='mini'>
-                                <Icon name='edit' />
-                                Изменить                            
-                            </Button> 
+                            {ButtonChangeUser}
+                            
+                            {ButtonCompromiseUserPasswords}
                 
-                            <Button basic color='violet' size='mini'>
-                                <Icon name='shield alternate' />
-                                Скомпрометировать пароли
-                            </Button>
-                
-                            <Button 
-                                onClick={() => {
-                                this.setState({
-                                    user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
-                                        user_id_for_delete: user.id,
-                                        modal_delete_user_is_open: true
-                                    });
-                                }} 
-                                basic color='red' size='mini'>
-                                <Icon name='remove' />
-                                Удалить
-                            </Button>
+                            {ButtonRemoveUser}
                 
                         </Item.Description>
                 
@@ -173,7 +185,7 @@ export default class UsersScreen extends Component {
                 <Modal 
                     open={modal_registration_is_open} 
                     trigger={
-                        <Button positive onClick={this.openModalAddUser}>Добавить пользователя</Button>
+                        (this.state.global_state.permissions.can_add_users == true) ? (<Button positive onClick={this.openModalAddUser}>Добавить пользователя</Button>) : ''
                     }>
             
                     <Modal.Header>Добавить пользователя</Modal.Header>

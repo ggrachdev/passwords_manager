@@ -45,22 +45,26 @@ export default class ProjectsMenu extends Component {
 
                     const isActiveFolder = this.state.activeFolder === folder.id && this.state.activeProject === project.id;
 
+                    const iconEditFolder = folder.permissions.can_edit ? (
+                        <Icon onClick={(e) => {
+                                this.state.onClickIconEditFolder(e, folder);
+                            }} content='Редактировать папку' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                    ) : '';
+                           
                     folders.push(
                         <Menu.Item
                             className="menu-projects"
                             name={folder.name} 
                             active={isActiveFolder}
                         >
-                        
                             <span className="menu-projects__folder" onClick={(e) => {
                                 e.preventDefault();
                                 this.state.onChangeFolderProject(e, folder, project);
-                            }}>{folder.name}
+                            }}>
+                            {folder.name}
                             </span>
                             
-                            <Icon onClick={(e) => {
-                                this.state.onClickIconEditFolder(e, folder);
-                            }} content='Редактировать папку' style={{marginLeft: '5px'}} className='icon_project' size='small' color='grey' link name='edit' />
+                            {iconEditFolder}
                         </Menu.Item>
                     );
                 });
@@ -73,13 +77,21 @@ export default class ProjectsMenu extends Component {
                     }
                 }
 
+                const iconEditProject = project.permissions.can_edit ? (
+                    <Icon onClick={(e) => { this.state.onClickIconEditProject(e, project); }} content='Редактировать проект' style={{marginLeft: '5px'}} 
+                            className='icon_project' size='small' color='grey' link name='edit' />
+                    ) : '';
+                
+                const iconAddFolder = project.permissions.can_edit ? (
+                    <Icon onClick={(e) => { this.state.onClickIconAddFolder(e, project); }} className='icon_project' size='small' color='grey' link name='add circle' />
+                ) : '';
+
                 menu.push(
                     <Menu.Item>
                         <Menu.Header>
                             {project.name} 
-                            <Icon onClick={(e) => { this.state.onClickIconEditProject(e, project); }} content='Редактировать проект' style={{marginLeft: '5px'}} 
-                            className='icon_project' size='small' color='grey' link name='edit' />
-                            <Icon onClick={(e) => { this.state.onClickIconAddFolder(e, project); }} className='icon_project' size='small' color='grey' link name='add circle' />
+                            {iconEditProject}
+                            {iconAddFolder}
                         </Menu.Header>
                         <Menu.Menu>
                             {folders}

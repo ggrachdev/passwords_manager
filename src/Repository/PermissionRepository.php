@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Permission;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +18,21 @@ class PermissionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Permission::class);
+    }
+    
+    public function findFromUser(User $user)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.for_id = :for_id AND p.for_context=:for_context_user OR p.for_id IN (:for_id_roles) AND p.for_context=:for_context_role AND p.target_context=:target_context_global')
+            ->setParameter('for_id', $user->getId())
+            ->setParameter('for_id_roles', $user->getRoles())
+            ->setParameter('for_context_user', 'USER')
+            ->setParameter('for_context_role', 'ROLE')
+            ->setParameter('target_context_global', 'GLOBAL')
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
     }
 
     // /**

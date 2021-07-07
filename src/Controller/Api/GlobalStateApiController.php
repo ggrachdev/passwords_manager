@@ -5,6 +5,8 @@ namespace App\Controller\Api;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Utils\Permission\UserPermission;
+use App\Entity\Permission;
 
 class GlobalStateApiController extends AbstractController {
 
@@ -18,6 +20,8 @@ class GlobalStateApiController extends AbstractController {
         $userMiddleName = null;
         $userId = null;
         $userRoles = [];
+        
+        $permissions = [];
 
         if ($userIsAuth) {
             $user = $this->getUser();
@@ -26,6 +30,11 @@ class GlobalStateApiController extends AbstractController {
             $userMiddleName = $user->getMiddleName();
             $userRoles = $user->getRoles();
             $userId = $user->getId();
+        
+            $em = $this->getDoctrine()->getManager();
+            $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            $permissions = $userPermission->getPermissionsGlobal();
+            
         }
 
         $response = [
@@ -34,11 +43,12 @@ class GlobalStateApiController extends AbstractController {
             'user_middle_name' => $userMiddleName,
             'user_roles' => $userRoles,
             'user_id' => $userId,
+            'permissions' => $permissions,
             'user_is_auth' => $userIsAuth
         ];
 
         return $this->json(
-                $response
+            $response
         );
     }
 
