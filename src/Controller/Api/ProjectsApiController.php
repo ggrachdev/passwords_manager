@@ -9,15 +9,25 @@ use App\Utils\Api\Response\ApiResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Entity\Project;
 use App\Entity\ProjectFolder;
+use App\Entity\Permission;
 use App\Form\AddProjectFormType;
 use App\Form\AddFolderFormType;
 use App\Form\ChangeProjectFormType;
 use App\Form\ChangeFolderFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\HttpFoundation\Request;
+use App\Utils\Permission\UserPermission;
+use App\Utils\Permission\ManagerPermission;
 
 class ProjectsApiController extends AbstractController {
 
+    private $managerPermission;
+    
+    public function __construct(ManagerPermission $mp) 
+    {
+        $this->managerPermission = $mp;
+    }
+    
     /**
      * @Route("/projects/add/folder/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_add_folder")
      */
@@ -56,6 +66,25 @@ class ProjectsApiController extends AbstractController {
 
             $em->persist($folder);
             $em->flush();
+            
+            $this->managerPermission->addPermissionForFolder(
+                $folder->getId(), $this->getUser()->getId(), 'can_edit_folder'
+            );
+            $this->managerPermission->addPermissionForFolder(
+                $folder->getId(), $this->getUser()->getId(), 'can_watch_folder'
+            );
+            $this->managerPermission->addPermissionForFolder(
+                $folder->getId(), $this->getUser()->getId(), 'can_remove_folder'
+            );
+            $this->managerPermission->addPermissionForFolder(
+                $folder->getId(), $this->getUser()->getId(), 'can_add_password_in_folder'
+            );
+            $this->managerPermission->addPermissionForFolder(
+                $folder->getId(), $this->getUser()->getId(), 'can_edit_password_in_folder'
+            );
+            $this->managerPermission->addPermissionForFolder(
+                $folder->getId(), $this->getUser()->getId(), 'can_remove_password_in_folder'
+            );
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
@@ -93,6 +122,16 @@ class ProjectsApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $em->persist($project);
             $em->flush();
+            
+            $this->managerPermission->addPermissionForProject(
+                $project->getId(), $this->getUser()->getId(), 'can_edit_project'
+            );
+            $this->managerPermission->addPermissionForProject(
+                $project->getId(), $this->getUser()->getId(), 'can_watch_project'
+            );
+            $this->managerPermission->addPermissionForProject(
+                $project->getId(), $this->getUser()->getId(), 'can_remove_project'
+            );
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
@@ -278,6 +317,9 @@ class ProjectsApiController extends AbstractController {
             }
 
             $em = $this->getDoctrine()->getManager();
+            
+            $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            
             $folderRepository = $em->getRepository(ProjectFolder::class);
             $folder = $folderRepository->find($id);
 
@@ -288,8 +330,9 @@ class ProjectsApiController extends AbstractController {
 
                 $apiResponse->setSuccess();
                 $apiResponse->setData(['folder' => [
-                        'name' => $folder->getName(),
-                        'id' => $folder->getId()
+                    'name' => $folder->getName(),
+                    'id' => $folder->getId(),
+                    'permissions' => $userPermission->getPermissionsForFolder($folder->getId())
                 ]]);
             }
         } catch (AccessDeniedException $exc) {
@@ -323,6 +366,17 @@ class ProjectsApiController extends AbstractController {
                 $apiResponse->setFail();
                 $apiResponse->setErrors("Not found project with id = $id");
             } else {
+            
+                $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+                            
+                if (
+                    !$userPermission->canWatchProject(
+                        $project->getId()
+                    )
+                ) {
+                    throw new AccessDeniedException('Has not access for you');
+                }
+                        
                 $foldersDb = $project->getProjectFolders();
 
                 $folders = [];
@@ -330,6 +384,15 @@ class ProjectsApiController extends AbstractController {
                 if (!empty($foldersDb)) {
 
                     foreach ($foldersDb as $folder) {
+                            
+                        if (
+                            !$userPermission->canWatchFolder(
+                                $folder->getId()
+                            )
+                        ) {
+                            continue;
+                        }
+                            
                         $folders[] = [
                             'name' => $folder->getName(),
                             'id' => $folder->getId()
@@ -340,12 +403,13 @@ class ProjectsApiController extends AbstractController {
                         return ($a['name'] > $b['name']);
                     });
                 }
-
+                
                 $apiResponse->setSuccess();
                 $apiResponse->setData(['project' => [
                     'name' => $project->getName(),
                     'id' => $project->getId(),
-                    'folders' => $folders
+                    'folders' => $folders,
+                    'permissions' => $userPermission->getPermissionsForProject($project->getId())
                 ]]);
             }
         } catch (AccessDeniedException $exc) {
@@ -377,16 +441,39 @@ class ProjectsApiController extends AbstractController {
             } else {
                 $projects = [];
 
+                $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+                
                 foreach ($projectsDb as $project) {
+                            
+                    if (
+                        !$userPermission->canWatchProject(
+                            $project->getId()
+                        )
+                    ) {
+                        continue;
+                    }
+
                     $foldersDb = $project->getProjectFolders();
 
                     $folders = [];
 
                     if (!empty($foldersDb)) {
                         foreach ($foldersDb as $folder) {
+                            
+                            if (
+                                !$userPermission->canWatchFolder(
+                                    $folder->getId()
+                                )
+                            ) {
+                                continue;
+                            }
+
+                            $folderPermissions = $userPermission->getPermissionsForFolder($folder->getId());
+                            
                             $folders[] = [
                                 'name' => $folder->getName(),
-                                'id' => $folder->getId()
+                                'id' => $folder->getId(),
+                                'permissions' => $folderPermissions
                             ];
                         };
 
@@ -394,11 +481,13 @@ class ProjectsApiController extends AbstractController {
                             return ($a['name'] > $b['name']);
                         });
                     }
+                    
 
                     $projects[] = [
                         'name' => $project->getName(),
                         'id' => $project->getId(),
-                        'folders' => $folders
+                        'folders' => $folders,
+                        'permissions' => $userPermission->getPermissionsForProject($project->getId())
                     ];
                 }
 

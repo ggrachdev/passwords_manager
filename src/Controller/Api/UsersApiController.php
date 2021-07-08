@@ -13,8 +13,18 @@ use App\Form\ChangeUserFormType;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Utils\Permission\UserPermission;
+use App\Entity\Permission;
+use App\Utils\Permission\ManagerPermission;
 
 class UsersApiController extends AbstractController {
+
+    private $managerPermission;
+    
+    public function __construct(ManagerPermission $mp) 
+    {
+        $this->managerPermission = $mp;
+    }
 
     /**
      * Изменение данных пользователя
@@ -29,7 +39,7 @@ class UsersApiController extends AbstractController {
 
             $nowUser = $this->getUser();
 
-            if ($id !== $nowUser->getId()) {
+            if ($id != $nowUser->getId()) {
                 if (!$this->isGranted('ROLE_ADMIN')) {
                     throw new AccessDeniedException('Has not access');
                 }
@@ -63,7 +73,6 @@ class UsersApiController extends AbstractController {
                 $pass = $encoder->encodePassword($changedUser, $request->request->get('change_user_form')['password']);
                 $changedUser->setPassword($pass);
             }
-            
             
             if(
                 array_key_exists('role', $request->request->get('change_user_form'))
@@ -102,6 +111,10 @@ class UsersApiController extends AbstractController {
             $userForRemove = $userRepository->find($id);
 
             if ($userForRemove != null) {
+                
+                // Удаляем все права пользователя
+                $this->managerPermission->removeAllForUser($userForRemove->getId());
+                
                 $em->remove($userForRemove);
                 $em->flush();
                 $apiResponse->setSuccess();
@@ -123,11 +136,20 @@ class UsersApiController extends AbstractController {
     public function getData($id): Response {
         $apiResponse = new ApiResponse();
 
-        if ($this->isGranted('ROLE_ADMIN')) {
+        if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
             $roleRepository = $em->getRepository(Role::class);
+            
+            $userPermission = new UserPermission(
+                $this->getUser(), $em->getRepository(Permission::class)
+            );
+            
+            if(!$userPermission->canWatchUsers() && $id != $this->getUser()->getId()) {
+                $apiResponse->setFail();
+                $apiResponse->setErrors('Has not permission');
+            }
 
             $usersDb = [$userRepository->find($id)];
             $rolesDb = $roleRepository->findAll();
@@ -187,6 +209,8 @@ class UsersApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
             $roleRepository = $em->getRepository(Role::class);
+            
+            $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
 
             $usersDb = $userRepository->findAll();
             $rolesDb = $roleRepository->findAll();
@@ -197,10 +221,17 @@ class UsersApiController extends AbstractController {
             } else {
                 $apiResponse->setSuccess();
                 $users = [];
+                
+                $canWatchUsers = $userPermission->canWatchUsers();
 
                 foreach ($usersDb as $user) {
                     $rolesResponse = [];
                     $roles = $user->getRoles();
+                    
+                    if(!$canWatchUsers && $user->getId() != $this->getUser()->getId())
+                    {
+                        continue;
+                    }
 
                     foreach ($roles as $value) {
                         foreach ($rolesDb as $role) {

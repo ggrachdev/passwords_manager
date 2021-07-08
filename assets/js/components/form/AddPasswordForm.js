@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, TextArea } from 'semantic-ui-react'
+import { Form, TextArea, Radio } from 'semantic-ui-react'
 
 export default class AddPasswordForm extends Component {
 
@@ -7,9 +7,23 @@ export default class AddPasswordForm extends Component {
         super(props);
         
         this.state = {
+            selected_tags: [],
             errors: props.errors || [],
         };
 
+        this.changeTagsRadioHandler = (e, valueData) => {
+
+            const value = valueData.value;
+
+            let nowSelectedTags = [...this.state.selected_tags];
+
+            let newSelectedTags = nowSelectedTags.includes(value) ? _.without(nowSelectedTags, value) : _.concat(nowSelectedTags, value);
+
+            this.setState({
+                selected_tags: newSelectedTags
+            })
+        };
+        
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
     }
 
@@ -46,7 +60,27 @@ export default class AddPasswordForm extends Component {
                         name="add_password_form[description]" 
                         placeholder='Введите описание' 
                       />
-                     
+                      
+                    <Form.Field>
+                        <Radio 
+                            checked={this.state.selected_tags.includes("compromised")} 
+                            onChange={this.changeTagsRadioHandler} 
+                            label="Пароль скомпрометирован"
+                            name={`add_password_form[tags][compromised]`}
+                            value="compromised" 
+                        />
+                    </Form.Field>
+                      
+                    <Form.Field>
+                        <Radio 
+                            checked={this.state.selected_tags.includes("not_working")} 
+                            onChange={this.changeTagsRadioHandler} 
+                            label="Пароль не актуален"
+                            name={`add_password_form[tags][not_working]`}
+                            value="not_working" 
+                        />
+                    </Form.Field>
+
                     <Form.Button positive>Добавить пароль</Form.Button>
                 </Form>
             </React.Fragment>

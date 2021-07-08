@@ -56,14 +56,6 @@ export default class MainMenu extends Component {
                 Проекты
             </Menu.Item>);
         
-            menu.push(<Menu.Item 
-                name='history' to='/history/' onClick={this.handlers.changeMenuItem} 
-                as={ Link }
-                active={path === '/history/'}>
-                <Icon name='history' />
-                История
-            </Menu.Item>);
-        
             if(global_state.user_roles.includes('ROLE_ADMIN'))
             {
                 menu.push(<Menu.Item 
@@ -80,6 +72,14 @@ export default class MainMenu extends Component {
                     active={path === '/roles/'}>
                     <Icon name='users' />
                     Роли
+                </Menu.Item>);
+        
+                menu.push(<Menu.Item 
+                    name='history' to='/history/' onClick={this.handlers.changeMenuItem} 
+                    as={ Link }
+                    active={path === '/history/'}>
+                    <Icon name='history' />
+                    История
                 </Menu.Item>);
             }
 

@@ -30,7 +30,7 @@ export default class App extends Component {
             this.setState({
                 global_state: data,
                 // Режим разработки
-                app_in_development_mode: true,
+                app_in_development_mode: false,
                 
                 // id'ы пользователей для которых доступен режим разработки
                 available_user_ids_for_development_mode: [4],
@@ -85,13 +85,16 @@ export default class App extends Component {
                         <Route path="/roles/">
                             <RolesScreen global_state={global_state}/>
                         </Route>
-                        <Route path="/projects/">
+                        <Route path="/projects/" exact>
                             <ProjectsScreen global_state={global_state}/>
                         </Route>
+                        <Route path="/projects/project-:projectId/folder-:folderId/" render={( { match } ) => {
+                            return (<ProjectsScreen folderId={match.params.folderId} projectId={match.params.projectId} global_state={global_state}/>);
+                        }} />
                         <Route path="/history/">
                             <HistoryScreen global_state={global_state}/>
                         </Route>
-                        <Route path="/">
+                        <Route path="/" exact>
                             <LoginScreen global_state={global_state}/>
                         </Route>
                         </Switch>

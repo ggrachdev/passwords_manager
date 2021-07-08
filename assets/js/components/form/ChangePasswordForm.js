@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, TextArea } from 'semantic-ui-react'
+import { Form, TextArea, Radio } from 'semantic-ui-react'
 import PasswordsApi from '../../src/Api/PasswordsApi';
 
 export default class ChangePasswordForm extends Component {
@@ -10,20 +10,37 @@ export default class ChangePasswordForm extends Component {
         this.state = {
             errors: props.errors || [],
             idPassword: props.idPassword,
+            canRemovePasswordInActiveFolder: props.canRemovePasswordInActiveFolder,
+            selected_tags: [],
             passwordData: {
                 name: '',
                 password: '',
                 description: '',
-                login: ''
+                login: '',
+                tags: []
             }
         };
         
         PasswordsApi.get(this.state.idPassword).then((response) => {
             this.setState({
-                passwordData: response.getData()['password']
+                passwordData: response.getData()['password'],
+                selected_tags: response.getData()['password']['tags']
             });
         });
 
+        this.changeTagsRadioHandler = (e, valueData) => {
+
+            const value = valueData.value;
+
+            let nowSelectedTags = [...this.state.selected_tags];
+
+            let newSelectedTags = nowSelectedTags.includes(value) ? _.without(nowSelectedTags, value) : _.concat(nowSelectedTags, value);
+
+            this.setState({
+                selected_tags: newSelectedTags
+            })
+        };
+        
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
         this.onClickRemovePasswordButton = 'onClickRemovePasswordButton' in props ? props['onClickRemovePasswordButton'] : (e) => {};
     }
@@ -31,6 +48,10 @@ export default class ChangePasswordForm extends Component {
     render() {
 
         const {errors} = this.state;
+        
+        const ButtonRemovePassword = (this.state.canRemovePasswordInActiveFolder == true) ? (
+            <Form.Button onClick={(e) => {e.preventDefault(); this.onClickRemovePasswordButton(e);}} negative>Удалить пароль</Form.Button>
+        ) : '';
 
         return (
             <React.Fragment>
@@ -65,9 +86,31 @@ export default class ChangePasswordForm extends Component {
                         defaultValue={this.state.passwordData.description} 
                         placeholder='Введите описание' 
                       />
+                      
+                    <Form.Field>
+                        <Radio 
+                            checked={this.state.selected_tags.includes("compromised")} 
+                            onClick={this.changeTagsRadioHandler} 
+                            label="Пароль скомпрометирован"
+                            name={`change_password_form[tags][compromised]`}
+                            value="compromised" 
+                        />
+                    </Form.Field>
+                      
+                    <Form.Field>
+                        <Radio 
+                            checked={this.state.selected_tags.includes("not_working")} 
+                            onClick={this.changeTagsRadioHandler} 
+                            label="Пароль не актуален"
+                            name={`change_password_form[tags][not_working]`}
+                            value="not_working" 
+                        />
+                    </Form.Field>
                      
                     <Form.Button positive>Изменить пароль</Form.Button> 
-                    <Form.Button onClick={(e) => {e.preventDefault(); this.onClickRemovePasswordButton(e);}} negative>Удалить пароль</Form.Button>
+                    
+                    {ButtonRemovePassword}
+                    
                 </Form>
             </React.Fragment>
         );
