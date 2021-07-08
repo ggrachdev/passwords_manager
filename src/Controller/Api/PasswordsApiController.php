@@ -14,7 +14,9 @@ use App\Form\AddPasswordFormType;
 use App\Form\ChangePasswordFormType;
 use App\Entity\ProjectFolder;
 use App\Entity\Password;
+use App\Entity\Permission;
 use App\Utils\Security\Encryption\EncryptionFacade;
+use App\Utils\Permission\UserPermission;
 
 class PasswordsApiController extends AbstractController {
     
@@ -50,6 +52,12 @@ class PasswordsApiController extends AbstractController {
             if($password === null)
             {
                 throw new AccessDeniedException("Not found password with id = $id");
+            }
+            
+            $nowUserPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            if(!$nowUserPermission->canEditPasswordInFolder($password->getFolder()->getId()))
+            {
+                throw new AccessDeniedException('Has not permission for update password in this folder');
             }
             
             $password->setName($passwordRequest->getName());
@@ -101,6 +109,12 @@ class PasswordsApiController extends AbstractController {
                 throw new AccessDeniedException("Not found password with id = $id");
             }
             
+            $nowUserPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            if(!$nowUserPermission->canRemovePasswordInFolder($password->getFolder()->getId()))
+            {
+                throw new AccessDeniedException('Has not permission for remove password in this folder');
+            }
+            
             $em->remove($password);
             $em->flush();
             
@@ -146,6 +160,13 @@ class PasswordsApiController extends AbstractController {
             {
                 throw new AccessDeniedException("Not found folder with id = $folderId");
             }
+            
+            $nowUserPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            if(!$nowUserPermission->canAddPasswordInFolder($folderId))
+            {
+                throw new AccessDeniedException('Has not permission for add password in this folder');
+            }
+            
             $password->setFolder($folder);
             $password->setPassword(
                 EncryptionFacade::encrypt(
@@ -205,6 +226,14 @@ class PasswordsApiController extends AbstractController {
                 throw new AccessDeniedException("Not found password with id = $id");
             }
             
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $em->getRepository(Permission::class)
+            );
+            if(!$nowUserPermission->canWatchFolder($password->getFolder()->getId()))
+            {
+                throw new AccessDeniedException('Has not permission for watch this password');
+            }
+            
             $apiResponse->setSuccess();
             $apiResponse->setData(['password' => [
                 'name' => $password->getName(),
@@ -245,6 +274,14 @@ class PasswordsApiController extends AbstractController {
                 $apiResponse->setFail();
                 $apiResponse->setErrors("Not found folder with id = $folderId");
             } else {
+            
+                $nowUserPermission = new UserPermission(
+                    $this->getUser(), $em->getRepository(Permission::class)
+                );
+                if(!$nowUserPermission->canWatchFolder($folderId))
+                {
+                    throw new AccessDeniedException('Has not permission for watch this passwords');
+                }
                 
                 $passwordsCol = $folder->getPasswords();
                 $passwords = [];

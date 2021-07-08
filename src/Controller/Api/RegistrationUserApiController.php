@@ -20,6 +20,7 @@ class RegistrationUserApiController extends AbstractController {
     public function registrationUser(UserPasswordEncoderInterface $encoder, Request $request): Response {
         $apiResponse = new ApiResponse();
 
+        // @todo check permissions
         if ($this->isGranted('ROLE_ADMIN')) {
             $newUser = new User();
             $registrationForm = $this->createForm(RegistrationUserFormType::class, $newUser);

@@ -58,13 +58,6 @@ export default class MainMenu extends Component {
         
             if(global_state.user_roles.includes('ROLE_ADMIN'))
             {
-                menu.push(<Menu.Item 
-                    name='users' to='/users/' onClick={this.handlers.changeMenuItem} 
-                    as={ Link }
-                    active={path === '/users/'}>
-                    <Icon name='user' />
-                    Пользователи
-                </Menu.Item>);
             
                 menu.push(<Menu.Item 
                     name='roles' to='/roles/' onClick={this.handlers.changeMenuItem} 
@@ -80,6 +73,17 @@ export default class MainMenu extends Component {
                     active={path === '/history/'}>
                     <Icon name='history' />
                     История
+                </Menu.Item>);
+            }
+            
+            if(global_state.permissions.can_watch_users == true)
+            {
+                menu.push(<Menu.Item 
+                    name='users' to='/users/' onClick={this.handlers.changeMenuItem} 
+                    as={ Link }
+                    active={path === '/users/'}>
+                    <Icon name='user' />
+                    Пользователи
                 </Menu.Item>);
             }
 
