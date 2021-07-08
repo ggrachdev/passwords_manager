@@ -12,8 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Form\ChangeRoleFormType;
+use App\Utils\Permission\ManagerPermission;
 
 class RolesApiController extends AbstractController {
+
+    private $managerPermission;
+    
+    public function __construct(ManagerPermission $mp) 
+    {
+        $this->managerPermission = $mp;
+    }
 
     /**
      * @Route("/api/roles/add/", name="roles_api_add")
@@ -44,6 +52,26 @@ class RolesApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $em->persist($newRole);
             $em->flush();
+            
+            // Добавляем права для роли
+            if($request->request->get('permissions'))
+            {
+                foreach ($request->request->get('permissions') as $permission) {
+                    if (in_array($permission, [
+                            'can_add_users',
+                            'can_edit_users',
+                            'can_watch_users',
+                            'can_remove_users',
+                            'can_create_projects',
+                            'can_compromise_passwords_users'
+                        ])) {
+                        $this->managerPermission->addPermissionForRole(
+                            $newRole->getRoleKey(), 
+                            $permission
+                        );
+                    }
+                }
+            }
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
