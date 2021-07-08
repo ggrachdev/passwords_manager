@@ -19,6 +19,34 @@ class ManagerPermission {
         return $this->permissionRepository;
     }
 
+    public function togglePermissionForFolder(int $folderId, int $userId, string $permission, $value = "true") {
+
+        $permissionEntity = new Permission();
+        $permissionEntity->setForContext('USER');
+        $permissionEntity->setForId($userId);
+        $permissionEntity->setPermission($permission);
+        $permissionEntity->setValue($value);
+        $permissionEntity->setTargetContext('FOLDER');
+        $permissionEntity->setTargetId($folderId);
+
+        $dbPermission = $this->hasPermission($permission, $value, $userId, 'USER', $folderId, 'FOLDER');
+        
+        if ($dbPermission) {
+            foreach($dbPermission as $perm)
+            {
+                $this->entityManager->remove($perm);
+            }
+        }
+        else
+        {
+            $this->entityManager->persist($permissionEntity);
+        }
+        
+        $this->entityManager->flush();
+
+        return $permissionEntity;
+    }
+
     public function addPermissionForFolder(int $folderId, int $userId, string $permission, $value = "true") {
 
         $permissionEntity = new Permission();
@@ -43,7 +71,11 @@ class ManagerPermission {
         $permissionEntity = $this->hasPermission($permission, $value, $userId, 'USER', $folderId, 'FOLDER');
 
         if ($permission) {
-            $this->entityManager->remove($permissionEntity);
+            
+            foreach($permissionEntity as $perm)
+            {
+                $this->entityManager->remove($perm);
+            }
             $this->entityManager->flush();
             $removed = true;
         }
@@ -61,7 +93,7 @@ class ManagerPermission {
         $permissionEntity->setTargetContext('GLOBAL');
         $permissionEntity->setTargetId(null);
 
-        if (!$this->hasPermission($permission, $value, $role, 'USER', null, 'FOLDER')) {
+        if (!$this->hasPermission($permission, $value, $role, 'USER', null, 'ROLE')) {
             $this->entityManager->persist($permissionEntity);
             $this->entityManager->flush();
         }
@@ -69,13 +101,45 @@ class ManagerPermission {
         return $permissionEntity;
     }
 
+    public function togglePermissionForRole($role, string $permission, $value = "true") {
+
+        $permissionEntity = new Permission();
+        $permissionEntity->setForContext('ROLE');
+        $permissionEntity->setForId($role);
+        $permissionEntity->setPermission($permission);
+        $permissionEntity->setValue($value);
+        $permissionEntity->setTargetContext('GLOBAL');
+        $permissionEntity->setTargetId(null);
+
+        $dbPermission = $this->hasPermission($permission, $value, $role, 'USER', null, 'ROLE');
+        
+        if ($dbPermission) {
+            foreach($dbPermission as $perm)
+            {
+                $this->entityManager->remove($perm);
+            }
+        }
+        else
+        {
+            $this->entityManager->persist($permissionEntity);
+        }
+        
+        $this->entityManager->flush();
+
+        return $permissionEntity;
+    }
+
     public function removePermissionForRole($role, string $permission, $value = "true") {
 
         $removed = false;
-        $permissionEntity = $this->hasPermission($permission, $value, $role, 'USER', null, 'FOLDER');
+        $permissionEntity = $this->hasPermission($permission, $value, $role, 'USER', null, 'ROLE');
 
         if ($permission) {
-            $this->entityManager->remove($permissionEntity);
+            
+            foreach($permissionEntity as $perm)
+            {
+                $this->entityManager->remove($perm);
+            }
             $this->entityManager->flush();
             $removed = true;
         }
@@ -93,7 +157,7 @@ class ManagerPermission {
         $permissionEntity->setTargetContext('PROJECT');
         $permissionEntity->setTargetId($projectId);
 
-        if (!$this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'FOLDER')) {
+        if (!$this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'PROJECT')) {
             $this->entityManager->persist($permissionEntity);
             $this->entityManager->flush();
         }
@@ -101,13 +165,45 @@ class ManagerPermission {
         return $permissionEntity;
     }
 
+    public function togglePermissionForProject(int $projectId, int $userId, string $permission, $value = "true") {
+
+        $permissionEntity = new Permission();
+        $permissionEntity->setForContext('USER');
+        $permissionEntity->setForId($userId);
+        $permissionEntity->setPermission($permission);
+        $permissionEntity->setValue($value);
+        $permissionEntity->setTargetContext('PROJECT');
+        $permissionEntity->setTargetId($projectId);
+
+        $dbPermission = $this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'PROJECT');
+        
+        if ($dbPermission) {
+            foreach($dbPermission as $perm)
+            {
+                $this->entityManager->remove($perm);
+            }
+        }
+        else
+        {
+            $this->entityManager->persist($permissionEntity);
+        }
+        
+        $this->entityManager->flush();
+
+        return $permissionEntity;
+    }
+
     public function removePermissionForProject(int $projectId, int $userId, string $permission, $value = "true") {
 
         $removed = false;
-        $permissionEntity = $this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'FOLDER');
+        $permissionEntity = $this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'PROJECT');
 
         if ($permission) {
-            $this->entityManager->remove($permissionEntity);
+            
+            foreach($permissionEntity as $perm)
+            {
+                $this->entityManager->remove($perm);
+            }
             $this->entityManager->flush();
             $removed = true;
         }

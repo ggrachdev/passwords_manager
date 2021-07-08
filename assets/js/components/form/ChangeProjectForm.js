@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react'
 import ProjectsApi from '../../src/Api/ProjectsApi';
+import EditPermissionsList from '../permission/edit-permissions-list';
 
 export default class ChangeProjectForm extends Component {
 
@@ -22,6 +23,18 @@ export default class ChangeProjectForm extends Component {
                 projectData: response.getData()['project']
             });
         });
+        
+        this.permissionsList = {
+            can_edit: {
+                name: 'Редактирование проекта'
+            },
+            can_watch: {
+                name: 'Просмотр проекта'
+            },
+            can_remove: {
+                name: 'Удаление проекта'
+            }
+        };
 
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {};
     }
@@ -40,8 +53,20 @@ export default class ChangeProjectForm extends Component {
                         name="change_project_form[name]" 
                         type="text" 
                         placeholder="Введите название проекта" />
-                    <Form.Button positive>Изменить Проект</Form.Button>
-                    <Form.Button onClick={(e) => {e.preventDefault(); this.state.onClickRemoveProject(e, this.state.projectData);}} negative>Удалить Проект</Form.Button>
+                        
+                    <Form.Button positive>
+                        Изменить Проект
+                    </Form.Button>
+                    
+                    <Form.Button onClick={(e) => {e.preventDefault(); this.state.onClickRemoveProject(e, this.state.projectData);}} negative>
+                        Удалить Проект
+                    </Form.Button>
+                        
+                    <EditPermissionsList typeName={this.state.projectData.name} 
+                        permissionsList={this.permissionsList} 
+                        idType={this.state.projectId} 
+                        type="project"
+                    />
                 </Form>
             </React.Fragment>
         );

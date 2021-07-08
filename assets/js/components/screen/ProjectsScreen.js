@@ -34,6 +34,7 @@ export default class ProjectsScreen extends Component {
             activeProject: 'projectId' in props ? parseInt(props['projectId']) : null,
             activeFolder: 'folderId' in props ? parseInt(props['folderId']) : null,
             
+            global_state: props.global_state,
             canAddPasswordInActiveFolder: false,
             canEditPasswordInActiveFolder: false,
             canRemovePasswordInActiveFolder: false,
@@ -379,17 +380,24 @@ export default class ProjectsScreen extends Component {
     }
 
     render() {
+        
+        if(this.state.global_state == null) return;
+        
+        const ButtonAddProject = this.state.global_state.permissions.can_create_projects == true ? 
+        (
+            <Popup content='Добавить новый проект' 
+                trigger={(<Icon onClick={() => { this.setState({ modal_add_project_is_open: true }); }} 
+                className='icon_add-new-project' 
+                style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
+            /> 
+        ) : '';
 
         return (
             <React.Fragment>
                 <Container>
                     <Header as='h1'>
                         Проекты: 
-                        <Popup content='Добавить новый проект' 
-                        trigger={(<Icon onClick={() => { this.setState({ modal_add_project_is_open: true }); }} 
-                        className='icon_add-new-project' 
-                        style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
-                    /> 
+                        {ButtonAddProject}
                     </Header>
                     <Grid divided>
                         <Grid.Row>

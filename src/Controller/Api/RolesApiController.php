@@ -86,7 +86,7 @@ class RolesApiController extends AbstractController {
     /**
      * @Route("/api/roles/remove/{key}/", name="roles_api_remove")
      */
-    public function removeUser($key): Response {
+    public function removeRole($key): Response {
         $apiResponse = new ApiResponse();
 
         if ($this->isGranted('ROLE_ADMIN')) {
@@ -95,6 +95,9 @@ class RolesApiController extends AbstractController {
             $roleForRemove = $roleRepository->find($key);
 
             if ($roleForRemove != null) {
+                
+                $this->managerPermission->removeAllForRole($roleForRemove->getRoleKey());
+                
                 $em->remove($roleForRemove);
                 $em->flush();
                 $apiResponse->setSuccess();
@@ -142,9 +145,38 @@ class RolesApiController extends AbstractController {
             
             $em->persist($changedRole);
             $em->flush();
+            
+            
+            if($request->request->get('permissions'))
+            {
+                $this->managerPermission->removeAllForRole($changedRole->getRoleKey());
+            
+                // Добавляем права для роли
+                if($request->request->get('permissions'))
+                {
+                    foreach ($request->request->get('permissions') as $permission) {
+                        if (in_array($permission, [
+                                'can_add_users',
+                                'can_edit_users',
+                                'can_watch_users',
+                                'can_remove_users',
+                                'can_create_projects',
+                                'can_compromise_passwords_users'
+                            ])) {
+                            $this->managerPermission->addPermissionForRole(
+                                $changedRole->getRoleKey(), 
+                                $permission
+                            );
+                        }
+                    }
+                }
+            }
+            else
+            {
+                $this->managerPermission->removeAllForRole($changedRole->getRoleKey());
+            }
 
             $apiResponse->setSuccess();
-                
         } catch (AccessDeniedException $ex) {
             $apiResponse->setFail();
             $apiResponse->setErrors($ex->getMessage());
@@ -177,12 +209,28 @@ class RolesApiController extends AbstractController {
             if ($role === null) {
                 throw new AccessDeniedException("Hot found role with id = $id");
             } else {
+                
+                // Подгружаем права роли
+                $permissions = [];
+                $permissionsList = $this->managerPermission->getPermissionRepository()->findFromRole(
+                    $role->getRoleKey()
+                );
+                if(!empty($permissionsList)) {
+                    foreach ($permissionsList as $permission) {
+                        if($permission->getValue() == true)
+                        {
+                            $permissions[] = $permission->getPermission();
+                        }
+                    }
+                }
+                
                 $apiResponse->setSuccess();
                 $apiResponse->setData([
                     'role' => [
                         'key' => $role->getRoleKey(),
                         'color' => $role->getColor(),
-                        'name' => $role->getName()
+                        'name' => $role->getName(),
+                        'permissions' => $permissions
                     ]
                 ]);
             }

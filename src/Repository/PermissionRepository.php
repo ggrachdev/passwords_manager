@@ -35,7 +35,7 @@ class PermissionRepository extends ServiceEntityRepository {
     
     public function findFromFolder(int $folderId) {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.target_id = :target_id AND p.target_contex=:target_context')
+            ->andWhere('p.target_id = :target_id AND p.target_context=:target_context')
             ->setParameter('target_id', $folderId)
             ->setParameter('target_context', 'FOLDER')
             ->orderBy('p.id', 'ASC')
@@ -57,7 +57,7 @@ class PermissionRepository extends ServiceEntityRepository {
 
     public function findFromProject(int $projectId) {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.target_id = :target_id AND p.target_contex=:target_context')
+            ->andWhere('p.target_id = :target_id AND p.target_context=:target_context')
             ->setParameter('target_id', $projectId)
             ->setParameter('target_context', 'PROJECT')
             ->orderBy('p.id', 'ASC')

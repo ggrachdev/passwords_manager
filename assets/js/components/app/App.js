@@ -30,7 +30,7 @@ export default class App extends Component {
             this.setState({
                 global_state: data,
                 // Режим разработки
-                app_in_development_mode: true,
+                app_in_development_mode: false,
                 
                 // id'ы пользователей для которых доступен режим разработки
                 available_user_ids_for_development_mode: [4],

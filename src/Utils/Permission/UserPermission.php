@@ -45,6 +45,7 @@ class UserPermission {
         return [
             'can_add_users' => $this->canAddUsers(),
             'can_edit_users' => $this->canEditUsers(),
+            'can_create_projects' => $this->canCreateProjects(),
             'can_compromise_passwords_users' => $this->canСompromisePasswordsUsers(),
             'can_watch_users' => $this->canWatchUsers(),
             'can_remove_users' => $this->canRemoveUsers()
@@ -195,7 +196,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_edit_folder' &&
+                    $permission->getPermission() === 'can_edit' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'FOLDER' &&
                     $permission->getTargetId() == $folderId ||
@@ -217,7 +218,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_add_password_in_folder' &&
+                    $permission->getPermission() === 'can_add_password' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'FOLDER' &&
                     $permission->getTargetId() == $folderId ||
@@ -239,7 +240,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_edit_password_in_folder' &&
+                    $permission->getPermission() === 'can_edit_passwords' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'FOLDER' &&
                     $permission->getTargetId() == $folderId ||
@@ -261,7 +262,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_remove_password_in_folder' &&
+                    $permission->getPermission() === 'can_remove_passwords' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'FOLDER' &&
                     $permission->getTargetId() == $folderId ||
@@ -283,7 +284,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_remove_folder' &&
+                    $permission->getPermission() === 'can_remove' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'FOLDER' &&
                     $permission->getTargetId() == $folderId ||
@@ -305,7 +306,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_watch_folder' &&
+                    $permission->getPermission() === 'can_watch' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'FOLDER' &&
                     $permission->getTargetId() == $folderId ||
@@ -328,7 +329,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_edit_project' &&
+                    $permission->getPermission() === 'can_edit' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'PROJECT' &&
                     $permission->getTargetId() == $projectId ||
@@ -350,7 +351,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_remove_project' &&
+                    $permission->getPermission() === 'can_remove' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'PROJECT' &&
                     $permission->getTargetId() == $projectId ||
@@ -372,7 +373,7 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_watch_project' &&
+                    $permission->getPermission() === 'can_watch' &&
                     $permission->getValue() == true &&
                     $permission->getTargetContext() == 'PROJECT' &&
                     $permission->getTargetId() == $projectId ||
