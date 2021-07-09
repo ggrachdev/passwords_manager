@@ -141,7 +141,7 @@ export default class ChangeUserForm extends Component {
                         placeholder="Повторите пароль" />
                     <Header as='h4'>Группы пользователя:</Header>
                     {renderRadioRoles()}
-                    <Form.Button positive>Изменить данные:</Form.Button>
+                    <Form.Button positive>Изменить данные</Form.Button>
                 </Form>
             </React.Fragment>
         );
