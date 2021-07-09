@@ -66,11 +66,11 @@ export default class RegistrationUserForm extends Component {
                         type="email" 
                         placeholder="Введите email" />
                     <Form.Input fluid 
-                        label="Отчество:" 
+                        label="Фамилия:" 
                         required 
-                        name="registration_user_form[middle_name]" 
+                        name="registration_user_form[second_name]" 
                         type="text" 
-                        placeholder="Введите отчество" />
+                        placeholder="Введите фамилию" />
                     <Form.Input fluid 
                         label="Имя:" 
                         required 
@@ -78,11 +78,11 @@ export default class RegistrationUserForm extends Component {
                         type="text" 
                         placeholder="Введите имя" />
                     <Form.Input fluid 
-                        label="Фамилия:" 
+                        label="Отчество:" 
                         required 
-                        name="registration_user_form[second_name]" 
+                        name="registration_user_form[middle_name]" 
                         type="text" 
-                        placeholder="Введите фамилию" />
+                        placeholder="Введите отчество" />
                     <Form.Input fluid 
                         label="Пароль для входа:" 
                         required 

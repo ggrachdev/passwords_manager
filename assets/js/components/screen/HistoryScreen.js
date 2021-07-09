@@ -18,6 +18,7 @@ export default class HistoryScreen extends Component {
             <React.Fragment>
                 <Container>
                     <Header as='h1'>История действий:</Header>
+                    В разработке ...
                 </Container>
             </React.Fragment>
         );

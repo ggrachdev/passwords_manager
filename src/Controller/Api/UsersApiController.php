@@ -204,13 +204,16 @@ class UsersApiController extends AbstractController {
     public function getAll(): Response {
         $apiResponse = new ApiResponse();
 
-        if ($this->isGranted('ROLE_ADMIN')) {
+        if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
             $roleRepository = $em->getRepository(Role::class);
             
-            $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            $userPermission = new UserPermission(
+                $this->getUser(), 
+                $em->getRepository(Permission::class)
+            );
 
             $usersDb = $userRepository->findAll();
             $rolesDb = $roleRepository->findAll();
@@ -254,6 +257,11 @@ class UsersApiController extends AbstractController {
                         'email' => $user->getEmail(),
                         'id' => $user->getId()
                     ];
+                    
+                    // @todo
+                    usort($users, function($a, $b) {
+                        return $a['second_name'] > $b['second_name'];
+                    });
                 }
 
                 $apiResponse->setData(['users' => $users]);

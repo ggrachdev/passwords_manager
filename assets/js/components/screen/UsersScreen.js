@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Button, Icon, Item, Label, Modal, Form, Header} from 'semantic-ui-react';
+import PasswordsApi from '../../src/Api/PasswordsApi';
 import UsersApi from '../../src/Api/UsersApi';
 import AuthApi from '../../src/Api/AuthApi';
 import FormSerializer from '../../src/FormSerializer/FormSerializer';
@@ -19,8 +20,10 @@ export default class UsersScreen extends Component {
             users: [],
             user_id_for_update: null,
             user_id_for_delete: null,
+            user_id_for_action: null,
             user_name_for_delete: null,
             modal_delete_user_is_open: false,
+            modal_compromate_user_is_open: false,
             modal_edit_user_is_open: false,
             modal_registration_is_open: false
         };
@@ -126,7 +129,14 @@ export default class UsersScreen extends Component {
             ) : '';
             
             const ButtonCompromiseUserPasswords = this.state.global_state.permissions.can_compromise_passwords_users == true ? (
-                <Button basic color='violet' size='mini'>
+                <Button 
+                    onClick={() => {
+                        this.setState({
+                            user_id_for_action: user.id,
+                            user_name_for_action: `${user.second_name} ${user.first_name} ${user.middle_name}`,
+                            modal_compromate_user_is_open: true
+                        });
+                    }}  basic color='violet' size='mini'>
                     <Icon name='shield alternate' />
                     Скомпрометировать пароли
                 </Button>
@@ -135,8 +145,8 @@ export default class UsersScreen extends Component {
             const ButtonRemoveUser = this.state.global_state.permissions.can_remove_users == true ? (
                 <Button 
                     onClick={() => {
-                    this.setState({
-                        user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
+                        this.setState({
+                            user_name_for_delete: `${user.second_name} ${user.first_name} ${user.middle_name}`,
                             user_id_for_delete: user.id,
                             modal_delete_user_is_open: true
                         });
@@ -211,6 +221,41 @@ export default class UsersScreen extends Component {
                         </Button>
                     </Modal.Actions>
                 </Modal>
+            
+                <Modal
+                    open={this.state.modal_compromate_user_is_open} 
+                    header={`Вы действительно хотите скомпрометировать пароли, которые видит пользователь - ${this.state.user_name_for_action}?`}
+                    actions={
+                        [
+                            {
+                                key: 'no',
+                                content: 'Нет',
+                                positive: false,
+                                onClick: () => {
+                                    this.setState({
+                                        modal_compromate_user_is_open: false
+                                    })
+                                }
+                            },
+                            {
+                                key: 'done',
+                                content: 'Да',
+                                positive: true,
+                                onClick: () => {
+                                    PasswordsApi.compromatePasswordsForUser(this.state.user_id_for_action).then(() => {
+                                        this.setState({
+                                            modal_compromate_user_is_open: false
+                                        });
+                                        Toasts.success(`Пароли видимые для пользователя ${this.state.user_name_for_action} успешно скомпрометированы`);
+                                        this.initialize();
+                                    }).catch(() => {
+                                        Toasts.success(`Не удалось скомпрометировать пароли для пользователя - ${this.state.user_name_for_action}`);
+                                    });
+                                }
+                            }
+                        ]
+                    }
+                    />
             
                 <Modal
                     open={modal_delete_user_is_open} 

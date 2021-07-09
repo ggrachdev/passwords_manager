@@ -91,7 +91,7 @@ export default class ProjectsScreen extends Component {
             if(confirm(`Вы действительно хотите удалить папку - ${folder.name} ? Все пароли этой папки будут удалены`))
             {
                 ProjectsApi.removeFolder(folder.id).then((response) => {
-                    Toasts.error(`Проект ${folder.name} успешно удален`);
+                    Toasts.success(`Папка ${folder.name} успешно удалена`);
                     this.setState({
                         modal_change_folder_is_open: false
                     });

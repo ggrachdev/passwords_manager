@@ -42,6 +42,26 @@ export default class PasswordsApi {
         })
     }
     
+    static async compromatePasswordsForUser(userId) {
+        
+        const response = await fetch(`/passwords/compromate/user/${userId}/`, {
+            method: 'GET'
+        });
+
+        const responseObj = await response.json();
+
+        return new Promise((resolve, reject) => {
+            
+            const response = new ResponseAdapter(responseObj);
+            
+            if (response.isSuccess()) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        })
+    }
+    
     static async get(passwordId) {
         
         const response = await fetch(`/passwords/get/${passwordId}/`, {

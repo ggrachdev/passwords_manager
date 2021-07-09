@@ -30,6 +30,15 @@ i.icon.icon_project {
     white-space: pre-line;
 }
 
+.link_edit-permission-list, .link_edit-permission-list .header {
+    cursor: pointer;
+    font-weight: normal !important;
+}
+
+.link_edit-permission-list:hover, .link_edit-permission-list:hover .header {
+    color: #673ab7 !important;
+}
+
 @media only screen and (min-width: 1600px) {
     .ui.container {
         margin-left:auto!important;

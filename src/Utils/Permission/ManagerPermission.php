@@ -3,7 +3,10 @@
 namespace App\Utils\Permission;
 
 use App\Entity\Permission;
+use App\Entity\ProjectFolder;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Utils\Permission\UserPermission;
 
 class ManagerPermission {
 
@@ -17,6 +20,34 @@ class ManagerPermission {
 
     public function getPermissionRepository() {
         return $this->permissionRepository;
+    }
+    
+    public function compromatePasswordsForUser(User $user)
+    {
+        $userPermission = new UserPermission($user, $this->getPermissionRepository());
+        
+        $folders = $this->entityManager->getRepository(ProjectFolder::class)->findAll();
+        
+        if(!empty($folders)) {
+            foreach ($folders as $folder) {
+                if($userPermission->canWatchFolder($folder->getId()))
+                {
+                    $passwords = $folder->getPasswords();
+                    
+                    if(!empty($passwords)) {
+                        foreach ($passwords as $password) {
+                            $tags = $password->getTags();
+                            if(\is_array($tags) && !in_array('compromised', $tags))
+                            {
+                                $tags[] = 'compromised';
+                                $password->setTags($tags);
+                                $this->entityManager->flush();
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function togglePermissionForFolder(int $folderId, int $userId, string $permission, $value = "true") {

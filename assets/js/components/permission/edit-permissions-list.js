@@ -80,7 +80,7 @@ export default class EditPermissionsList extends Component {
         for (let permissionKey in this.state.permissionsList) {
             let permission = this.state.permissionsList[permissionKey];
             list.push((
-                <List.Item style={{cursor: 'pointer'}} 
+                <List.Item className="link_edit-permission-list" 
                     onClick={() => {
                         this.onClickEditPermission(permissionKey, permission.name);
                     }}>

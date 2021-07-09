@@ -61,6 +61,14 @@ class ProjectsApiController extends AbstractController {
             if ($project === null) {
                 throw new AccessDeniedException("Has found project with id = $project_id");
             }
+            
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $this->managerPermission->getPermissionRepository()
+            );
+            if(!$nowUserPermission->canEditProject($project->getId()))
+            {
+                throw new AccessDeniedException('Has not permission for edit this project, so can not create folder');
+            }
 
             $folder->setProject($project);
 
@@ -142,7 +150,6 @@ class ProjectsApiController extends AbstractController {
         return $apiResponse->generate();
     }
 
-    
     /**
      * @Route("/folders/remove/{id}/", requirements={"id"="\d+"}, name="folders_api_remove", methods={"GET"})
      */
@@ -154,6 +161,14 @@ class ProjectsApiController extends AbstractController {
                 throw new AccessDeniedException('Has not access. Need auth');
             }
             
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $this->managerPermission->getPermissionRepository()
+            );
+            if(!$nowUserPermission->canRemoveFolder($id))
+            {
+                throw new AccessDeniedException('Has not permission for remove this folder');
+            }
+            
             $em = $this->getDoctrine()->getManager();
             $foldersRepository = $em->getRepository(ProjectFolder::class);
             $folder = $foldersRepository->find($id);
@@ -161,6 +176,8 @@ class ProjectsApiController extends AbstractController {
             if ($folder === null) {
                 throw new AccessDeniedException("Has found folders with id = $id");
             }
+            
+            $this->managerPermission->removeAllForFolder($folder->getId());
             
             $em->remove($folder);
             $em->flush();
@@ -174,7 +191,6 @@ class ProjectsApiController extends AbstractController {
 
         return $apiResponse->generate();
     }
-
     
     /**
      * @Route("/projects/remove/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_remove", methods={"GET"})
@@ -187,9 +203,27 @@ class ProjectsApiController extends AbstractController {
                 throw new AccessDeniedException('Has not access. Need auth');
             }
             
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $this->managerPermission->getPermissionRepository()
+            );
+            if(!$nowUserPermission->canRemoveProject($project_id))
+            {
+                throw new AccessDeniedException('Has not permission for remove this project');
+            }
+            
             $em = $this->getDoctrine()->getManager();
             $projectRepository = $em->getRepository(Project::class);
             $project = $projectRepository->find($project_id);
+            
+            $folders = $project->getProjectFolders();
+            
+            if(!empty($folders)) {
+                foreach ($folders as $projectFolder) {
+                    $this->managerPermission->removeAllForFolder($projectFolder->getId());
+                }
+            }
+            
+            $this->managerPermission->removeAllForProject($project->getId());
 
             if ($project === null) {
                 throw new AccessDeniedException("Has found project with id = $project_id");
@@ -290,6 +324,14 @@ class ProjectsApiController extends AbstractController {
                 throw new AccessDeniedException("Not found project with id = $project_id");
             }
             
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $this->managerPermission->getPermissionRepository()
+            );
+            if(!$nowUserPermission->canEditProject($project->getId()))
+            {
+                throw new AccessDeniedException('Has not permission for edit this project');
+            }
+            
             $project->setName($projectRequest->getName());
             $em->persist($project);
             $em->flush();
@@ -327,6 +369,14 @@ class ProjectsApiController extends AbstractController {
                 $apiResponse->setFail();
                 $apiResponse->setErrors("Not found folder with id = $id");
             } else {
+            
+                $nowUserPermission = new UserPermission(
+                    $this->getUser(), $this->managerPermission->getPermissionRepository()
+                );
+                if(!$nowUserPermission->canWatchFolder($folder->getId()))
+                {
+                    throw new AccessDeniedException('Has not permission for watch this folder');
+                }
 
                 $apiResponse->setSuccess();
                 $apiResponse->setData(['folder' => [

@@ -81,6 +81,14 @@ class PermissionsApiController extends AbstractController {
 
             $usersPermissions = [];
 
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $this->managerPermission->getPermissionRepository()
+            );
+            if(!$nowUserPermission->canWatchProject($project_id))
+            {
+                throw new AccessDeniedException('Has not permission edit this project');
+            }
+
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
 
@@ -99,6 +107,11 @@ class PermissionsApiController extends AbstractController {
                         ))->getPermissionsForProject($project_id)
                     ];
                 }
+                    
+                // @todo
+                usort($usersPermissions, function($a, $b) {
+                    return $a['second_name'] > $b['second_name'];
+                });
             }
 
             $apiResponse->setSuccess();
@@ -132,7 +145,6 @@ class PermissionsApiController extends AbstractController {
             $nowUserPermission = new UserPermission(
                 $this->getUser(), $this->managerPermission->getPermissionRepository()
             );
-            
             if(!$nowUserPermission->canEditFolder($folder_id))
             {
                 throw new AccessDeniedException('Has not permission edit this folder');
@@ -176,6 +188,14 @@ class PermissionsApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
 
+            $nowUserPermission = new UserPermission(
+                $this->getUser(), $this->managerPermission->getPermissionRepository()
+            );
+            if(!$nowUserPermission->canWatchFolder($folder_id))
+            {
+                throw new AccessDeniedException('Has not permission edit this folder');
+            }
+
             $users = $userRepository->findAll();
 
             if (!empty($users)) {
@@ -191,6 +211,11 @@ class PermissionsApiController extends AbstractController {
                         ))->getPermissionsForFolder($folder_id)
                     ];
                 }
+                    
+                // @todo
+                usort($usersPermissions, function($a, $b) {
+                    return $a['second_name'] > $b['second_name'];
+                });
             }
 
             $apiResponse->setSuccess();
