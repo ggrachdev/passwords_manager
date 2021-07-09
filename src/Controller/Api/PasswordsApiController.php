@@ -14,11 +14,59 @@ use App\Form\AddPasswordFormType;
 use App\Form\ChangePasswordFormType;
 use App\Entity\ProjectFolder;
 use App\Entity\Password;
+use App\Entity\User;
 use App\Entity\Permission;
 use App\Utils\Security\Encryption\EncryptionFacade;
 use App\Utils\Permission\UserPermission;
+use App\Utils\Permission\ManagerPermission;
 
 class PasswordsApiController extends AbstractController {
+
+    private $managerPermission;
+    
+    public function __construct(ManagerPermission $mp) 
+    {
+        $this->managerPermission = $mp;
+    }
+    
+    /**
+     * @Route("/passwords/compromate/user/{id}/", requirements={"id"="\d+"}, name="passwords_api_compromate_for_user", methods={"GET"})
+     */
+    public function compromatePasswordsForUser($id): Response {
+        $apiResponse = new ApiResponse();
+        
+        try {
+            if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                throw new AccessDeniedException('Has not access. Need auth');
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+            $usersRepository = $em->getRepository(User::class);
+            
+            $nowUserPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
+            if(!$nowUserPermission->canСompromisePasswordsUsers())
+            {
+                throw new AccessDeniedException('You can not to compromise users');
+            }
+            
+            $userCompromated = $usersRepository->find($id);
+            
+            if($userCompromated === null)
+            {
+                throw new AccessDeniedException("Not found user with id = $id");
+            }
+            
+            $this->managerPermission->compromatePasswordsForUser($userCompromated);
+            
+            $apiResponse->setSuccess();
+        } catch (AccessDeniedException $exc) {
+            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        }
+
+
+        return $apiResponse->generate();
+    }
     
     /**
      * @Route("/passwords/update/{id}/", requirements={"id"="\d+"}, name="passwords_api_update", methods={"POST"})
