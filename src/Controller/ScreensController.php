@@ -36,11 +36,10 @@ class ScreensController extends AbstractController {
      */
     public function test(): Response {
         
-//        $this->managerPermission->addPermissionForFolder(36, $this->getUser()->getId(), 'can_watch');
-//        $this->managerPermission->addPermissionForRole('ROLE_ADMIN', 'CAN_ABCD');
-        $this->managerPermission->removeAllForUser($this->getUser()->getId());
-        
-//        $userPermission = new UserPermission($this->getUser(), $repository);
+        if(!$this->isGranted('ROLE_ADMIN'))
+        {
+            die;
+        }
         
         die;
     }  
