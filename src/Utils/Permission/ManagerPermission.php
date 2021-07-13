@@ -52,6 +52,8 @@ class ManagerPermission {
 
     public function togglePermissionForFolder(int $folderId, int $userId, string $permission, $value = "true") {
 
+        $permissionHas = true;
+        
         $permissionEntity = new Permission();
         $permissionEntity->setForContext('USER');
         $permissionEntity->setForId($userId);
@@ -67,6 +69,8 @@ class ManagerPermission {
             {
                 $this->entityManager->remove($perm);
             }
+            
+            $permissionHas = false;
         }
         else
         {
@@ -75,7 +79,7 @@ class ManagerPermission {
         
         $this->entityManager->flush();
 
-        return $permissionEntity;
+        return $permissionHas;
     }
 
     public function addPermissionForFolder(int $folderId, int $userId, string $permission, $value = "true") {
@@ -133,6 +137,8 @@ class ManagerPermission {
     }
 
     public function togglePermissionForRole($role, string $permission, $value = "true") {
+        
+        $permissionHas = true;
 
         $permissionEntity = new Permission();
         $permissionEntity->setForContext('ROLE');
@@ -149,6 +155,8 @@ class ManagerPermission {
             {
                 $this->entityManager->remove($perm);
             }
+            
+            $permissionHas = false;
         }
         else
         {
@@ -157,7 +165,7 @@ class ManagerPermission {
         
         $this->entityManager->flush();
 
-        return $permissionEntity;
+        return $permissionHas;
     }
 
     public function removePermissionForRole($role, string $permission, $value = "true") {
@@ -197,6 +205,8 @@ class ManagerPermission {
     }
 
     public function togglePermissionForProject(int $projectId, int $userId, string $permission, $value = "true") {
+        
+        $permissionHas = true;
 
         $permissionEntity = new Permission();
         $permissionEntity->setForContext('USER');
@@ -213,6 +223,8 @@ class ManagerPermission {
             {
                 $this->entityManager->remove($perm);
             }
+            
+            $permissionHas = false;
         }
         else
         {
@@ -221,7 +233,7 @@ class ManagerPermission {
         
         $this->entityManager->flush();
 
-        return $permissionEntity;
+        return $permissionHas;
     }
 
     public function removePermissionForProject(int $projectId, int $userId, string $permission, $value = "true") {

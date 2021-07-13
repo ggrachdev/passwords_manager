@@ -13,14 +13,17 @@ use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Form\ChangeRoleFormType;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class RolesApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
 
     /**
@@ -52,6 +55,8 @@ class RolesApiController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $em->persist($newRole);
             $em->flush();
+            
+            $this->managerHistory->logAddRoleEvent($this->getUser(), $newRole);
             
             // Добавляем права для роли
             if($request->request->get('permissions'))
@@ -97,6 +102,8 @@ class RolesApiController extends AbstractController {
             if ($roleForRemove != null) {
                 
                 $this->managerPermission->removeAllForRole($roleForRemove->getRoleKey());
+            
+                $this->managerHistory->logRemoveRoleEvent($this->getUser(), $roleForRemove);
                 
                 $em->remove($roleForRemove);
                 $em->flush();
@@ -146,6 +153,7 @@ class RolesApiController extends AbstractController {
             $em->persist($changedRole);
             $em->flush();
             
+            $this->managerHistory->logUpdateRoleEvent($this->getUser(), $changedRole);
             
             if($request->request->get('permissions'))
             {

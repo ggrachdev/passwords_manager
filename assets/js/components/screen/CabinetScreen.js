@@ -21,17 +21,9 @@ export default class CabinetScreen extends Component {
             if (dataForm['change_user_form[password]'] === dataForm['change_user_form[re_password]'])
             {
                 UsersApi.set(this.state.global_state.user_id, dataForm).then((response) => {
-                    this.setState({
-                        modal_edit_user_is_open: false
-                    });
-                    
                     Toasts.success(`Данные пользователя успешно изменены`);
-                    
-                    this.initialize();
                 }).catch(() => {
-                    
                     Toasts.error("При изменении данных что-то пошло не так");
-                
                     location.reload();
                 });
             } else

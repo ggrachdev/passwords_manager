@@ -159,6 +159,11 @@ class User implements UserInterface
         return $this->middle_name;
     }
 
+    public function getFullName(): ?string
+    {
+        return $this->getSecondName().' '.$this->getFirstName().' '.$this->getMiddleName();
+    }
+
     public function setMiddleName(string $middle_name): self
     {
         $this->middle_name = $middle_name;

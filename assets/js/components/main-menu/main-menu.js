@@ -86,6 +86,15 @@ export default class MainMenu extends Component {
                     Пользователи
                 </Menu.Item>);
             }
+        
+            /*
+            menu.push(<Menu.Item 
+                name='generator' to='/generator/' onClick={this.handlers.changeMenuItem} 
+                as={ Link }
+                active={path === '/generator/'}>
+                <Icon name='shield alternate' />
+                Генератор паролей
+            </Menu.Item>); */
 
             menu.push(<Menu.Item 
                 name='logout' onClick={() => {location.href = '/logout'}}

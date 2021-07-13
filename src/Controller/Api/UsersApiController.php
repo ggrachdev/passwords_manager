@@ -16,14 +16,17 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Utils\Permission\UserPermission;
 use App\Entity\Permission;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class UsersApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
 
     /**
@@ -85,6 +88,8 @@ class UsersApiController extends AbstractController {
             {
                 $changedUser->setRoles(['ROLE_USER']);
             }
+            
+            $this->managerHistory->logUpdateUserEvent($this->getUser(), $changedUser);
 
             $em->persist($changedUser);
             $em->flush();
@@ -111,6 +116,8 @@ class UsersApiController extends AbstractController {
             $userForRemove = $userRepository->find($id);
 
             if ($userForRemove != null) {
+            
+                $this->managerHistory->logRemoveUserEvent($this->getUser(), $userForRemove);
                 
                 // Удаляем все права пользователя
                 $this->managerPermission->removeAllForUser($userForRemove->getId());

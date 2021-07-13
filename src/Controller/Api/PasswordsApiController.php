@@ -19,14 +19,17 @@ use App\Entity\Permission;
 use App\Utils\Security\Encryption\EncryptionFacade;
 use App\Utils\Permission\UserPermission;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class PasswordsApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
     
     /**
@@ -56,6 +59,7 @@ class PasswordsApiController extends AbstractController {
                 throw new AccessDeniedException("Not found user with id = $id");
             }
             
+            $this->managerHistory->logCompromatedUserEvent($this->getUser(), $userCompromated);
             $this->managerPermission->compromatePasswordsForUser($userCompromated);
             
             $apiResponse->setSuccess();
@@ -124,6 +128,8 @@ class PasswordsApiController extends AbstractController {
                 $password->setTags([]);
             }
             
+            $this->managerHistory->logUpdatePasswordEvent($this->getUser(), $password);
+            
             $em->persist($password);
             $em->flush();
             
@@ -162,6 +168,8 @@ class PasswordsApiController extends AbstractController {
             {
                 throw new AccessDeniedException('Has not permission for remove password in this folder');
             }
+            
+            $this->managerHistory->logRemovePasswordEvent($this->getUser(), $password);
             
             $em->remove($password);
             $em->flush();
@@ -240,6 +248,8 @@ class PasswordsApiController extends AbstractController {
             
             $em->persist($password);
             $em->flush();
+            
+            $this->managerHistory->logAddPasswordEvent($this->getUser(), $password);
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {

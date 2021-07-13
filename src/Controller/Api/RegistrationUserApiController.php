@@ -11,8 +11,16 @@ use App\Entity\User;
 use App\Utils\Api\Response\ApiResponse;
 use App\Form\RegistrationUserFormType;
 use App\Utils\Form\ErrorsHelper;
+use App\Utils\History\HistoryManager;
 
 class RegistrationUserApiController extends AbstractController {
+
+    private $managerHistory;
+    
+    public function __construct(HistoryManager $mh) 
+    {
+        $this->managerHistory = $mh;
+    }
 
     /**
      * @Route("/api/auth/registration/", name="registration_user_api")
@@ -37,6 +45,9 @@ class RegistrationUserApiController extends AbstractController {
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($newUser);
                     $em->flush();
+                    
+                    $this->managerHistory->logRegistrationUserEvent($this->getUser(), $newUser);
+                    
                     $apiResponse->setSuccess();
                 } else {
                     $apiResponse->setFail();
