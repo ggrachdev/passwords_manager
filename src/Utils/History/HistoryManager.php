@@ -28,6 +28,74 @@ class HistoryManager {
         return $this->historyRepository;
     }
     
+    // Roles permission
+    public function logToggleProjectPermissionEvent($permission, $newValue, User $user, User $forUser, Project $project, array $meta = []) {
+        
+        if($newValue === true)
+        {
+            $newValue = "true";
+        }
+        else if($newValue === false)
+        {
+            $newValue = "false";
+        }
+        
+        $history = new History();
+        $history->setAction('toggle permission project');
+        $history->setSubjectId($user->getId());
+        $history->setSubjectContext('user');
+        $history->setObjectId($forUser->getId());
+        $history->setObjectContext('user');
+        $history->setMeta(
+            array_merge(
+                [
+                    'SUBJECT_USER_NAME' => $user->getFullName(),
+                    'OBJECT_USER_NAME' => $forUser->getFullName(),
+                    'PROJECT_NAME' => $project->getName(),
+                    'PROJECT_ID' => $project->getId(),
+                    'PERMISSION' => $permission,
+                    'NEW_PERMISSION_VALUE' => $newValue
+                ],
+                $meta)
+        );
+        $this->getEntityManager()->persist($history);
+        $this->getEntityManager()->flush();
+    }
+    
+    public function logToggleProjectFolderPermissionEvent($permission, $newValue, User $user, User $forUser, ProjectFolder $folder, array $meta = []) {
+        
+        if($newValue === true)
+        {
+            $newValue = "true";
+        }
+        else if($newValue === false)
+        {
+            $newValue = "false";
+        }
+        
+        $history = new History();
+        $history->setAction('toggle permission folder');
+        $history->setSubjectId($user->getId());
+        $history->setSubjectContext('user');
+        $history->setObjectId($forUser->getId());
+        $history->setObjectContext('user');
+        $history->setMeta(
+            array_merge(
+                [
+                    'SUBJECT_USER_NAME' => $user->getFullName(),
+                    'OBJECT_USER_NAME' => $forUser->getFullName(),
+                    'PROJECT_NAME' => $folder->getProject()->getName(),
+                    'PROJECT_ID' => $folder->getProject()->getId(),
+                    'PROJECT_FOLDER_ID' => $folder->getId(),
+                    'PERMISSION' => $permission,
+                    'NEW_PERMISSION_VALUE' => $newValue
+                ],
+                $meta)
+        );
+        $this->getEntityManager()->persist($history);
+        $this->getEntityManager()->flush();
+    }
+    
     // Roles events
     public function logAddRoleEvent(User $user, Role $role, array $meta = []) {
         $history = new History();

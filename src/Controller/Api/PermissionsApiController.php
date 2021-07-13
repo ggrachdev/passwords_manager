@@ -7,20 +7,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Api\Response\ApiResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Form\ChangeUserFormType;
-use App\Utils\Form\ErrorsHelper;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Entity\User;
+use App\Entity\Project;
+use App\Entity\ProjectFolder;
 use App\Utils\Permission\ManagerPermission;
 use App\Utils\Permission\UserPermission;
+use App\Utils\History\HistoryManager;
 
 class PermissionsApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
 
-    public function __construct(ManagerPermission $mp) {
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
 
     /**
@@ -36,6 +38,7 @@ class PermissionsApiController extends AbstractController {
 
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
+            $projectRepository = $em->getRepository(Project::class);
 
             $nowUserPermission = new UserPermission(
                 $this->getUser(), $this->managerPermission->getPermissionRepository()
@@ -44,6 +47,12 @@ class PermissionsApiController extends AbstractController {
             if(!$nowUserPermission->canEditProject($project_id))
             {
                 throw new AccessDeniedException('Has not permission edit this project');
+            }
+            
+            $project = $projectRepository->find($project_id);
+            if($project === null)
+            {
+                throw new AccessDeniedException("Not found project with id = $project_id");
             }
 
             $permission = $request->request->get('permission');
@@ -58,7 +67,10 @@ class PermissionsApiController extends AbstractController {
                 throw new AccessDeniedException('User is admin');
             }
 
-            $this->managerPermission->togglePermissionForProject($project_id, $user_id, $permission);
+            $hasPermission = $this->managerPermission->togglePermissionForProject($project_id, $user_id, $permission);
+            
+            $this->managerHistory->logToggleProjectPermissionEvent($permission, $hasPermission, $this->getUser(), $userChangedPermission, $project);
+            
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
@@ -141,6 +153,7 @@ class PermissionsApiController extends AbstractController {
 
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
+            $projectFolderRepository = $em->getRepository(ProjectFolder::class);
 
             $nowUserPermission = new UserPermission(
                 $this->getUser(), $this->managerPermission->getPermissionRepository()
@@ -148,6 +161,12 @@ class PermissionsApiController extends AbstractController {
             if(!$nowUserPermission->canEditFolder($folder_id))
             {
                 throw new AccessDeniedException('Has not permission edit this folder');
+            }
+            
+            $folder = $projectFolderRepository->find($folder_id);
+            if($folder === null)
+            {
+                throw new AccessDeniedException("Not found folder with id = $folder_id");
             }
 
             $permission = $request->request->get('permission');
@@ -162,7 +181,10 @@ class PermissionsApiController extends AbstractController {
                 throw new AccessDeniedException('User is admin');
             }
 
-            $this->managerPermission->togglePermissionForFolder($folder_id, $user_id, $permission);
+            $hasPermission = $this->managerPermission->togglePermissionForFolder($folder_id, $user_id, $permission);
+            
+            $this->managerHistory->logToggleProjectFolderPermissionEvent($permission, $hasPermission, $this->getUser(), $userChangedPermission, $folder);
+            
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
             $apiResponse->setFail();
