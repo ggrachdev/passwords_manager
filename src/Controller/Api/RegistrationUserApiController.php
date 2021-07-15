@@ -50,15 +50,12 @@ class RegistrationUserApiController extends AbstractController {
                     
                     $apiResponse->setSuccess();
                 } else {
-                    $apiResponse->setFail();
                     $apiResponse->setErrors(var_export(ErrorsHelper::getErrorMessages($registrationForm), true));
                 }
             } else {
-                $apiResponse->setFail();
                 $apiResponse->setErrors('Has not data');
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 

@@ -73,7 +73,8 @@ class PermissionsApiController extends AbstractController {
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -133,7 +134,8 @@ class PermissionsApiController extends AbstractController {
                 ]
             );
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -187,7 +189,8 @@ class PermissionsApiController extends AbstractController {
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -247,7 +250,8 @@ class PermissionsApiController extends AbstractController {
                 ]
             );
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 

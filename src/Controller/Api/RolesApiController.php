@@ -80,7 +80,8 @@ class RolesApiController extends AbstractController {
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -109,11 +110,9 @@ class RolesApiController extends AbstractController {
                 $em->flush();
                 $apiResponse->setSuccess();
             } else {
-                $apiResponse->setFail();
                 $apiResponse->setErrors("User with id = $key not found");
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 
@@ -186,8 +185,9 @@ class RolesApiController extends AbstractController {
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $ex) {
-            $apiResponse->setFail();
             $apiResponse->setErrors($ex->getMessage());
+        } catch (\Exception $exc) {
+            $apiResponse->setErrors($exc->getMessage());
         }
         
         return $apiResponse->generate();
@@ -243,7 +243,8 @@ class RolesApiController extends AbstractController {
                 ]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -265,7 +266,6 @@ class RolesApiController extends AbstractController {
             $rolesDb = $roleRepository->findBy([], ['name' => 'ASC']);
 
             if ($rolesDb === null) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors('Not found roles');
             } else {
                 $apiResponse->setSuccess();
@@ -282,7 +282,6 @@ class RolesApiController extends AbstractController {
                 $apiResponse->setData(['roles' => $roles]);
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 

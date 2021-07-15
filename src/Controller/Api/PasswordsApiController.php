@@ -64,7 +64,8 @@ class PasswordsApiController extends AbstractController {
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -136,7 +137,8 @@ class PasswordsApiController extends AbstractController {
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -177,7 +179,8 @@ class PasswordsApiController extends AbstractController {
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -253,10 +256,10 @@ class PasswordsApiController extends AbstractController {
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         } catch (NoSuchPropertyException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -304,7 +307,8 @@ class PasswordsApiController extends AbstractController {
             ]]);
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -329,7 +333,6 @@ class PasswordsApiController extends AbstractController {
             $folder = $projectFolderRepository->find($folderId);
             
             if ($folder === null) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors("Not found folder with id = $folderId");
             } else {
             
@@ -363,7 +366,8 @@ class PasswordsApiController extends AbstractController {
                 ]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
         
