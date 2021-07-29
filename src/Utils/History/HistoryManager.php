@@ -58,6 +58,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -92,6 +93,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -113,6 +115,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -133,6 +136,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -153,6 +157,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -177,6 +182,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -200,6 +206,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -223,6 +230,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -245,6 +253,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -266,6 +275,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -287,6 +297,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -307,6 +318,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -326,6 +338,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -345,6 +358,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -365,6 +379,40 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
+        $this->getEntityManager()->persist($history);
+        $this->getEntityManager()->flush();
+    }
+    
+    public function logUserSuccessLogin(User $user, array $meta = []) {
+        $history = new History();
+        $history->setAction('success login');
+        $history->setSubjectId($user->getId());
+        $history->setSubjectContext('user');
+        $history->setMeta(
+            array_merge(
+                [
+                    'SUBJECT_USER_NAME' => $user->getFullName()
+                ],
+                $meta)
+        );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
+        $this->getEntityManager()->persist($history);
+        $this->getEntityManager()->flush();
+    }
+    
+    public function logUserFailLogin(string $login, array $meta = []) {
+        $history = new History();
+        $history->setAction('fail login');
+        $history->setSubjectContext('user');
+        $history->setMeta(
+            array_merge(
+                [
+                    'LOGIN' => $login
+                ],
+                $meta)
+        );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -384,6 +432,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -403,6 +452,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
@@ -422,6 +472,7 @@ class HistoryManager {
                 ],
                 $meta)
         );
+        $history->setIpExecutor($_SERVER['REMOTE_ADDR']);
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
