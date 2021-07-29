@@ -19,6 +19,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use App\Utils\History\HistoryManager;
 
 class UserAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface {
 
@@ -30,13 +31,15 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
     private $urlGenerator;
     private $csrfTokenManager;
     private $passwordEncoder;
+    private $managerHistory;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder) {
+    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, HistoryManager $mh) {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
-        $this->passwordEncoder = $passwordEncoder; 
-   }
+        $this->passwordEncoder = $passwordEncoder;
+        $this->managerHistory = $mh;
+    }
 
     public function supports(Request $request) {
         return self::LOGIN_ROUTE === $request->attributes->get('_route') && $request->isMethod('POST');
@@ -65,6 +68,7 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
 
         if (!$user) {
+            $this->managerHistory->logUserFailLogin($credentials['email'], ['ERRORS' => ['NOT FOUND USER EMAIL']]);
             throw new UsernameNotFoundException('Email could not be found.');
         }
 
@@ -72,7 +76,18 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
     }
 
     public function checkCredentials($credentials, UserInterface $user) {
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+
+        $isValid = $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+
+        if ($isValid) {
+            $this->managerHistory->logUserSuccessLogin($user);
+        }
+        else
+        {
+            $this->managerHistory->logUserFailLogin($user->getUsername(), ['ERRORS' => ['NOT VALID PASSWORD']]);
+        }
+
+        return $isValid;
     }
 
     /**
