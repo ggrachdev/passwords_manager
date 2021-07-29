@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Radio, Header, List } from 'semantic-ui-react';
+import { Form, Radio, Header, List, Popup, Icon } from 'semantic-ui-react';
 import ModalChangePermission from '../modal/modal-change-permission';
 import PermissionsApi from '../../src/Api/PermissionsApi';
 import Toasts from '../../src/Toasts/Toasts';
@@ -79,6 +79,7 @@ export default class EditPermissionsList extends Component {
 
         for (let permissionKey in this.state.permissionsList) {
             let permission = this.state.permissionsList[permissionKey];
+            let desc = 'desc' in permission ? ( <Popup content={permission.desc} trigger={(<Icon name='question circle' />) } /> ) : '';
             list.push((
                 <List.Item className="link_edit-permission-list" 
                     onClick={() => {
@@ -87,11 +88,11 @@ export default class EditPermissionsList extends Component {
                     <List.Icon name='edit' />
                     <List.Content>
                         <List.Header>
-                            {permission.name}
+                            {permission.name} {desc}
                         </List.Header>
                     </List.Content>
                 </List.Item>
-                ));
+            ));
         }
 
         return list;

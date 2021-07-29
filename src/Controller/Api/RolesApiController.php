@@ -13,14 +13,17 @@ use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Form\ChangeRoleFormType;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class RolesApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
 
     /**
@@ -53,6 +56,8 @@ class RolesApiController extends AbstractController {
             $em->persist($newRole);
             $em->flush();
             
+            $this->managerHistory->logAddRoleEvent($this->getUser(), $newRole);
+            
             // Добавляем права для роли
             if($request->request->get('permissions'))
             {
@@ -75,7 +80,8 @@ class RolesApiController extends AbstractController {
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -97,16 +103,16 @@ class RolesApiController extends AbstractController {
             if ($roleForRemove != null) {
                 
                 $this->managerPermission->removeAllForRole($roleForRemove->getRoleKey());
+            
+                $this->managerHistory->logRemoveRoleEvent($this->getUser(), $roleForRemove);
                 
                 $em->remove($roleForRemove);
                 $em->flush();
                 $apiResponse->setSuccess();
             } else {
-                $apiResponse->setFail();
                 $apiResponse->setErrors("User with id = $key not found");
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 
@@ -146,6 +152,7 @@ class RolesApiController extends AbstractController {
             $em->persist($changedRole);
             $em->flush();
             
+            $this->managerHistory->logUpdateRoleEvent($this->getUser(), $changedRole);
             
             if($request->request->get('permissions'))
             {
@@ -178,8 +185,9 @@ class RolesApiController extends AbstractController {
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $ex) {
-            $apiResponse->setFail();
             $apiResponse->setErrors($ex->getMessage());
+        } catch (\Exception $exc) {
+            $apiResponse->setErrors($exc->getMessage());
         }
         
         return $apiResponse->generate();
@@ -235,7 +243,8 @@ class RolesApiController extends AbstractController {
                 ]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -257,7 +266,6 @@ class RolesApiController extends AbstractController {
             $rolesDb = $roleRepository->findBy([], ['name' => 'ASC']);
 
             if ($rolesDb === null) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors('Not found roles');
             } else {
                 $apiResponse->setSuccess();
@@ -274,7 +282,6 @@ class RolesApiController extends AbstractController {
                 $apiResponse->setData(['roles' => $roles]);
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 

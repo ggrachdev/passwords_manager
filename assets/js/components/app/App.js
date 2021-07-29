@@ -7,6 +7,7 @@ import UsersScreen from '../screen/UsersScreen';
 import RolesScreen from '../screen/RolesScreen';
 import ProjectsScreen from '../screen/ProjectsScreen';
 import HistoryScreen from '../screen/HistoryScreen';
+import PasswordGeneratorScreen from '../screen/PasswordGeneratorScreen';
 import MainMenu from '../main-menu/main-menu';
 import { Container, Loader, Dimmer } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
@@ -30,12 +31,15 @@ export default class App extends Component {
             this.setState({
                 global_state: data,
                 // Режим разработки
-                app_in_development_mode: false,
-                
+                app_in_development_mode: data['app_in_development_mode'],
                 // id'ы пользователей для которых доступен режим разработки
-                available_user_ids_for_development_mode: [4],
+                available_user_ids_for_development_mode: data['available_user_ids_for_development_mode'],
                 app_is_initialized: true
             });
+            
+            window.GlobalData = {
+                csrf: data['tokens']
+            };
         });
 
     }
@@ -87,6 +91,9 @@ export default class App extends Component {
                         </Route>
                         <Route path="/projects/" exact>
                             <ProjectsScreen global_state={global_state}/>
+                        </Route>
+                        <Route path="/generator/">
+                            <PasswordGeneratorScreen global_state={global_state}/>
                         </Route>
                         <Route path="/projects/project-:projectId/folder-:folderId/" render={( { match } ) => {
                             return (<ProjectsScreen folderId={match.params.folderId} projectId={match.params.projectId} global_state={global_state}/>);

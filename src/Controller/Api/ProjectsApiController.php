@@ -18,14 +18,17 @@ use App\Utils\Form\ErrorsHelper;
 use Symfony\Component\HttpFoundation\Request;
 use App\Utils\Permission\UserPermission;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class ProjectsApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
     
     /**
@@ -75,6 +78,8 @@ class ProjectsApiController extends AbstractController {
             $em->persist($folder);
             $em->flush();
             
+            $this->managerHistory->logAddProjectFolderEvent($this->getUser(), $folder);
+            
             $this->managerPermission->addPermissionForFolder(
                 $folder->getId(), $this->getUser()->getId(), 'can_edit_folder'
             );
@@ -96,7 +101,8 @@ class ProjectsApiController extends AbstractController {
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -131,6 +137,8 @@ class ProjectsApiController extends AbstractController {
             $em->persist($project);
             $em->flush();
             
+            $this->managerHistory->logAddProjectEvent($this->getUser(), $project);
+            
             $this->managerPermission->addPermissionForProject(
                 $project->getId(), $this->getUser()->getId(), 'can_edit_project'
             );
@@ -143,7 +151,8 @@ class ProjectsApiController extends AbstractController {
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -179,13 +188,16 @@ class ProjectsApiController extends AbstractController {
             
             $this->managerPermission->removeAllForFolder($folder->getId());
             
+            $this->managerHistory->logRemoveProjectFolderEvent($this->getUser(), $folder);
+            
             $em->remove($folder);
             $em->flush();
             
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -215,6 +227,8 @@ class ProjectsApiController extends AbstractController {
             $projectRepository = $em->getRepository(Project::class);
             $project = $projectRepository->find($project_id);
             
+            $this->managerHistory->logRemoveProjectEvent($this->getUser(), $project);
+            
             $folders = $project->getProjectFolders();
             
             if(!empty($folders)) {
@@ -235,7 +249,8 @@ class ProjectsApiController extends AbstractController {
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -280,10 +295,13 @@ class ProjectsApiController extends AbstractController {
             $em->persist($folder);
             $em->flush();
             
+            $this->managerHistory->logUpdateProjectFolderEvent($this->getUser(), $folder);
+            
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -336,10 +354,13 @@ class ProjectsApiController extends AbstractController {
             $em->persist($project);
             $em->flush();
             
+            $this->managerHistory->logUpdateProjectEvent($this->getUser(), $project);
+            
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -386,7 +407,8 @@ class ProjectsApiController extends AbstractController {
                 ]]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -463,7 +485,8 @@ class ProjectsApiController extends AbstractController {
                 ]]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -545,7 +568,8 @@ class ProjectsApiController extends AbstractController {
                 $apiResponse->setData(['projects' => $projects]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 

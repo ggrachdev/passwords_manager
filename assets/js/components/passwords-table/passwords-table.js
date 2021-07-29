@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, Icon, Container, Input, Table, Button, Popup } from 'semantic-ui-react';
 import Search from '../../src/Search/Search';
 import Toasts from '../../src/Toasts/Toasts';
+import TextCopier from '../../src/TextCopier/TextCopier';
 const equal = require('deep-equal');
 
 function truncate(str, maxlength) {
@@ -27,30 +28,6 @@ export default class PasswordsTable extends Component {
                 searchStringPasswords: e.target.value
             });
         };
-        
-        this.copyText = (textForCopy) => {
-            // Step 1: create a textarea element.
-            // It is capable of holding linebreaks (newlines) unlike "input" element
-            const myFluffyTextarea = document.createElement('textarea');
-
-            // Step 2: Store your string in innerHTML of myFluffyTextarea element        
-            myFluffyTextarea.innerHTML = textForCopy;
-
-            // Step3: find an id element within the body to append your myFluffyTextarea there temporarily
-            const parentElement = document.querySelector('body');
-            parentElement.appendChild(myFluffyTextarea);
-
-            // Step 4: Simulate selection of your text from myFluffyTextarea programmatically 
-            myFluffyTextarea.select();
-
-            // Step 5: simulate copy command (ctrl+c)
-            // now your string with newlines should be copied to your clipboard 
-            document.execCommand('copy');
-
-            // Step 6: Now you can get rid of your fluffy textarea element
-            parentElement.removeChild(myFluffyTextarea);
-            Toasts.success('Успешно скопировано');
-        };
 
         this.renderPasswords = () => {
             const passwords = [];
@@ -74,7 +51,33 @@ export default class PasswordsTable extends Component {
                     <Icon onClick={ (e) => { this.state.onClickIconEditPassword(e, password) } } size='small' color='grey' link name='edit' />
                 ) : '';
                     
+                let httpRegExp = /(http:\/\/[.\w/=&?-]+)/gi;
+                let httpsRegExp = /(https:\/\/[.\w/=&?-]+)/gi;
+                
+                let desc = '';
+                
+                // Первая ссылка
+                let firstLinkMatch = null;
+                
+                if(typeof password.description === "string")
+                {
+                    desc = password.description.replace(httpRegExp, "<a target='_blank' href='$1'>$1</a>").replace(httpsRegExp, "<a target='_blank' href='$1'>$1</a>");
+                
+                    let httpMatches = password.description.match(httpRegExp);
+                    let httpsMatches = password.description.match(httpsRegExp);
+                    
+                    if(httpMatches)
+                    {
+                        firstLinkMatch = httpMatches[0];
+                    }
+                    else if(httpsMatches)
+                    {
+                        firstLinkMatch = httpsMatches[0];
+                    }
+                }
+                    
                 const bodyPassword = (
+                    
                     <React.Fragment>
                         <Table.Cell>
                             { password.tags.includes('compromised') ? ( <Popup content='Пароль скомпрометирован' trigger={(<Icon name='attention' />) } /> ) : '' }
@@ -82,21 +85,34 @@ export default class PasswordsTable extends Component {
                             {password.name}
                         </Table.Cell>
                         <Table.Cell>
-                            <Icon style={{float: 'right'}} link color='grey' name='copy' onClick={() => { this.copyText(password.login) }} />
+                            <Icon style={{float: 'right'}} link color='grey' name='copy' onClick={() => { TextCopier.copy(password.login) }} />
                             {password.login}
                         </Table.Cell>
                         <Table.Cell>
-                            <Icon style={{float: 'right'}} link color='grey' name='copy' onClick={() => { this.copyText(password.password) }} />
+                            <Icon style={{float: 'right'}} link color='grey' name='copy' onClick={() => { TextCopier.copy(password.password) }} />
                             <Icon style={{float: 'right'}} link color='grey' name='eye' onClick={() => { alert(password.password) }} />
                             { truncate(password.password, 3) }
                         </Table.Cell>
-                        <Table.Cell className='display-linebreak'>{password.description}</Table.Cell>
+                        <Table.Cell className='display-linebreak'>
+                            <div dangerouslySetInnerHTML={{__html: desc}} />
+                        </Table.Cell>
+                        
                         <Table.Cell textAlign="center">
                             {buttonEditPassword}
-                            <Icon link color='grey' name='copy' onClick={() => { 
-                                const folderName = document.querySelector('.active.menu-projects').innerText;
-                                const projectName = document.querySelector('.active.menu-projects').closest('.menu').closest('.item').querySelector('.header').innerText;
-                                this.copyText(`Проект: ${projectName} \\ ${folderName}\n\nНазвание: ${password.name}\n\nЛогин: ${password.login}\n\nПароль: ${password.password}`) }
+                            <Icon link color='grey' name='copy'
+                                onClick={() => { 
+                                    const folderName = document.querySelector('.active.menu-projects').innerText;
+                                    const projectName = document.querySelector('.active.menu-projects').closest('.menu').closest('.item').querySelector('.header').innerText;
+
+                                    let textCopyFull = `Проект: ${projectName} \\ ${folderName}\n\nНазвание: ${password.name}\n\nЛогин: ${password.login}\n\nПароль: ${password.password}`;
+
+                                    if(firstLinkMatch)
+                                    {
+                                        textCopyFull = `Проект: ${projectName} \\ ${folderName}\n\nНазвание: ${password.name}\n\nСсылка для входа: ${firstLinkMatch}\n\nЛогин: ${password.login}\n\nПароль: ${password.password}`;
+                                    }
+
+                                    TextCopier.copy(textCopyFull);
+                                }
                             } />
                         </Table.Cell>
                     </React.Fragment>
@@ -148,15 +164,36 @@ export default class PasswordsTable extends Component {
         
         const Passwords = this.renderPasswords();
         let ButtonAddPassword = '';
-        
+
         if(this.state.canAddPasswordInActiveFolder == true)
         {
             ButtonAddPassword = <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>;
         }
+            
+        let InputSearch;
+        
+        if(this.state.passwords.length)
+        {
+
+            if(this.state.searchStringPasswords.length)
+            {
+                InputSearch = (
+                    <Input style={{width: '300px'}} value={this.state.searchStringPasswords} 
+                        icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchStringPasswords: '' }); }}} 
+                        onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
+                );
+            }
+            else
+            {
+                InputSearch = (
+                    <Input style={{width: '300px'}} value={this.state.searchStringPasswords} onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
+                );
+            }  
+        }
         
         return (
             <React.Fragment>
-                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' /> 
+                {InputSearch}
                 {ButtonAddPassword}
                 <Table style={{display: (Passwords.length == 0 ? 'none' : '')}} celled>
                     <Table.Header>

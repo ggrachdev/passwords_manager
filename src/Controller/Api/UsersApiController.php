@@ -16,14 +16,17 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use App\Utils\Permission\UserPermission;
 use App\Entity\Permission;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class UsersApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
 
     /**
@@ -85,13 +88,16 @@ class UsersApiController extends AbstractController {
             {
                 $changedUser->setRoles(['ROLE_USER']);
             }
+            
+            $this->managerHistory->logUpdateUserEvent($this->getUser(), $changedUser);
 
             $em->persist($changedUser);
             $em->flush();
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -105,25 +111,36 @@ class UsersApiController extends AbstractController {
     public function removeUser($id): Response {
         $apiResponse = new ApiResponse();
 
-        if ($this->isGranted('ROLE_ADMIN')) {
+        if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $em = $this->getDoctrine()->getManager();
             $userRepository = $em->getRepository(User::class);
             $userForRemove = $userRepository->find($id);
+            
+            $userPermission = new UserPermission(
+                $this->getUser(), $em->getRepository(Permission::class)
+            );
+            
+            if($userPermission->canRemoveUsers())
+            {
+                $apiResponse->setErrors("Have not permissions for remove users");
+            }
+            else
+            {
+                if ($userForRemove != null) {
 
-            if ($userForRemove != null) {
-                
-                // Удаляем все права пользователя
-                $this->managerPermission->removeAllForUser($userForRemove->getId());
-                
-                $em->remove($userForRemove);
-                $em->flush();
-                $apiResponse->setSuccess();
-            } else {
-                $apiResponse->setFail();
-                $apiResponse->setErrors("User with id = $id not found");
+                    $this->managerHistory->logRemoveUserEvent($this->getUser(), $userForRemove);
+
+                    // Удаляем все права пользователя
+                    $this->managerPermission->removeAllForUser($userForRemove->getId());
+
+                    $em->remove($userForRemove);
+                    $em->flush();
+                    $apiResponse->setSuccess();
+                } else {
+                    $apiResponse->setErrors("User with id = $id not found");
+                }
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 
@@ -147,7 +164,6 @@ class UsersApiController extends AbstractController {
             );
             
             if(!$userPermission->canWatchUsers() && $id != $this->getUser()->getId()) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors('Has not permission');
             }
 
@@ -155,7 +171,6 @@ class UsersApiController extends AbstractController {
             $rolesDb = $roleRepository->findAll();
 
             if ($usersDb === null) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors('Not found users');
             } else {
                 $apiResponse->setSuccess();
@@ -191,7 +206,6 @@ class UsersApiController extends AbstractController {
                 $apiResponse->setData(['user' => $users[0]]);
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 
@@ -219,7 +233,6 @@ class UsersApiController extends AbstractController {
             $rolesDb = $roleRepository->findAll();
 
             if ($usersDb === null) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors('Not found users');
             } else {
                 $apiResponse->setSuccess();
@@ -267,7 +280,6 @@ class UsersApiController extends AbstractController {
                 $apiResponse->setData(['users' => $users]);
             }
         } else {
-            $apiResponse->setFail();
             $apiResponse->setErrors('Has not access');
         }
 

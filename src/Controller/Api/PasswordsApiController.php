@@ -19,14 +19,17 @@ use App\Entity\Permission;
 use App\Utils\Security\Encryption\EncryptionFacade;
 use App\Utils\Permission\UserPermission;
 use App\Utils\Permission\ManagerPermission;
+use App\Utils\History\HistoryManager;
 
 class PasswordsApiController extends AbstractController {
 
     private $managerPermission;
+    private $managerHistory;
     
-    public function __construct(ManagerPermission $mp) 
+    public function __construct(ManagerPermission $mp, HistoryManager $mh) 
     {
         $this->managerPermission = $mp;
+        $this->managerHistory = $mh;
     }
     
     /**
@@ -56,11 +59,13 @@ class PasswordsApiController extends AbstractController {
                 throw new AccessDeniedException("Not found user with id = $id");
             }
             
+            $this->managerHistory->logCompromatedUserEvent($this->getUser(), $userCompromated);
             $this->managerPermission->compromatePasswordsForUser($userCompromated);
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -124,13 +129,16 @@ class PasswordsApiController extends AbstractController {
                 $password->setTags([]);
             }
             
+            $this->managerHistory->logUpdatePasswordEvent($this->getUser(), $password);
+            
             $em->persist($password);
             $em->flush();
             
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -163,13 +171,16 @@ class PasswordsApiController extends AbstractController {
                 throw new AccessDeniedException('Has not permission for remove password in this folder');
             }
             
+            $this->managerHistory->logRemovePasswordEvent($this->getUser(), $password);
+            
             $em->remove($password);
             $em->flush();
             
             $apiResponse->setSuccess();
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -241,12 +252,14 @@ class PasswordsApiController extends AbstractController {
             $em->persist($password);
             $em->flush();
             
+            $this->managerHistory->logAddPasswordEvent($this->getUser(), $password);
+            
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
             $apiResponse->setErrors($exc->getMessage());
         } catch (NoSuchPropertyException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -294,7 +307,8 @@ class PasswordsApiController extends AbstractController {
             ]]);
             
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
 
@@ -319,7 +333,6 @@ class PasswordsApiController extends AbstractController {
             $folder = $projectFolderRepository->find($folderId);
             
             if ($folder === null) {
-                $apiResponse->setFail();
                 $apiResponse->setErrors("Not found folder with id = $folderId");
             } else {
             
@@ -335,6 +348,7 @@ class PasswordsApiController extends AbstractController {
                 $passwords = [];
                 
                 if(!empty($passwordsCol)) {
+                    
                     foreach ($passwordsCol as $password) {
                         $passwords[] = [
                             'id' => $password->getId(),
@@ -345,6 +359,11 @@ class PasswordsApiController extends AbstractController {
                             'description' => $password->getDescription(),
                         ];
                     }
+                    
+                    // @todo
+                    usort($passwords, function($a, $b) {
+                        return $a['name'] > $b['name'];
+                    });
                 }
                 
                 $apiResponse->setSuccess();
@@ -353,7 +372,8 @@ class PasswordsApiController extends AbstractController {
                 ]);
             }
         } catch (AccessDeniedException $exc) {
-            $apiResponse->setFail();
+            $apiResponse->setErrors($exc->getMessage());
+        } catch (\Exception $exc) {
             $apiResponse->setErrors($exc->getMessage());
         }
         

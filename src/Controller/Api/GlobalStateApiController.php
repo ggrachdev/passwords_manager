@@ -20,7 +20,7 @@ class GlobalStateApiController extends AbstractController {
         $userMiddleName = null;
         $userId = null;
         $userRoles = [];
-        
+
         $permissions = [];
 
         if ($userIsAuth) {
@@ -30,11 +30,31 @@ class GlobalStateApiController extends AbstractController {
             $userMiddleName = $user->getMiddleName();
             $userRoles = $user->getRoles();
             $userId = $user->getId();
-        
+
             $em = $this->getDoctrine()->getManager();
             $userPermission = new UserPermission($this->getUser(), $em->getRepository(Permission::class));
             $permissions = $userPermission->getPermissionsGlobal();
-            
+        }
+
+        $tokenProvider = $this->container->get('security.csrf.token_manager');
+
+        $csrfTokens = [];
+        $csrfTokensNeed = [
+            'authenticate',
+            'add_role_form',
+            'add_password_form',
+            'add_project_form',
+            'add_folder_form',
+            'change_password_form',
+            'change_folder_form',
+            'change_project_form',
+            'change_user_form',
+            'change_role_form',
+            'registration_user_form'
+        ];
+
+        foreach ($csrfTokensNeed as $needToken) {
+            $csrfTokens[$needToken] = $tokenProvider->getToken($needToken)->getValue();
         }
 
         $response = [
@@ -44,12 +64,13 @@ class GlobalStateApiController extends AbstractController {
             'user_roles' => $userRoles,
             'user_id' => $userId,
             'permissions' => $permissions,
-            'user_is_auth' => $userIsAuth
+            'user_is_auth' => $userIsAuth,
+            'tokens' => $csrfTokens,
+            'available_user_ids_for_development_mode' => [4],
+            'app_in_development_mode' => false
         ];
 
-        return $this->json(
-            $response
-        );
+        return $this->json($response);
     }
 
 }

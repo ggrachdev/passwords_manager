@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthApiController extends AbstractController {
-
+    
     /**
      * @Route("/api/auth/login/", name="app_login")
      */

@@ -30,6 +30,10 @@ services:
     App\Utils\Permission\ManagerPermission:
         arguments: ['@doctrine.orm.entity_manager']
         tags: ['permission.manager']
+
+    App\Utils\History\HistoryManager:
+        arguments: ['@doctrine.orm.entity_manager']
+        tags: ['history.manager']
     
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

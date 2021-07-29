@@ -28,21 +28,6 @@
                     var mvp = document.getElementById('vp');
                     mvp.setAttribute('content','user-scalable=no,width=1000');
                 }
-            }
-            var GlobalData = {
-                csrf: {
-                    authenticate: '{{ csrf_token('authenticate') }}',
-                    add_role_form: '{{ csrf_token('add_role_form') }}',
-                    add_password_form: '{{ csrf_token('add_password_form') }}',
-                    add_project_form: '{{ csrf_token('add_project_form') }}',
-                    add_folder_form: '{{ csrf_token('add_folder_form') }}',
-                    change_password_form: '{{ csrf_token('change_password_form') }}',
-                    change_folder_form: '{{ csrf_token('change_folder_form') }}',
-                    change_project_form: '{{ csrf_token('change_project_form') }}',
-                    change_user_form: '{{ csrf_token('change_user_form') }}',
-                    change_role_form: '{{ csrf_token('change_role_form') }}',
-                    registration_user_form: '{{ csrf_token('registration_user_form') }}'
-                } 
             };
         </script>
         <div id="app"></div>
