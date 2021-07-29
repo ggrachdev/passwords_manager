@@ -129,10 +129,32 @@ export default class ProjectsMenu extends Component {
     
     render() {
         
+        let InputSearch;
+        
+        if(this.state.searchString.length)
+        {
+            InputSearch = (
+                <Input 
+                    value={this.state.searchString} 
+                    icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchString: '' }); }}} 
+                    onChange={this.onChangeSearchProjects} className='w100p' placeholder='Введите ключевые слова для поиска по проектам' 
+                />
+            );
+        }
+        else
+        {
+            InputSearch = (
+                <Input 
+                    value={this.state.searchString} 
+                    onChange={this.onChangeSearchProjects} className='w100p' placeholder='Введите ключевые слова для поиска по проектам' 
+                />
+            );
+        }
+        
         const menu = this.renderMenu();
         return (
             <React.Fragment>
-                <Input onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск...' />
+                {InputSearch}
                 <Menu style={{display: (menu.length == 0 ? 'none' : '')}} size='large' vertical className='w100p'>
                     {menu}
                 </Menu>
