@@ -348,6 +348,7 @@ class PasswordsApiController extends AbstractController {
                 $passwords = [];
                 
                 if(!empty($passwordsCol)) {
+                    
                     foreach ($passwordsCol as $password) {
                         $passwords[] = [
                             'id' => $password->getId(),
@@ -358,6 +359,11 @@ class PasswordsApiController extends AbstractController {
                             'description' => $password->getDescription(),
                         ];
                     }
+                    
+                    // @todo
+                    usort($passwords, function($a, $b) {
+                        return $a['name'] > $b['name'];
+                    });
                 }
                 
                 $apiResponse->setSuccess();
