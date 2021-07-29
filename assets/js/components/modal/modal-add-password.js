@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Button,  Modal } from 'semantic-ui-react';
 import AddPasswordForm from '../form/AddPasswordForm';
-
 const equal = require('deep-equal');
 
 export default class ModalAddPassword extends Component {
