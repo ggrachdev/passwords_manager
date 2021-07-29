@@ -164,15 +164,36 @@ export default class PasswordsTable extends Component {
         
         const Passwords = this.renderPasswords();
         let ButtonAddPassword = '';
-        
+
         if(this.state.canAddPasswordInActiveFolder == true)
         {
             ButtonAddPassword = <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>;
         }
+            
+        let InputSearch;
+        
+        if(this.state.passwords.length)
+        {
+
+            if(this.state.searchStringPasswords.length)
+            {
+                InputSearch = (
+                    <Input style={{width: '300px'}} value={this.state.searchStringPasswords} 
+                        icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchStringPasswords: '' }); }}} 
+                        onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
+                );
+            }
+            else
+            {
+                InputSearch = (
+                    <Input style={{width: '300px'}} value={this.state.searchStringPasswords} onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
+                );
+            }  
+        }
         
         return (
             <React.Fragment>
-                <Input onChange={this.onChangeSearchPasswords} placeholder='Поиск...' /> 
+                {InputSearch}
                 {ButtonAddPassword}
                 <Table style={{display: (Passwords.length == 0 ? 'none' : '')}} celled>
                     <Table.Header>
