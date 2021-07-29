@@ -50,9 +50,7 @@ class ScreensController extends AbstractController {
         {
             die;
         }
-        
-        $this->managerHistory->logRegistrationUserEvent($this->getUser(), $this->getUser());
-        
+   
         die;
     }  
     
