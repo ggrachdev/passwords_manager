@@ -53,6 +53,11 @@ class History {
      */
     private $created_at;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $ip_executor;
+
     public function getId(): ?int {
         return $this->id;
     }
@@ -135,6 +140,18 @@ class History {
         if ($this->getCreatedAt() === null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    public function getIpExecutor(): ?string
+    {
+        return $this->ip_executor;
+    }
+
+    public function setIpExecutor(?string $ip_executor): self
+    {
+        $this->ip_executor = $ip_executor;
+
+        return $this;
     }
 
 }
