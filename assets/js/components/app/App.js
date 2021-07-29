@@ -31,12 +31,15 @@ export default class App extends Component {
             this.setState({
                 global_state: data,
                 // Режим разработки
-                app_in_development_mode: false,
-                
+                app_in_development_mode: data['app_in_development_mode'],
                 // id'ы пользователей для которых доступен режим разработки
-                available_user_ids_for_development_mode: [4],
+                available_user_ids_for_development_mode: data['available_user_ids_for_development_mode'],
                 app_is_initialized: true
             });
+            
+            window.GlobalData = {
+                csrf: data['tokens']
+            };
         });
 
     }
