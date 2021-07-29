@@ -10,6 +10,7 @@ export default class AddPasswordForm extends Component {
         this.state = {
             selected_tags: [],
             errors: props.errors || [],
+            passwordValue: null
         };
 
         this.changeTagsRadioHandler = (e, valueData) => {
@@ -27,19 +28,34 @@ export default class AddPasswordForm extends Component {
 
         this.onSubmit = 'onSubmit' in props ? props['onSubmit'] : (e) => {
         };
+
+        this.generatePassword = () => {
+            this.setState({
+                passwordValue: PasswordGenerator.generate({
+                    needNumerics: true,
+                    needUpperChars: true,
+                    needLowerChars: true,
+                    needSymbols: true,
+                    length: 25
+                })
+            });
+        };
+
+        this.onChangePassword = (e, data) => {
+            this.setState({
+                passwordValue: data.value
+            });
+        };
+        
+        if(this.state.passwordValue === null)
+        {
+            this.generatePassword();
+        }
     }
 
     render() {
 
-        const {errors} = this.state;
-
-        let defalutPassword = PasswordGenerator.generate({
-            needNumerics: true,
-            needUpperChars: true,
-            needLowerChars: true,
-            needSymbols: true,
-            length: 25
-        });
+        const {errors, passwordValue} = this.state;
 
         return (
             <React.Fragment>
@@ -61,8 +77,9 @@ export default class AddPasswordForm extends Component {
                     <Form.Input fluid 
                                 label="Пароль:" 
                                 name="add_password_form[password]" 
-                                type="text" 
-                                defaultValue={defalutPassword}
+                                type="text" icon={{name: 'refresh', circular: false, link: true, onClick: () => { this.generatePassword(); }}}
+                                value={passwordValue} 
+                                onChange={this.onChangePassword}
                                 placeholder="Введите пароль" />
             
                     <Form.Field
