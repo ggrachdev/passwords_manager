@@ -81,22 +81,22 @@ class ProjectsApiController extends AbstractController {
             $this->managerHistory->logAddProjectFolderEvent($this->getUser(), $folder);
             
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_edit_folder'
+                $folder->getId(), $this->getUser()->getId(), 'can_edit'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_watch_folder'
+                $folder->getId(), $this->getUser()->getId(), 'can_watch'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_remove_folder'
+                $folder->getId(), $this->getUser()->getId(), 'can_remove'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_add_password_in_folder'
+                $folder->getId(), $this->getUser()->getId(), 'can_add_password'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_edit_password_in_folder'
+                $folder->getId(), $this->getUser()->getId(), 'can_edit_password'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_remove_password_in_folder'
+                $folder->getId(), $this->getUser()->getId(), 'can_remove_password'
             );
 
             $apiResponse->setSuccess();
@@ -140,13 +140,13 @@ class ProjectsApiController extends AbstractController {
             $this->managerHistory->logAddProjectEvent($this->getUser(), $project);
             
             $this->managerPermission->addPermissionForProject(
-                $project->getId(), $this->getUser()->getId(), 'can_edit_project'
+                $project->getId(), $this->getUser()->getId(), 'can_edit'
             );
             $this->managerPermission->addPermissionForProject(
-                $project->getId(), $this->getUser()->getId(), 'can_watch_project'
+                $project->getId(), $this->getUser()->getId(), 'can_watch'
             );
             $this->managerPermission->addPermissionForProject(
-                $project->getId(), $this->getUser()->getId(), 'can_remove_project'
+                $project->getId(), $this->getUser()->getId(), 'can_remove'
             );
 
             $apiResponse->setSuccess();
