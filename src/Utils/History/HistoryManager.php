@@ -41,11 +41,11 @@ class HistoryManager {
         }
         
         $history = new History();
-        $history->setAction('toggle permission project');
+        $history->setAction('toggle permission');
         $history->setSubjectId($user->getId());
         $history->setSubjectContext('user');
         $history->setObjectId($forUser->getId());
-        $history->setObjectContext('user');
+        $history->setObjectContext('project folder');
         $history->setMeta(
             array_merge(
                 [
@@ -75,11 +75,11 @@ class HistoryManager {
         }
         
         $history = new History();
-        $history->setAction('toggle permission folder');
+        $history->setAction('toggle permission');
         $history->setSubjectId($user->getId());
         $history->setSubjectContext('user');
         $history->setObjectId($forUser->getId());
-        $history->setObjectContext('user');
+        $history->setObjectContext('project folder');
         $history->setMeta(
             array_merge(
                 [
