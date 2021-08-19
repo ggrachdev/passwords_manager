@@ -93,10 +93,10 @@ class ProjectsApiController extends AbstractController {
                 $folder->getId(), $this->getUser()->getId(), 'can_add_password'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_edit_password'
+                $folder->getId(), $this->getUser()->getId(), 'can_edit_passwords'
             );
             $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_remove_password'
+                $folder->getId(), $this->getUser()->getId(), 'can_remove_passwords'
             );
 
             $apiResponse->setSuccess();
