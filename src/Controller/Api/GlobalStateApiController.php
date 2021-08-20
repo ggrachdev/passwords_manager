@@ -39,19 +39,26 @@ class GlobalStateApiController extends AbstractController {
         $tokenProvider = $this->container->get('security.csrf.token_manager');
 
         $csrfTokens = [];
-        $csrfTokensNeed = [
-            'authenticate',
-            'add_role_form',
-            'add_password_form',
-            'add_project_form',
-            'add_folder_form',
-            'change_password_form',
-            'change_folder_form',
-            'change_project_form',
-            'change_user_form',
-            'change_role_form',
-            'registration_user_form'
-        ];
+
+        if ($userIsAuth) {
+            $csrfTokensNeed = [
+                'authenticate',
+                'add_role_form',
+                'add_password_form',
+                'add_project_form',
+                'add_folder_form',
+                'change_password_form',
+                'change_folder_form',
+                'change_project_form',
+                'change_user_form',
+                'change_role_form',
+                'registration_user_form'
+            ];
+        } else {
+            $csrfTokensNeed = [
+                'authenticate'
+            ];
+        }
 
         foreach ($csrfTokensNeed as $needToken) {
             $csrfTokens[$needToken] = $tokenProvider->getToken($needToken)->getValue();
