@@ -119,10 +119,45 @@ export default class ModalChangePermission extends Component {
         const list = [];
         
         this.state.users.forEach((user) => {
+            
+            let hasPermission = user.permissions[this.state.permissionEdit] == true;
+            
+            if(this.state.permissionEdit === 'add_all_permissions')
+            {
+                let hasAllPermissions = true;
+                
+                for(var key in user.permissions)
+                {
+                    if(user.permissions[key] == false)
+                    {
+                        hasAllPermissions = false;
+                        break;
+                    }
+                }
+                
+                hasPermission = hasAllPermissions;
+            }
+            
+            if(this.state.permissionEdit === 'remove_all_permissions')
+            {
+                let hasNotAllPermissions = true;
+                
+                for(var key in user.permissions)
+                {
+                    if(user.permissions[key] == true)
+                    {
+                        hasNotAllPermissions = false;
+                        break;
+                    }
+                }
+                
+                hasPermission = hasNotAllPermissions;
+            }
+            
             list.push(
                 <div style={{marginBottom: '10px'}}>
                     <Checkbox 
-                        checked={user.permissions[this.state.permissionEdit] == true} 
+                        checked={hasPermission} 
                         onClick={(e) => {
                             this.onClickChangeItem(e, user, this.state.type, this.state.idType);
                         }} 

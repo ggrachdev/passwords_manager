@@ -45,7 +45,7 @@ class HistoryManager {
         $history->setSubjectId($user->getId());
         $history->setSubjectContext('user');
         $history->setObjectId($forUser->getId());
-        $history->setObjectContext('project folder');
+        $history->setObjectContext('project');
         $history->setMeta(
             array_merge(
                 [

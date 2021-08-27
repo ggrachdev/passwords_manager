@@ -66,10 +66,29 @@ class PermissionsApiController extends AbstractController {
             if (in_array('ROLE_ADMIN', $userChangedPermission->getRoles())) {
                 throw new AccessDeniedException('User is admin');
             }
-
-            $hasPermission = $this->managerPermission->togglePermissionForProject($project_id, $user_id, $permission);
             
-            $this->managerHistory->logToggleProjectPermissionEvent($permission, $hasPermission, $this->getUser(), $userChangedPermission, $project);
+            $permissionsList = [
+                'can_edit',
+                'can_watch',
+                'can_remove'
+            ];
+            
+            if ($permission === 'add_all_permissions') {
+                // Добавить все права
+                foreach ($permissionsList as $permission) {
+                    $this->managerPermission->addPermissionForProject($project_id, $user_id, $permission);
+                }
+                $this->managerHistory->logToggleProjectPermissionEvent('add_all_permissions', true, $this->getUser(), $userChangedPermission, $project);
+            } else if ($permission === 'remove_all_permissions') {
+                // Удалить все права
+                foreach ($permissionsList as $permission) {
+                    $this->managerPermission->removePermissionForProject($project_id, $user_id, $permission);
+                }
+                $this->managerHistory->logToggleProjectPermissionEvent('remove_all_permissions', true, $this->getUser(), $userChangedPermission, $project);
+            } else {
+                $hasPermission = $this->managerPermission->togglePermissionForProject($project_id, $user_id, $permission);
+                $this->managerHistory->logToggleProjectPermissionEvent($permission, $hasPermission, $this->getUser(), $userChangedPermission, $project);
+            }
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
@@ -160,6 +179,7 @@ class PermissionsApiController extends AbstractController {
             $nowUserPermission = new UserPermission(
                 $this->getUser(), $this->managerPermission->getPermissionRepository()
             );
+            
             if(!$nowUserPermission->canEditFolder($folder_id))
             {
                 throw new AccessDeniedException('Has not permission edit this folder');
@@ -182,10 +202,40 @@ class PermissionsApiController extends AbstractController {
             if (in_array('ROLE_ADMIN', $userChangedPermission->getRoles())) {
                 throw new AccessDeniedException('User is admin');
             }
-
-            $hasPermission = $this->managerPermission->togglePermissionForFolder($folder_id, $user_id, $permission);
             
-            $this->managerHistory->logToggleProjectFolderPermissionEvent($permission, $hasPermission, $this->getUser(), $userChangedPermission, $folder);
+            
+            $permissionsList = [
+                'can_edit',
+                'can_watch',
+                'can_remove',
+                'can_add_password',
+                'can_edit_passwords',
+                'can_remove_passwords'
+            ];
+            
+            if($permission === 'add_all_permissions')
+            {
+                // Добавить все права
+                foreach ($permissionsList as $permission) {
+                    $this->managerPermission->addPermissionForFolder($folder_id, $user_id, $permission);
+                }
+                
+                $this->managerHistory->logToggleProjectFolderPermissionEvent('add_all_permissions', true, $this->getUser(), $userChangedPermission, $folder);
+            }
+            else if($permission === 'remove_all_permissions')
+            {
+                // Удалить все права
+                foreach ($permissionsList as $permission) {
+                    $this->managerPermission->removePermissionForFolder($folder_id, $user_id, $permission);
+                }
+                
+                $this->managerHistory->logToggleProjectFolderPermissionEvent('remove_all_permissions', true, $this->getUser(), $userChangedPermission, $folder);
+            }
+            else
+            {
+                $hasPermission = $this->managerPermission->togglePermissionForFolder($folder_id, $user_id, $permission);
+                $this->managerHistory->logToggleProjectFolderPermissionEvent($permission, $hasPermission, $this->getUser(), $userChangedPermission, $folder);
+            }
             
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {

@@ -137,7 +137,7 @@ export default class ProjectsMenu extends Component {
                 <Input 
                     value={this.state.searchString} 
                     icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchString: '' }); }}} 
-                    onChange={this.onChangeSearchProjects} className='w100p' placeholder='Введите ключевые слова для поиска по проектам' 
+                    onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск по проектам' 
                 />
             );
         }
@@ -146,7 +146,7 @@ export default class ProjectsMenu extends Component {
             InputSearch = (
                 <Input 
                     value={this.state.searchString} 
-                    onChange={this.onChangeSearchProjects} className='w100p' placeholder='Введите ключевые слова для поиска по проектам' 
+                    onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск по проектам' 
                 />
             );
         }
