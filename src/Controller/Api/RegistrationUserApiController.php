@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\User;
+use App\Authorization\Domain\User;
 use App\Utils\Api\Response\ApiResponse;
 use App\Form\RegistrationUserFormType;
 use App\Utils\Form\ErrorsHelper;

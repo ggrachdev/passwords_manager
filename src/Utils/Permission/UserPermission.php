@@ -2,7 +2,7 @@
 
 namespace App\Utils\Permission;
 
-use App\Entity\User;
+use App\Authorization\Domain\User;
 use App\Entity\Password;
 use App\Repository\PermissionRepository;
 

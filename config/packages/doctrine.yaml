@@ -20,3 +20,15 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+            Authorization:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Authorization/Domain'
+                prefix: 'App\Authorization\Domain'
+                alias: Authorization
+            Project:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Authorization/Domain'
+                prefix: 'App\Project\Domain'
+                alias: Project

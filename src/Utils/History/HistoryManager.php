@@ -4,11 +4,11 @@ namespace App\Utils\History;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\History;
-use App\Entity\User;
+use App\Authorization\Domain\User;
 use App\Entity\Password;
-use App\Entity\Project;
-use App\Entity\ProjectFolder;
-use App\Entity\Role;
+use App\Project\Domain\Project;
+use App\Project\Domain\ProjectFolder;
+use App\Authorization\Domain\Role;
 
 class HistoryManager {
 

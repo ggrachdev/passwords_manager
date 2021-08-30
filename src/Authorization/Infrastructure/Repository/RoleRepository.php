@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Authorization\Infrastructure\Repository;
 
-use App\Entity\Role;
+use App\Authorization\Domain\Role;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

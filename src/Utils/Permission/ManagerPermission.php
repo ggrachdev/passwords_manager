@@ -3,8 +3,8 @@
 namespace App\Utils\Permission;
 
 use App\Entity\Permission;
-use App\Entity\ProjectFolder;
-use App\Entity\User;
+use App\Project\Domain\ProjectFolder;
+use App\Authorization\Domain\User;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Utils\Permission\UserPermission;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Authorization\Domain;
 
-use App\Repository\RoleRepository;
+use App\Authorization\Infrastructure\Repository\RoleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

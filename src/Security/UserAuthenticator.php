@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use App\Entity\User;
+use App\Authorization\Domain\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

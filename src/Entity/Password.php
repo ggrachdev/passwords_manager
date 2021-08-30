@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PasswordRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Project\Domain\ProjectFolder;
 
 /**
  * @ORM\Entity(repositoryClass=PasswordRepository::class)

@@ -74,7 +74,7 @@ class GlobalStateApiController extends AbstractController {
             'user_is_auth' => $userIsAuth,
             'tokens' => $csrfTokens,
             'available_user_ids_for_development_mode' => [4],
-            'app_in_development_mode' => false
+            'app_in_development_mode' => true
         ];
 
         return $this->json($response);

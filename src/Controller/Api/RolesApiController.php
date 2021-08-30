@@ -5,7 +5,7 @@ namespace App\Controller\Api;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Role;
+use App\Authorization\Domain\Role;
 use App\Utils\Api\Response\ApiResponse;
 use App\Form\AddRoleFormType;
 use Symfony\Component\HttpFoundation\Request;
