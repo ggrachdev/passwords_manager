@@ -36,6 +36,14 @@ export default class ChangeProjectForm extends Component {
             can_remove: {
                 name: 'Удаление проекта',
                 desc: 'Право позволяет пользователю удалить проект. При удалении проекта все папки удалятся автоматически'
+            },
+            add_all_permissions: {
+                name: 'Добавить все вышеуказанные права',
+                desc: 'Добавляет все вышеуказанные права'
+            },
+            remove_all_permissions: {
+                name: 'Убрать все вышеуказанные права',
+                desc: 'Убирает все вышеуказанные права'
             }
         };
 

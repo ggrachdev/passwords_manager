@@ -30,13 +30,22 @@ i.icon.icon_project {
     white-space: pre-line;
 }
 
+.modal {
+    border-radius: 0 !important;
+}
+
 .link_edit-permission-list, .link_edit-permission-list .header {
     cursor: pointer;
     font-weight: normal !important;
 }
 
 .link_edit-permission-list:hover, .link_edit-permission-list:hover .header {
-    color: #673ab7 !important;
+    color: #223d7b !important;
+}
+
+.ui.inverted.menu {
+    border-radius: 0;
+    background-color: #223d7b !important;
 }
 
 @media only screen and (min-width: 1600px) {

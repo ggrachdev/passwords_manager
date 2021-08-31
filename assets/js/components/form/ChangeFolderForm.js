@@ -43,6 +43,14 @@ export default class ChangeFolderForm extends Component {
                 name: 'Удаление паролей',
                 desc: 'Позволяет пользователю удалять пароли в текущей папке'
             },
+            add_all_permissions: {
+                name: 'Добавить все вышеуказанные права',
+                desc: 'Добавляет все вышеуказанные права'
+            },
+            remove_all_permissions: {
+                name: 'Убрать все вышеуказанные права',
+                desc: 'Убирает все вышеуказанные права'
+            }
         };
         
         ProjectsApi.getFolder(this.state.folderId).then((response) => {

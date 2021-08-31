@@ -3,12 +3,12 @@
 namespace App\Utils\History;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\History;
-use App\Entity\User;
-use App\Entity\Password;
-use App\Entity\Project;
-use App\Entity\ProjectFolder;
-use App\Entity\Role;
+use App\History\Domain\History;
+use App\Authorization\Domain\User;
+use App\Project\Domain\Password;
+use App\Project\Domain\Project;
+use App\Project\Domain\ProjectFolder;
+use App\Authorization\Domain\Role;
 
 class HistoryManager {
 
@@ -41,11 +41,11 @@ class HistoryManager {
         }
         
         $history = new History();
-        $history->setAction('toggle permission project');
+        $history->setAction('toggle permission');
         $history->setSubjectId($user->getId());
         $history->setSubjectContext('user');
         $history->setObjectId($forUser->getId());
-        $history->setObjectContext('user');
+        $history->setObjectContext('project');
         $history->setMeta(
             array_merge(
                 [
@@ -75,11 +75,11 @@ class HistoryManager {
         }
         
         $history = new History();
-        $history->setAction('toggle permission folder');
+        $history->setAction('toggle permission');
         $history->setSubjectId($user->getId());
         $history->setSubjectContext('user');
         $history->setObjectId($forUser->getId());
-        $history->setObjectContext('user');
+        $history->setObjectContext('project folder');
         $history->setMeta(
             array_merge(
                 [
@@ -88,6 +88,7 @@ class HistoryManager {
                     'PROJECT_NAME' => $folder->getProject()->getName(),
                     'PROJECT_ID' => $folder->getProject()->getId(),
                     'PROJECT_FOLDER_ID' => $folder->getId(),
+                    'PROJECT_FOLDER_NAME' => $folder->getName(),
                     'PERMISSION' => $permission,
                     'NEW_PERMISSION_VALUE' => $newValue
                 ],
@@ -249,6 +250,7 @@ class HistoryManager {
                     'SUBJECT_USER_NAME' => $user->getFullName(),
                     'PROJECT_NAME' => $folder->getProject()->getName(),
                     'PROJECT_ID' => $folder->getProject()->getId(),
+                    'FOLDER_ID' => $folder->getId(),
                     'PROJECT_FOLDER_NAME' => $folder->getName()
                 ],
                 $meta)
@@ -293,6 +295,7 @@ class HistoryManager {
                     'SUBJECT_USER_NAME' => $user->getFullName(),
                     'PROJECT_NAME' => $folder->getProject()->getName(),
                     'PROJECT_ID' => $folder->getProject()->getId(),
+                    'FOLDER_ID' => $folder->getId(),
                     'PROJECT_FOLDER_NAME' => $folder->getName()
                 ],
                 $meta)
@@ -314,7 +317,8 @@ class HistoryManager {
             array_merge(
                 [
                     'SUBJECT_USER_NAME' => $user->getFullName(),
-                    'PROJECT_NAME' => $project->getName()
+                    'PROJECT_NAME' => $project->getName(),
+                    'PROJECT_ID' => $project->getId()
                 ],
                 $meta)
         );

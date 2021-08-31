@@ -7,30 +7,9 @@
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicons/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicons/favicon-16x16.png">
         <link rel="manifest" href="/assets/images/favicons/site.webmanifest">
-        <title>
-            {% block title %}
-            Fred Security
-            {% endblock %}
-        </title>
-        
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
-
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
+        <title>Fred Security</title>
+        {% block stylesheets %}{{ encore_entry_link_tags('app') }}{% endblock %}
+        {% block javascripts %}{{ encore_entry_script_tags('app') }}{% endblock %}
     </head>
-    <body>
-        <script>
-            window.onload = function() {
-                if (screen.width < 1000) {
-                    var mvp = document.getElementById('vp');
-                    mvp.setAttribute('content','user-scalable=no,width=1000');
-                }
-            };
-        </script>
-        <div id="app"></div>
-        {% block body %}{% endblock %}
-    </body>
+    <body><div id="app"></div></body>
 </html>

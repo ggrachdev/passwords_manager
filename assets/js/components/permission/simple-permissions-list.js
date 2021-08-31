@@ -42,12 +42,15 @@ export default class SimplePermissionsList extends Component {
         
         for (var permissionKey in this.state.permissionsList) {
             const permission = this.state.permissionsList[permissionKey];
+            
+            let permissionChecked = permission.selected;
+            
             list.push((
                 <Form.Field>
                     <Radio 
                         label={permission.name} 
                         name={`permissions[${permissionKey}]`}
-                        checked={permission.selected} 
+                        checked={permissionChecked} 
                         onClick={this.changeRadioHandler} 
                         value={permissionKey} 
                     />
