@@ -88,6 +88,7 @@ class HistoryManager {
                     'PROJECT_NAME' => $folder->getProject()->getName(),
                     'PROJECT_ID' => $folder->getProject()->getId(),
                     'PROJECT_FOLDER_ID' => $folder->getId(),
+                    'PROJECT_FOLDER_NAME' => $folder->getName(),
                     'PERMISSION' => $permission,
                     'NEW_PERMISSION_VALUE' => $newValue
                 ],
@@ -249,6 +250,7 @@ class HistoryManager {
                     'SUBJECT_USER_NAME' => $user->getFullName(),
                     'PROJECT_NAME' => $folder->getProject()->getName(),
                     'PROJECT_ID' => $folder->getProject()->getId(),
+                    'FOLDER_ID' => $folder->getId(),
                     'PROJECT_FOLDER_NAME' => $folder->getName()
                 ],
                 $meta)
@@ -293,6 +295,7 @@ class HistoryManager {
                     'SUBJECT_USER_NAME' => $user->getFullName(),
                     'PROJECT_NAME' => $folder->getProject()->getName(),
                     'PROJECT_ID' => $folder->getProject()->getId(),
+                    'FOLDER_ID' => $folder->getId(),
                     'PROJECT_FOLDER_NAME' => $folder->getName()
                 ],
                 $meta)
@@ -314,7 +317,8 @@ class HistoryManager {
             array_merge(
                 [
                     'SUBJECT_USER_NAME' => $user->getFullName(),
-                    'PROJECT_NAME' => $project->getName()
+                    'PROJECT_NAME' => $project->getName(),
+                    'PROJECT_ID' => $project->getId()
                 ],
                 $meta)
         );

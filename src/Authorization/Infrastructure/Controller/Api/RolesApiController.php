@@ -85,7 +85,6 @@ class RolesApiController extends AbstractController {
             $apiResponse->setErrors($exc->getMessage());
         }
 
-
         return $apiResponse->generate();
     }
 
