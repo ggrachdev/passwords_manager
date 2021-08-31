@@ -32,3 +32,9 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Authorization/Domain'
                 prefix: 'App\Project\Domain'
                 alias: Project
+            History:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/History/Domain'
+                prefix: 'App\History\Domain'
+                alias: History

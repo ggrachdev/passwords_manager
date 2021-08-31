@@ -3,9 +3,9 @@
 namespace App\Utils\History;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\History;
+use App\History\Domain\History;
 use App\Authorization\Domain\User;
-use App\Entity\Password;
+use App\Project\Domain\Password;
 use App\Project\Domain\Project;
 use App\Project\Domain\ProjectFolder;
 use App\Authorization\Domain\Role;

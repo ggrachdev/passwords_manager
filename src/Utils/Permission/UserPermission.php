@@ -3,8 +3,8 @@
 namespace App\Utils\Permission;
 
 use App\Authorization\Domain\User;
-use App\Entity\Password;
-use App\Repository\PermissionRepository;
+use App\Project\Domain\Password;
+use App\Authorization\Infrastructure\Repository\PermissionRepository;
 
 class UserPermission {
 

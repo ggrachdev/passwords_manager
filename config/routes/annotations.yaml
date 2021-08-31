@@ -2,6 +2,22 @@ controllers:
     resource: ../../src/Controller/
     type: annotation
 
+controllers_history:
+    resource: ../../src/History/Infrastructure/Controller/
+    type: annotation
+
+controllers_authorization:
+    resource: ../../src/Authorization/Infrastructure/Controller/
+    type: annotation
+
+controllers_project:
+    resource: ../../src/Project/Infrastructure/Controller/
+    type: annotation
+
+controllers_generator:
+    resource: ../../src/Generator/Infrastructure/Controller/
+    type: annotation
+    
 kernel:
     resource: ../../src/Kernel.php
     type: annotation
