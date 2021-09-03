@@ -134,7 +134,7 @@ export default class ProjectsMenu extends Component {
         if(this.state.searchString.length)
         {
             InputSearch = (
-                <Input 
+                <Input id="search_from_projects" 
                     value={this.state.searchString} 
                     icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchString: '' }); }}} 
                     onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск по проектам' 
@@ -144,12 +144,16 @@ export default class ProjectsMenu extends Component {
         else
         {
             InputSearch = (
-                <Input 
+                <Input id="search_from_projects" 
                     value={this.state.searchString} 
                     onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск по проектам' 
                 />
             );
         }
+        
+        setTimeout(() => {
+            document.querySelector('#search_from_projects').focus();
+        }, 300);
         
         const menu = this.renderMenu();
         return (
