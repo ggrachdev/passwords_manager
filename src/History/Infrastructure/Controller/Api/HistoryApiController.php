@@ -6,15 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\Api\Response\ApiResponse;
-use App\History\Domain\History;
 use App\Utils\History\HistoryDescriptionAdapter;
+use App\History\Domain\Repository\HistoryRepositoryInterface;
 
 class HistoryApiController extends AbstractController {
 
     /**
      * @Route("/api/history/get/page-{page}", name="api_get_history")
      */
-    public function getHistory($page): Response {
+    public function getHistory($page, HistoryRepositoryInterface $historyRepositoryInterface): Response {
         $response = new ApiResponse();
 
         if ($this->isGranted('ROLE_ADMIN') && $page > 0) {
@@ -25,15 +25,13 @@ class HistoryApiController extends AbstractController {
                 'history' => []
             ];
 
-            $em = $this->getDoctrine()->getManager();
-            $historyRepository = $em->getRepository(History::class);
-            $countTotal = $historyRepository->getTotalCount();
+            $countTotal = $historyRepositoryInterface->getTotalCount();
             $countPages = floor($countTotal / 50) + ($countTotal % 50 > 0 ? 1 : 0);
 
             $responseData['count_pages'] = $countPages;
             $responseData['total_count'] = $countTotal;
             
-            $historyList = $historyRepository->getElementOnPage($page, 50);
+            $historyList = $historyRepositoryInterface->getElementOnPage($page, 50);
 
             if (!empty($historyList)) {
                 foreach ($historyList as $history) {
