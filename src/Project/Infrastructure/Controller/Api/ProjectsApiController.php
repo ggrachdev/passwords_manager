@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Utils\Permission\UserPermission;
 use App\Utils\Permission\ManagerPermission;
 use App\Utils\History\HistoryManager;
+use App\Project\Domain\Repository\ProjectRepositoryInterface;
 
 class ProjectsApiController extends AbstractController {
 
@@ -34,7 +35,7 @@ class ProjectsApiController extends AbstractController {
     /**
      * @Route("/projects/add/folder/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_add_folder")
      */
-    public function addFolder(Request $request, $project_id): Response {
+    public function addFolder(Request $request, ProjectRepositoryInterface $projectRepository, $project_id): Response {
         $apiResponse = new ApiResponse();
 
         try {
@@ -57,9 +58,7 @@ class ProjectsApiController extends AbstractController {
 
             $em = $this->getDoctrine()->getManager();
 
-            $projectRepository = $em->getRepository(Project::class);
-
-            $project = $projectRepository->find($project_id);
+            $project = $projectRepository->findById($project_id);
 
             if ($project === null) {
                 throw new AccessDeniedException("Has found project with id = $project_id");
@@ -80,24 +79,12 @@ class ProjectsApiController extends AbstractController {
             
             $this->managerHistory->logAddProjectFolderEvent($this->getUser(), $folder);
             
-            $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_edit'
-            );
-            $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_watch'
-            );
-            $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_remove'
-            );
-            $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_add_password'
-            );
-            $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_edit_passwords'
-            );
-            $this->managerPermission->addPermissionForFolder(
-                $folder->getId(), $this->getUser()->getId(), 'can_remove_passwords'
-            );
+            // Если человек создал папку добавляем ему все права для нее
+            foreach (ManagerPermission::LIST_PERMISSIONS_FOLDER as $permissionFolder) {
+                $this->managerPermission->addPermissionForFolder(
+                    $folder->getId(), $this->getUser()->getId(), $permissionFolder
+                );
+            }
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
@@ -133,21 +120,15 @@ class ProjectsApiController extends AbstractController {
                 throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
             }
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($project);
-            $em->flush();
+            $this->getDoctrine()->getManager()->persist($project)->flush();
             
             $this->managerHistory->logAddProjectEvent($this->getUser(), $project);
             
-            $this->managerPermission->addPermissionForProject(
-                $project->getId(), $this->getUser()->getId(), 'can_edit'
-            );
-            $this->managerPermission->addPermissionForProject(
-                $project->getId(), $this->getUser()->getId(), 'can_watch'
-            );
-            $this->managerPermission->addPermissionForProject(
-                $project->getId(), $this->getUser()->getId(), 'can_remove'
-            );
+            foreach (ManagerPermission::LIST_PERMISSIONS_PROJECT as $permissionProject) {
+                $this->managerPermission->addPermissionForProject(
+                    $project->getId(), $this->getUser()->getId(), $permissionProject
+                );
+            }
 
             $apiResponse->setSuccess();
         } catch (AccessDeniedException $exc) {
@@ -207,7 +188,7 @@ class ProjectsApiController extends AbstractController {
     /**
      * @Route("/projects/remove/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_remove", methods={"GET"})
      */
-    public function remove($project_id): Response {
+    public function remove(ProjectRepositoryInterface $projectRepository, $project_id): Response {
         $apiResponse = new ApiResponse();
         
         try {
@@ -218,14 +199,14 @@ class ProjectsApiController extends AbstractController {
             $nowUserPermission = new UserPermission(
                 $this->getUser(), $this->managerPermission->getPermissionRepository()
             );
+            
             if(!$nowUserPermission->canRemoveProject($project_id))
             {
                 throw new AccessDeniedException('Has not permission for remove this project');
             }
             
             $em = $this->getDoctrine()->getManager();
-            $projectRepository = $em->getRepository(Project::class);
-            $project = $projectRepository->find($project_id);
+            $project = $projectRepository->findById($project_id);
             
             $this->managerHistory->logRemoveProjectEvent($this->getUser(), $project);
             
@@ -311,7 +292,7 @@ class ProjectsApiController extends AbstractController {
     /**
      * @Route("/projects/update/{project_id}/", requirements={"project_id"="\d+"}, name="projects_api_update", methods={"POST"})
      */
-    public function update(Request $request, $project_id): Response {
+    public function update(Request $request, ProjectRepositoryInterface $projectRepository, $project_id): Response {
         $apiResponse = new ApiResponse();
 
         try {
@@ -333,9 +314,7 @@ class ProjectsApiController extends AbstractController {
             }
             
             $em = $this->getDoctrine()->getManager();
-            $projectRepository = $em->getRepository(Project::class);
-
-            $project = $projectRepository->find($project_id);
+            $project = $projectRepository->findById($project_id);
             
             if($project === null)
             {
@@ -418,7 +397,7 @@ class ProjectsApiController extends AbstractController {
     /**
      * @Route("/projects/get/{id}/", name="projects_api_get_from_id")
      */
-    public function get($id): Response {
+    public function getFromId(ProjectRepositoryInterface $projectRepository, $id): Response {
         if ($id === 'all') {
             return $this->forward(self::class . '::getAll');
         }
@@ -431,8 +410,7 @@ class ProjectsApiController extends AbstractController {
             }
 
             $em = $this->getDoctrine()->getManager();
-            $projectRepository = $em->getRepository(Project::class);
-            $project = $projectRepository->find($id);
+            $project = $projectRepository->findById($id);
 
             if ($project === null) {
                 $apiResponse->setFail();
@@ -506,7 +484,7 @@ class ProjectsApiController extends AbstractController {
 
             $em = $this->getDoctrine()->getManager();
             $projectRepository = $em->getRepository(Project::class);
-            $projectsDb = $projectRepository->findBy([], ['name' => 'ASC']);
+            $projectsDb = $projectRepository->findByParams([], ['name' => 'ASC']);
 
             if ($projectsDb === null) {
                 $apiResponse->setFail();

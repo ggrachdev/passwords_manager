@@ -54,6 +54,12 @@ class HistoryDescriptionAdapter {
         
         if ($meta['PERMISSION'] === 'add_all_permissions') {
             return '<b>' . $meta['SUBJECT_USER_NAME'] . '</b> дал все права доступа для проекта <b>' . $meta['PROJECT_NAME'] . '</b> для пользователя <b>' . $meta['OBJECT_USER_NAME'] . '</b>';
+        } else if ($meta['PERMISSION'] === 'remove_all_permissions_for_children_folders') {
+            return '<b>' . $meta['SUBJECT_USER_NAME'] . '</b> удалил все права для папок у проекта <b>' . $meta['PROJECT_NAME'] . '</b> для пользователя <b>' . $meta['OBJECT_USER_NAME'] . '</b>';
+        } else if ($meta['PERMISSION'] === 'add_all_permissions_for_children_folders') {
+            return '<b>' . $meta['SUBJECT_USER_NAME'] . '</b> дал все права для папок проекта <b>' . $meta['PROJECT_NAME'] . '</b> для пользователя <b>' . $meta['OBJECT_USER_NAME'] . '</b>';
+        } else if ($meta['PERMISSION'] === 'add_watch_permissions_for_children_folders') {
+            return '<b>' . $meta['SUBJECT_USER_NAME'] . '</b> дал права для просмотра папок и просмотр проекта у проекта <b>' . $meta['PROJECT_NAME'] . '</b> для пользователя <b>' . $meta['OBJECT_USER_NAME'] . '</b>';
         } else if ($meta['PERMISSION'] === 'remove_all_permissions') {
             return '<b>' . $meta['SUBJECT_USER_NAME'] . '</b> удалил все права доступа для проекта <b>' . $meta['PROJECT_NAME'] . '</b> для пользователя <b>' . $meta['OBJECT_USER_NAME'] . '</b>';
         } else {
@@ -146,13 +152,13 @@ class HistoryDescriptionAdapter {
     private static function userFailLogin(History $history)
     {
         $meta = $history->getMeta();
-        return 'Кто-то не смог авторизоваться под логином <b>'.$meta['LOGIN'].'</b>';
+        return '<span style="color: red;">Кто-то не смог авторизоваться под логином</span> <b>'.$meta['LOGIN'].'</b>';
     }
     
     private static function userSuccessLogin(History $history)
     {
         $meta = $history->getMeta();
-        return '<b>'.$meta['SUBJECT_USER_NAME'].'</b> успешно авторизовался';
+        return '<b>'.$meta['SUBJECT_USER_NAME'].'</b> <span style="color: green;">успешно авторизовался(ась)</span>';
     }
 
 }

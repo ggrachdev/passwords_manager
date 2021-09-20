@@ -10,6 +10,20 @@ use App\Utils\Permission\UserPermission;
 
 class ManagerPermission {
 
+    const LIST_PERMISSIONS_FOLDER = [
+        'can_edit',
+        'can_watch',
+        'can_remove',
+        'can_add_password',
+        'can_edit_passwords',
+        'can_remove_passwords'
+    ];
+    const LIST_PERMISSIONS_PROJECT = [
+        'can_edit',
+        'can_watch',
+        'can_remove'
+    ];
+
     private $entityManager;
     private $permissionRepository;
 
@@ -21,24 +35,21 @@ class ManagerPermission {
     public function getPermissionRepository() {
         return $this->permissionRepository;
     }
-    
-    public function compromatePasswordsForUser(User $user)
-    {
+
+    public function compromatePasswordsForUser(User $user) {
         $userPermission = new UserPermission($user, $this->getPermissionRepository());
-        
+
         $folders = $this->entityManager->getRepository(ProjectFolder::class)->findAll();
-        
-        if(!empty($folders)) {
+
+        if (!empty($folders)) {
             foreach ($folders as $folder) {
-                if($userPermission->canWatchFolder($folder->getId()))
-                {
+                if ($userPermission->canWatchFolder($folder->getId())) {
                     $passwords = $folder->getPasswords();
-                    
-                    if(!empty($passwords)) {
+
+                    if (!empty($passwords)) {
                         foreach ($passwords as $password) {
                             $tags = $password->getTags();
-                            if(\is_array($tags) && !in_array('compromised', $tags))
-                            {
+                            if (\is_array($tags) && !in_array('compromised', $tags)) {
                                 $tags[] = 'compromised';
                                 $password->setTags($tags);
                                 $this->entityManager->flush();
@@ -53,7 +64,7 @@ class ManagerPermission {
     public function togglePermissionForFolder(int $folderId, int $userId, string $permission, $value = "true") {
 
         $permissionHas = true;
-        
+
         $permissionEntity = new Permission();
         $permissionEntity->setForContext('USER');
         $permissionEntity->setForId($userId);
@@ -63,20 +74,17 @@ class ManagerPermission {
         $permissionEntity->setTargetId($folderId);
 
         $dbPermission = $this->hasPermission($permission, $value, $userId, 'USER', $folderId, 'FOLDER');
-        
+
         if ($dbPermission) {
-            foreach($dbPermission as $perm)
-            {
+            foreach ($dbPermission as $perm) {
                 $this->entityManager->remove($perm);
             }
-            
+
             $permissionHas = false;
-        }
-        else
-        {
+        } else {
             $this->entityManager->persist($permissionEntity);
         }
-        
+
         $this->entityManager->flush();
 
         return $permissionHas;
@@ -106,9 +114,8 @@ class ManagerPermission {
         $permissionEntity = $this->hasPermission($permission, $value, $userId, 'USER', $folderId, 'FOLDER');
 
         if ($permission) {
-            
-            foreach($permissionEntity as $perm)
-            {
+
+            foreach ($permissionEntity as $perm) {
                 $this->entityManager->remove($perm);
             }
             $this->entityManager->flush();
@@ -137,7 +144,7 @@ class ManagerPermission {
     }
 
     public function togglePermissionForRole($role, string $permission, $value = "true") {
-        
+
         $permissionHas = true;
 
         $permissionEntity = new Permission();
@@ -149,20 +156,17 @@ class ManagerPermission {
         $permissionEntity->setTargetId(null);
 
         $dbPermission = $this->hasPermission($permission, $value, $role, 'USER', null, 'ROLE');
-        
+
         if ($dbPermission) {
-            foreach($dbPermission as $perm)
-            {
+            foreach ($dbPermission as $perm) {
                 $this->entityManager->remove($perm);
             }
-            
+
             $permissionHas = false;
-        }
-        else
-        {
+        } else {
             $this->entityManager->persist($permissionEntity);
         }
-        
+
         $this->entityManager->flush();
 
         return $permissionHas;
@@ -174,9 +178,8 @@ class ManagerPermission {
         $permissionEntity = $this->hasPermission($permission, $value, $role, 'USER', null, 'ROLE');
 
         if ($permission) {
-            
-            foreach($permissionEntity as $perm)
-            {
+
+            foreach ($permissionEntity as $perm) {
                 $this->entityManager->remove($perm);
             }
             $this->entityManager->flush();
@@ -205,7 +208,7 @@ class ManagerPermission {
     }
 
     public function togglePermissionForProject(int $projectId, int $userId, string $permission, $value = "true") {
-        
+
         $permissionHas = true;
 
         $permissionEntity = new Permission();
@@ -217,20 +220,17 @@ class ManagerPermission {
         $permissionEntity->setTargetId($projectId);
 
         $dbPermission = $this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'PROJECT');
-        
+
         if ($dbPermission) {
-            foreach($dbPermission as $perm)
-            {
+            foreach ($dbPermission as $perm) {
                 $this->entityManager->remove($perm);
             }
-            
+
             $permissionHas = false;
-        }
-        else
-        {
+        } else {
             $this->entityManager->persist($permissionEntity);
         }
-        
+
         $this->entityManager->flush();
 
         return $permissionHas;
@@ -242,9 +242,8 @@ class ManagerPermission {
         $permissionEntity = $this->hasPermission($permission, $value, $userId, 'USER', $projectId, 'PROJECT');
 
         if ($permission) {
-            
-            foreach($permissionEntity as $perm)
-            {
+
+            foreach ($permissionEntity as $perm) {
                 $this->entityManager->remove($perm);
             }
             $this->entityManager->flush();
@@ -256,65 +255,65 @@ class ManagerPermission {
 
     public function removeAllForProject(int $projectId) {
         $removed = false;
-        
+
         $entities = $this->getPermissionRepository()->findFromProject($projectId);
-        
-        if(!empty($entities)) {
+
+        if (!empty($entities)) {
             foreach ($entities as $entity) {
                 $this->entityManager->remove($entity);
             }
             $this->entityManager->flush();
             $removed = true;
         }
-        
+
         return $removed;
     }
 
     public function removeAllForRole(string $roleId) {
         $removed = false;
-        
+
         $entities = $this->getPermissionRepository()->findFromRole($roleId);
-        
-        if(!empty($entities)) {
+
+        if (!empty($entities)) {
             foreach ($entities as $entity) {
                 $this->entityManager->remove($entity);
             }
             $this->entityManager->flush();
             $removed = true;
         }
-        
+
         return $removed;
     }
 
     public function removeAllForFolder(int $folderId) {
         $removed = false;
-        
+
         $entities = $this->getPermissionRepository()->findFromFolder($folderId);
-        
-        if(!empty($entities)) {
+
+        if (!empty($entities)) {
             foreach ($entities as $entity) {
                 $this->entityManager->remove($entity);
             }
             $this->entityManager->flush();
             $removed = true;
         }
-        
+
         return $removed;
     }
 
     public function removeAllForUser(int $userId) {
         $removed = false;
-        
+
         $entities = $this->getPermissionRepository()->findFromUserWithoutRoles($userId);
-        
-        if(!empty($entities)) {
+
+        if (!empty($entities)) {
             foreach ($entities as $entity) {
                 $this->entityManager->remove($entity);
             }
             $this->entityManager->flush();
             $removed = true;
         }
-        
+
         return $removed;
     }
 

@@ -9,15 +9,16 @@ use App\Project\Domain\Password;
 use App\Project\Domain\Project;
 use App\Project\Domain\ProjectFolder;
 use App\Authorization\Domain\Role;
+use App\History\Domain\Repository\HistoryRepositoryInterface;
 
 class HistoryManager {
 
     private $entityManager;
     private $historyRepository;
 
-    public function __construct(EntityManagerInterface $em) {
+    public function __construct(HistoryRepositoryInterface $historyRepository, EntityManagerInterface $em) {
         $this->entityManager = $em;
-        $this->historyRepository = $em->getRepository(History::class);
+        $this->historyRepository = $historyRepository;
     }
 
     public function getEntityManager() {
@@ -27,19 +28,16 @@ class HistoryManager {
     public function getHistoryRepository() {
         return $this->historyRepository;
     }
-    
+
     // Roles permission
     public function logToggleProjectPermissionEvent($permission, $newValue, User $user, User $forUser, Project $project, array $meta = []) {
-        
-        if($newValue === true)
-        {
+
+        if ($newValue === true) {
             $newValue = "true";
-        }
-        else if($newValue === false)
-        {
+        } else if ($newValue === false) {
             $newValue = "false";
         }
-        
+
         $history = new History();
         $history->setAction('toggle permission');
         $history->setSubjectId($user->getId());
@@ -62,18 +60,15 @@ class HistoryManager {
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
-    
+
     public function logToggleProjectFolderPermissionEvent($permission, $newValue, User $user, User $forUser, ProjectFolder $folder, array $meta = []) {
-        
-        if($newValue === true)
-        {
+
+        if ($newValue === true) {
             $newValue = "true";
-        }
-        else if($newValue === false)
-        {
+        } else if ($newValue === false) {
             $newValue = "false";
         }
-        
+
         $history = new History();
         $history->setAction('toggle permission');
         $history->setSubjectId($user->getId());
@@ -98,7 +93,7 @@ class HistoryManager {
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
-    
+
     // Roles events
     public function logAddRoleEvent(User $user, Role $role, array $meta = []) {
         $history = new History();
@@ -387,7 +382,7 @@ class HistoryManager {
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
-    
+
     public function logUserSuccessLogin(User $user, array $meta = []) {
         $history = new History();
         $history->setAction('success login');
@@ -404,7 +399,7 @@ class HistoryManager {
         $this->getEntityManager()->persist($history);
         $this->getEntityManager()->flush();
     }
-    
+
     public function logUserFailLogin(string $login, array $meta = []) {
         $history = new History();
         $history->setAction('fail login');

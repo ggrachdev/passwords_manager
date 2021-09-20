@@ -85,9 +85,11 @@ export default class ProjectsMenu extends Component {
                 const iconAddFolder = project.permissions.can_edit ? (
                     <Icon onClick={(e) => { this.state.onClickIconAddFolder(e, project); }} className='icon_project' size='small' color='grey' link name='add circle' />
                 ) : '';
+            
+                let styleObj = this.state.activeProject === project.id ? {'backgroundColor': '#f9ffe7'} : {};
 
                 menu.push(
-                    <Menu.Item>
+                    <Menu.Item style={styleObj}>
                         <Menu.Header>
                             {project.name} 
                             {iconEditProject}
@@ -101,6 +103,12 @@ export default class ProjectsMenu extends Component {
 
             return menu;
         };
+    }
+    
+    componentDidMount() {
+        setTimeout(() => {
+            document.querySelector('#search_from_projects').focus();
+        }, 300);
     }
 
     componentDidUpdate(prevProps) {
@@ -150,10 +158,6 @@ export default class ProjectsMenu extends Component {
                 />
             );
         }
-        
-        setTimeout(() => {
-            document.querySelector('#search_from_projects').focus();
-        }, 300);
         
         const menu = this.renderMenu();
         return (

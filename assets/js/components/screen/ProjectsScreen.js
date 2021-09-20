@@ -190,6 +190,16 @@ export default class ProjectsScreen extends Component {
             }
         };
         
+        this.onClickFolderPasswordsTable = (folder) => {
+            this.setState({
+                activeFolder: folder.id
+            });
+            
+            setTimeout(() => {
+                this.updatePasswords();
+            }, 50);
+        };
+        
         this.onClickCloseModalAddProject = () => {
             this.setState({
                 modal_add_project_is_open: false
@@ -391,7 +401,7 @@ export default class ProjectsScreen extends Component {
                 style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
             /> 
         ) : '';
-
+    
         return (
             <React.Fragment>
                 <Container>
@@ -413,11 +423,13 @@ export default class ProjectsScreen extends Component {
                             </Grid.Column>
                             <Grid.Column width={12}>
                                 <PasswordsTable 
+                                    onClickFolder={this.onClickFolderPasswordsTable}
                                     onClickAddPasswordButton={() => {this.setState({modal_add_password_is_open: true})}} 
                                     activeFolder={this.state.activeFolder} 
                                     canEditPasswordInActiveFolder={this.state.canEditPasswordInActiveFolder} 
                                     canAddPasswordInActiveFolder={this.state.canAddPasswordInActiveFolder} 
                                     onClickIconEditPassword={this.onClickIconEditPassword} 
+                                    activeProject={ this.state.projects.find(project => project.id == this.state.activeProject) } 
                                     passwords={this.state.passwords} 
                                 />
                             </Grid.Column>

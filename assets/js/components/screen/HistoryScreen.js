@@ -26,7 +26,6 @@ export default class HistoryScreen extends Component {
     }
 
     render() {
-
         let pagination = [];
         let table = '';
         let tableRows = [];
@@ -56,11 +55,11 @@ export default class HistoryScreen extends Component {
                         <Table.Cell><div dangerouslySetInnerHTML={{__html: history.desc}} /></Table.Cell>
                         <Table.Cell><div dangerouslySetInnerHTML={{__html: history.date}} /></Table.Cell>
                         <Table.Cell><div dangerouslySetInnerHTML={{__html: history.ip}} /></Table.Cell>
+                        <Table.Cell><Icon link color='grey' name='eye' onClick={() => { alert(JSON.stringify(history.meta, undefined, 4)); }} /></Table.Cell>
                     </Table.Row>
                 );
             });
         }
-        
         
         if(tableRows.length > 0)
         {
@@ -72,6 +71,7 @@ export default class HistoryScreen extends Component {
                             <Table.HeaderCell>Описание действия</Table.HeaderCell>
                             <Table.HeaderCell>Дата</Table.HeaderCell>
                             <Table.HeaderCell>IP</Table.HeaderCell>
+                            <Table.HeaderCell></Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
 

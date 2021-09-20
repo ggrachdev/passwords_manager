@@ -5,6 +5,7 @@ namespace App\Project\Infrastructure\Repository;
 use App\Project\Domain\Project;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Project\Domain\Repository\ProjectRepositoryInterface;
 
 /**
  * @method Project|null find($id, $lockMode = null, $lockVersion = null)
@@ -12,11 +13,19 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Project[]    findAll()
  * @method Project[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProjectRepository extends ServiceEntityRepository
+class ProjectRepository extends ServiceEntityRepository implements ProjectRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Project::class);
+    }
+    
+    public function findById($idProject) {
+        return $this->find($idProject);
+    }
+    
+    public function findByParams(array $params, array $sortParams) {
+        return $this->findBy($params, $sortParams);
     }
 
     // /**
