@@ -44,6 +44,18 @@ export default class ChangeProjectForm extends Component {
             remove_all_permissions: {
                 name: 'Убрать все вышеуказанные права',
                 desc: 'Убирает все вышеуказанные права'
+            },
+            add_watch_permissions_for_children_folders: {
+                name: 'Добавить права на просмотр проекта и его подпапок',
+                desc: 'Добавить права на просмотр проекта и его подпапок'
+            },
+            add_all_permissions_for_children_folders: {
+                name: 'Добавить все права для папок проекта',
+                desc: 'Добавляет все права для папок проекта'
+            },
+            remove_all_permissions_for_children_folders: {
+                name: 'Удалить все права для папок проекта',
+                desc: 'Удаляет все права для папок проекта'
             }
         };
 

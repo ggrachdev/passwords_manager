@@ -85,9 +85,11 @@ export default class ProjectsMenu extends Component {
                 const iconAddFolder = project.permissions.can_edit ? (
                     <Icon onClick={(e) => { this.state.onClickIconAddFolder(e, project); }} className='icon_project' size='small' color='grey' link name='add circle' />
                 ) : '';
+            
+                let styleObj = this.state.activeProject === project.id ? {'backgroundColor': '#f9ffe7'} : {};
 
                 menu.push(
-                    <Menu.Item>
+                    <Menu.Item style={styleObj}>
                         <Menu.Header>
                             {project.name} 
                             {iconEditProject}
@@ -101,6 +103,12 @@ export default class ProjectsMenu extends Component {
 
             return menu;
         };
+    }
+    
+    componentDidMount() {
+        setTimeout(() => {
+            document.querySelector('#search_from_projects').focus();
+        }, 300);
     }
 
     componentDidUpdate(prevProps) {
@@ -134,7 +142,7 @@ export default class ProjectsMenu extends Component {
         if(this.state.searchString.length)
         {
             InputSearch = (
-                <Input 
+                <Input id="search_from_projects" 
                     value={this.state.searchString} 
                     icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchString: '' }); }}} 
                     onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск по проектам' 
@@ -144,7 +152,7 @@ export default class ProjectsMenu extends Component {
         else
         {
             InputSearch = (
-                <Input 
+                <Input id="search_from_projects" 
                     value={this.state.searchString} 
                     onChange={this.onChangeSearchProjects} className='w100p' placeholder='Поиск по проектам' 
                 />

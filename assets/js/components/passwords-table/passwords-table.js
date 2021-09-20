@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
-import { Menu, Icon, Container, Input, Table, Button, Popup } from 'semantic-ui-react';
+import { Menu, Icon, Container, Input, Table, Button, Popup, Header } from 'semantic-ui-react';
 import Search from '../../src/Search/Search';
 import Toasts from '../../src/Toasts/Toasts';
 import TextCopier from '../../src/TextCopier/TextCopier';
@@ -14,12 +14,14 @@ export default class PasswordsTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            activeProject: props.activeProject,
             passwords: props.passwords,
             activeFolder: props.activeFolder,
             canAddPasswordInActiveFolder: props.canAddPasswordInActiveFolder,
             canEditPasswordInActiveFolder: props.canEditPasswordInActiveFolder,
             onClickIconEditPassword: props.onClickIconEditPassword,
             onClickAddPasswordButton: props.onClickAddPasswordButton,
+            onClickFolder: props.onClickFolder,
             searchStringPasswords: ''
         };
 
@@ -108,7 +110,7 @@ export default class PasswordsTable extends Component {
 
                                     if(firstLinkMatch)
                                     {
-                                        textCopyFull = `Проект: ${projectName} \\ ${folderName}\n\nНазвание: ${password.name}\n\nСсылка для входа: ${firstLinkMatch}\n\nЛогин: ${password.login}\n\nПароль: ${password.password}`;
+                                        textCopyFull = `Проект: ${projectName} \\ ${folderName}\n\nНазвание: ${password.name}\n\nСсылка для входа: ${firstLinkMatch}\n\nЛогин: ${password.login}\n\nПароль: ${password.password}                                         `;
                                     }
 
                                     TextCopier.copy(textCopyFull);
@@ -148,12 +150,15 @@ export default class PasswordsTable extends Component {
             !equal(prevProps.passwords, this.props.passwords) ||
             !equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder) ||
             !equal(prevProps.canAddPasswordInActiveFolder, this.props.canAddPasswordInActiveFolder) ||
-            !equal(prevProps.canEditPasswordInActiveFolder, this.props.canEditPasswordInActiveFolder)
+            !equal(prevProps.canEditPasswordInActiveFolder, this.props.canEditPasswordInActiveFolder) || 
+            !equal(prevProps.activeProject, this.props.activeProject) ||
+            !equal(prevProps.activeFolder, this.props.activeFolder)
         )
         {
             this.setState({
                 passwords: this.props.passwords,
                 activeFolder: this.props.activeFolder,
+                activeProject: this.props.activeProject,
                 canEditPasswordInActiveFolder: this.props.canEditPasswordInActiveFolder,
                 canAddPasswordInActiveFolder: this.props.canAddPasswordInActiveFolder
             });
@@ -167,7 +172,7 @@ export default class PasswordsTable extends Component {
 
         if(this.state.canAddPasswordInActiveFolder == true)
         {
-            ButtonAddPassword = <Button onClick={this.state.onClickAddPasswordButton} positive style={{marginLeft: '10px', position: 'relative', bottom: '1px'}}>Добавить пароль</Button>;
+            ButtonAddPassword = <Button onClick={this.state.onClickAddPasswordButton} positive style={{position: 'relative', bottom: '1px'}}>Добавить пароль</Button>;
         }
             
         let InputSearch;
@@ -178,7 +183,7 @@ export default class PasswordsTable extends Component {
             if(this.state.searchStringPasswords.length)
             {
                 InputSearch = (
-                    <Input style={{width: '300px'}} value={this.state.searchStringPasswords} 
+                    <Input style={{width: '300px', marginRight: '10px'}} value={this.state.searchStringPasswords} 
                         icon={{name: 'close', circular: false, link: true, onClick: () => { this.setState({ searchStringPasswords: '' }); }}} 
                         onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
                 );
@@ -186,15 +191,39 @@ export default class PasswordsTable extends Component {
             else
             {
                 InputSearch = (
-                    <Input style={{width: '300px'}} value={this.state.searchStringPasswords} onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
+                    <Input style={{width: '300px', marginRight: '10px'}} value={this.state.searchStringPasswords} onChange={this.onChangeSearchPasswords} placeholder='Поиск по паролям' /> 
                 );
             }  
+        }
+        
+        
+        let FoldersButtons = [];
+            
+        if(this.state.activeProject)
+        {
+            FoldersButtons.push((
+                <Header style={{'marginTop': '20px'}} as='h3'>{this.state.activeProject.name}</Header> 
+            ));
+            if(this.state.activeProject.folders.length > 0)
+            {
+                this.state.activeProject.folders.forEach((folder) => {
+                    let color = this.state.activeFolder === folder.id ? 'green' : 'teal';
+                    FoldersButtons.push((
+                        <Button onClick={() => { this.state.onClickFolder(folder); }} color={color} size='tiny'>{folder.name}</Button>
+                    ));
+                });
+            }
         }
         
         return (
             <React.Fragment>
                 {InputSearch}
                 {ButtonAddPassword}
+                
+                <div>
+                    {FoldersButtons}
+                </div>
+                
                 <Table style={{display: (Passwords.length == 0 ? 'none' : '')}} celled>
                     <Table.Header>
                         <Table.Row>

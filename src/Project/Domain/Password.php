@@ -37,7 +37,7 @@ class Password
      * @ORM\Column(type="string", length=2000, nullable=true)
      */
     private $description;
-
+    
     /**
      * @ORM\ManyToOne(targetEntity=ProjectFolder::class, inversedBy="passwords")
      * @ORM\JoinColumn(nullable=false)

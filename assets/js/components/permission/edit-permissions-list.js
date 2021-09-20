@@ -36,37 +36,28 @@ export default class EditPermissionsList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-
-        if (
-            !equal(prevProps.permissionsList, this.props.permissionsList)
-            )
+        if (!equal(prevProps.permissionsList, this.props.permissionsList))
         {
             this.setState({
                 permissionsList: this.props.permissionsList
             });
         }
 
-        if (
-            !equal(prevProps.idType, this.props.idType)
-            )
+        if (!equal(prevProps.idType, this.props.idType))
         {
             this.setState({
                 idType: this.props.idType
             });
         }
 
-        if (
-            !equal(prevProps.type, this.props.type)
-            )
+        if (!equal(prevProps.type, this.props.type))
         {
             this.setState({
                 type: this.props.type
             });
         }
 
-        if (
-            !equal(prevProps.typeName, this.props.typeName)
-            )
+        if (!equal(prevProps.typeName, this.props.typeName))
         {
             this.setState({
                 typeName: this.props.typeName
@@ -99,14 +90,13 @@ export default class EditPermissionsList extends Component {
     }
 
     render() {
-
         return (
             <React.Fragment>
                 <Header as='h4'>
                     Редактирование доступов {this.state.type == 'folder' ? 'папки' : 'проекта'}:
                 </Header>
                 <List>
-                {this.renderPermissionsList()}
+                    {this.renderPermissionsList()}
                 </List>
                 <ModalChangePermission 
                     randomStringForUpdate={this.state.randomStringForUpdate} 

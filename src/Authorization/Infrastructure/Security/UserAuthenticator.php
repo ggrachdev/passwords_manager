@@ -64,6 +64,7 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
     public function getUser($credentials, UserProviderInterface $userProvider) {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->managerHistory->logUserFailLogin($credentials['email'], ['ERRORS' => ['NOT VALID CSRF TOKEN']]);
             throw new InvalidCsrfTokenException();
         }
 

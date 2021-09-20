@@ -25,6 +25,7 @@ export default class ModalChangePermission extends Component {
                 PermissionsApi.toggleForFolder(idType, user.id, this.state.permissionEdit).
                     then(() => {
                         this.initializeList();
+                        Toasts.success('Право успешно изменено');
                     }).
                     catch(() => {
                         Toasts.error('Не удалось изменить право, возможно пользователь является администратором');
@@ -36,6 +37,7 @@ export default class ModalChangePermission extends Component {
                 PermissionsApi.toggleForProject(idType, user.id, this.state.permissionEdit).
                     then(() => {
                         this.initializeList();
+                        Toasts.success('Право успешно изменено');
                     }).
                     catch(() => {
                         Toasts.error('Не удалось изменить право, возможно пользователь является администратором');

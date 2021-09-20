@@ -10,6 +10,9 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            App\History\Domain\Repository\HistoryRepositoryInterface $historyRepository: '@App\History\Infrastructure\Repository\HistoryRepository'
+            App\Project\Domain\Repository\ProjectRepositoryInterface $projectRepository: '@App\Project\Infrastructure\Repository\ProjectRepository'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -20,7 +23,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
-
+        
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
@@ -28,11 +31,11 @@ services:
         tags: ['controller.service_arguments']
 
     App\Utils\Permission\ManagerPermission:
-        arguments: ['@doctrine.orm.entity_manager']
+        autowire: true
         tags: ['permission.manager']
 
     App\Utils\History\HistoryManager:
-        arguments: ['@doctrine.orm.entity_manager']
+        autowire: true
         tags: ['history.manager']
     
     # add more service definitions when explicit configuration is needed
