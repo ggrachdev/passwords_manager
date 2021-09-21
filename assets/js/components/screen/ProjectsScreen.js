@@ -190,14 +190,21 @@ export default class ProjectsScreen extends Component {
             }
         };
         
+        /**
+         * Клик по кнопке с папкой в таблице паролей
+         */
         this.onClickFolderPasswordsTable = (folder) => {
-            this.setState({
-                activeFolder: folder.id
-            });
             
-            setTimeout(() => {
-                this.updatePasswords();
-            }, 50);
+            if(folder.id != this.state.activeFolder)
+            {
+                this.setState({
+                    activeFolder: folder.id
+                });
+
+                setTimeout(() => {
+                    this.updatePasswords();
+                }, 50);
+            }
         };
         
         this.onClickCloseModalAddProject = () => {
