@@ -80,7 +80,6 @@ export default class App extends Component {
                     <ErrorApplication>
                         <Router>
                             <MainMenu global_state={global_state}/>
-                            <br/>
                             <Switch>
                             <Route path="/cabinet/">
                                 <CabinetScreen global_state={global_state}/>
@@ -98,8 +97,8 @@ export default class App extends Component {
                                 <PasswordGeneratorScreen global_state={global_state}/>
                             </Route>
                             <Route path="/projects/project-:projectId/folder-:folderId/" render={({ match }) => {
-                                           return (<ProjectsScreen folderId={match.params.folderId} projectId={match.params.projectId} global_state={global_state}/>);
-                                }} />
+                                return (<ProjectsScreen folderId={match.params.folderId} projectId={match.params.projectId} global_state={global_state}/>);
+                            }} />
                             <Route path="/history/">
                                 <HistoryScreen global_state={global_state}/>
                             </Route>
@@ -125,7 +124,7 @@ export default class App extends Component {
                         </Dimmer>
                     </Container>
                 </React.Fragment>
-                );
+            );
         }
     }
 }
