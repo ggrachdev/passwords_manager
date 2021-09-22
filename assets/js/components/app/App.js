@@ -9,6 +9,7 @@ import ProjectsScreen from '../screen/ProjectsScreen';
 import HistoryScreen from '../screen/HistoryScreen';
 import PasswordGeneratorScreen from '../screen/PasswordGeneratorScreen';
 import MainMenu from '../main-menu/main-menu';
+import ErrorApplication from '../error-application/ErrorApplication';
 import { Container, Loader, Dimmer } from 'semantic-ui-react';
 import StateApi from '../../src/Api/StateApi';
 import { ToastContainer } from 'react-toastify';
@@ -36,7 +37,7 @@ export default class App extends Component {
                 available_user_ids_for_development_mode: data['available_user_ids_for_development_mode'],
                 app_is_initialized: true
             });
-            
+
             window.GlobalData = {
                 csrf: data['tokens']
             };
@@ -52,15 +53,15 @@ export default class App extends Component {
         {
 
             if (
-                app_in_development_mode && 
+                app_in_development_mode &&
                 this.state.global_state.user_is_auth == true &&
                 !this.state.available_user_ids_for_development_mode.includes(this.state.global_state.user_id)
-            )
+                )
             {
                 setTimeout(() => {
                     location.reload();
                 }, 30000);
-                
+
                 return (
                     <React.Fragment>
                         <br/>
@@ -71,43 +72,45 @@ export default class App extends Component {
                             </Dimmer>
                         </Container>
                     </React.Fragment>
-                );
+                    );
             } else
             {
 
                 return (
-                    <Router>
-                        <MainMenu global_state={global_state}/>
-                        <br/>
-                        <Switch>
-                        <Route path="/cabinet/">
-                            <CabinetScreen global_state={global_state}/>
-                        </Route>
-                        <Route path="/users/">
-                            <UsersScreen global_state={global_state}/>
-                        </Route>
-                        <Route path="/roles/">
-                            <RolesScreen global_state={global_state}/>
-                        </Route>
-                        <Route path="/projects/" exact>
-                            <ProjectsScreen global_state={global_state}/>
-                        </Route>
-                        <Route path="/generator/">
-                            <PasswordGeneratorScreen global_state={global_state}/>
-                        </Route>
-                        <Route path="/projects/project-:projectId/folder-:folderId/" render={( { match } ) => {
-                            return (<ProjectsScreen folderId={match.params.folderId} projectId={match.params.projectId} global_state={global_state}/>);
-                        }} />
-                        <Route path="/history/">
-                            <HistoryScreen global_state={global_state}/>
-                        </Route>
-                        <Route path="/" exact>
-                            <LoginScreen global_state={global_state}/>
-                        </Route>
-                        </Switch>
-                        <br/>
-                        <ToastContainer />
-                    </Router>
+                    <ErrorApplication>
+                        <Router>
+                            <MainMenu global_state={global_state}/>
+                            <br/>
+                            <Switch>
+                            <Route path="/cabinet/">
+                                <CabinetScreen global_state={global_state}/>
+                            </Route>
+                            <Route path="/users/">
+                                <UsersScreen global_state={global_state}/>
+                            </Route>
+                            <Route path="/roles/">
+                                <RolesScreen global_state={global_state}/>
+                            </Route>
+                            <Route path="/projects/" exact>
+                                <ProjectsScreen global_state={global_state}/>
+                            </Route>
+                            <Route path="/generator/">
+                                <PasswordGeneratorScreen global_state={global_state}/>
+                            </Route>
+                            <Route path="/projects/project-:projectId/folder-:folderId/" render={({ match }) => {
+                                           return (<ProjectsScreen folderId={match.params.folderId} projectId={match.params.projectId} global_state={global_state}/>);
+                                }} />
+                            <Route path="/history/">
+                                <HistoryScreen global_state={global_state}/>
+                            </Route>
+                            <Route path="/" exact>
+                                <LoginScreen global_state={global_state}/>
+                            </Route>
+                            </Switch>
+                            <br/>
+                            <ToastContainer />
+                        </Router>
+                    </ErrorApplication>
                 );
             }
         } else
@@ -122,7 +125,7 @@ export default class App extends Component {
                         </Dimmer>
                     </Container>
                 </React.Fragment>
-            );
+                );
         }
     }
 }
