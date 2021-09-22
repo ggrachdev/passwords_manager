@@ -2,6 +2,69 @@ import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import { Container, Header, Menu, Grid, Icon, Input, Popup, Modal, Button } from 'semantic-ui-react';
 import Search from '../../src/Search/Search';
+import Cookies from 'js-cookie';
+
+/**
+ * Сохраняет данные о скрытых / не скрытых проектах в куки и достает их
+ */
+class VisibleProjectsData {
+    
+    static getData()
+    {
+        let data = Cookies.get('not_visible_projects_ids');
+        return data ? data.split(',') : [];
+    }
+    
+    static saveData(listIds)
+    {
+        if(listIds.length === 0)
+        {
+            Cookies.remove('not_visible_projects_ids');
+        }
+        else
+        {
+            Cookies.set('not_visible_projects_ids', listIds.join(','));
+        }
+    }
+    
+    static showProjectItem(projectId)
+    {
+        let data = VisibleProjectsData.getData();
+        let indexProject = data.indexOf(projectId.toString());
+        
+        if(indexProject !== -1)
+        {
+            data.splice(indexProject, 1);
+        }
+        
+        VisibleProjectsData.saveData(data);
+    }
+    
+    static hideProjectItem(projectId)
+    {
+        let data = VisibleProjectsData.getData();
+        
+        if(!data.includes(projectId))
+        {
+            data.push(projectId);
+        }
+        
+        VisibleProjectsData.saveData(data);
+    }
+    
+    static isVisible(projectId)
+    {
+        return !VisibleProjectsData.isNotVisible(projectId);
+    }
+    
+    static isNotVisible(projectId)
+    {
+        let data = VisibleProjectsData.getData();
+        return data.includes(projectId.toString());
+    }
+}
+
+window.VisibleProjectsData = VisibleProjectsData;
 
 const equal = require('deep-equal');
 
@@ -28,9 +91,30 @@ export default class ProjectsMenu extends Component {
         this.renderMenu = () => {
             const menu = [];
             const searchString = this.state.searchString;
+            
+            // Перемещаем активный проект вперед
+            
+            this.state.projects.sort(function (a, b) {
+                if (a.name < b.name) {
+                    return -1;
+                }
+                if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+            })
+
+            let indexActiveProject = _.findIndex(this.state.projects, project => project.id == this.state.activeProject);
+            if(indexActiveProject !== -1)
+            {
+                let activeProject = this.state.projects[indexActiveProject];
+                this.state.projects.splice(indexActiveProject, 1);
+                this.state.projects.unshift(activeProject);
+            }
 
             this.state.projects.forEach((project) => {
-
+                
+                
                 const folders = [];
 
                 let projectIsSearched = Search.string(project.name, searchString);
@@ -59,6 +143,7 @@ export default class ProjectsMenu extends Component {
                         >
                             <span className="menu-projects__folder" onClick={(e) => {
                                 e.preventDefault();
+                                window.scrollTo(0, 0);
                                 this.state.onChangeFolderProject(e, folder, project);
                             }}>
                             {folder.name}
@@ -87,11 +172,35 @@ export default class ProjectsMenu extends Component {
                 ) : '';
             
                 let styleObj = this.state.activeProject === project.id ? {'backgroundColor': '#f9ffe7'} : {};
+                
+                let projectId = project.id;
+                
+                let isVisibleProject = VisibleProjectsData.isVisible(projectId) || searchString.length > 0 || this.state.activeProject === projectId;
+                    
+                let visibleClass = isVisibleProject ? 'project-menu-item' : 'hide project-menu-item';
 
                 menu.push(
-                    <Menu.Item style={styleObj}>
+                    <Menu.Item className={visibleClass} style={styleObj}>
                         <Menu.Header>
-                            {project.name} 
+                            <span onClick={(e) => {
+                                
+                                if(!(searchString.length > 0 || this.state.activeProject === projectId))
+                                {
+                                    if(isVisibleProject)
+                                    {
+                                        e.target.closest('.project-menu-item').classList.add('hide');
+                                        VisibleProjectsData.hideProjectItem(projectId);
+                                        isVisibleProject = false;
+                                    }
+                                    else
+                                    {
+                                        e.target.closest('.project-menu-item').classList.remove('hide');
+                                        VisibleProjectsData.showProjectItem(projectId);
+                                        isVisibleProject = true;
+                                    }
+                                }
+                                
+                            }}>{project.name}</span>
                             {iconEditProject}
                             {iconAddFolder}
                         </Menu.Header>
@@ -162,7 +271,9 @@ export default class ProjectsMenu extends Component {
         const menu = this.renderMenu();
         return (
             <React.Fragment>
-                {InputSearch}
+                <form autocomplete="off">
+                    {InputSearch}
+                </form>
                 <Menu style={{display: (menu.length == 0 ? 'none' : '')}} size='large' vertical className='w100p'>
                     {menu}
                 </Menu>

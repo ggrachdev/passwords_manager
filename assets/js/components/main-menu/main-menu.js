@@ -51,7 +51,7 @@ export default class MainMenu extends Component {
             menu.push(<Menu.Item 
                 name='projects' to='/projects/' onClick={this.handlers.changeMenuItem} 
                 as={ Link }
-                active={path === '/projects/'}>
+                active={path.indexOf('/projects') !== -1}>
                 <Icon name='briefcase' />
                 Проекты
             </Menu.Item>);
