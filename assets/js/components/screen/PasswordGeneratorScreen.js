@@ -21,7 +21,7 @@ function PasswordGeneratorComponent() {
             Toasts.error('Нужно указать длину больше нуля');
         } else if (length > 1000)
         {
-            Toasts.error('Серьезно?');
+            Toasts.error('Стоит ограничение в 1000 символов');
         } else
         {
             const pwd = PasswordGenerator.generate(
