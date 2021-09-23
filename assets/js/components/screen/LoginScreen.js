@@ -17,7 +17,7 @@ export default class LoginScreen extends Component {
         this.onSubmitLoginForm = (e) => {
             const dataForm = (new FormSerializer(e.target)).getObject();
             AuthApi.login(dataForm).then((response) => {
-                location.href = '/cabinet/';
+                location.href = '/projects/';
                 this.setState({
                     errors: []
                 });
