@@ -174,9 +174,9 @@ class UserPermission {
         if (!empty($this->getListPermissions())) {
             foreach ($this->getListPermissions() as $permission) {
                 if (
-                    $permission->getPermission() === 'can_remove_users' &&
+                    ($permission->getPermission() === 'can_remove_users' &&
                     $permission->getValue() == true &&
-                    $permission->getTargetContext() == 'GLOBAL' ||
+                    $permission->getTargetContext() == 'GLOBAL') ||
                     in_array('ROLE_ADMIN', $this->getUser()->getRoles())
                 ) {
                     $can = true;
