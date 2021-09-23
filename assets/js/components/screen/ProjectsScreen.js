@@ -266,7 +266,6 @@ export default class ProjectsScreen extends Component {
             });
         }).catch(() => {
             Toasts.error(`Не получить данные о проектах`);
-            this.initialize();
         });
     }
     
