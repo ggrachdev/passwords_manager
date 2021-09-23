@@ -11,7 +11,23 @@ class HistoryDescriptionAdapter {
         $object = ucwords($history->getObjectContext());
         $action = ucwords($history->getAction());
         
-        return self::{str_replace(' ', '', $context.$action.$object)}($history);
+        $methodName = str_replace(' ', '', $context.$action.$object);
+            
+        if(method_exists(self::class, $methodName))
+        {
+            return self::{$methodName}($history);
+        }
+        else
+        {
+            return \sprintf('Not found method %s', $methodName);
+        }
+        
+    }
+    
+    private static function userRemoveUser(History $history)
+    {
+        $meta = $history->getMeta();
+        return '<b>'.$meta['SUBJECT_USER_NAME'].'</b> удалил пользователя <b>'.$meta['OBJECT_USER_NAME'].'</b>';
     }
     
     private static function userUpdateProject(History $history)
