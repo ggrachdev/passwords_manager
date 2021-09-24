@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Header, Menu, Grid, Table, Icon, Button, Label } from 'semantic-ui-react';
+import { Container, Header, Menu, Grid, Table, Icon, Button, Label, Pagination } from 'semantic-ui-react';
 import HistoryApi from '../../src/Api/HistoryApi';
 const equal = require('deep-equal');
 
@@ -26,28 +26,12 @@ export default class HistoryScreen extends Component {
     }
 
     render() {
-        let pagination = [];
+        let pagination = '';
         let table = '';
         let tableRows = [];
 
         if (this.state.response !== null)
         {
-            for (let i = 1; i <= this.state.response.count_pages; i++) {
-                let history = this.state.response.history[i];
-                let color = this.state.page == i ? 'green' : 'primary';
-                pagination.push(
-                    <Button onClick={() => {
-                        this.setState({
-                            page: i
-                        });
-                        this.loadDataForPage(i);
-                        window.scrollTo(0, 0);
-                    }} color={color} icon>
-                        {i}
-                    </Button>
-                );
-            }
-            
             this.state.response.history.forEach((history) => {
                 tableRows.push(
                     <Table.Row>
@@ -59,6 +43,16 @@ export default class HistoryScreen extends Component {
                     </Table.Row>
                 );
             });
+            
+            pagination = (
+                 <Pagination size='mini' activePage={this.state.page} defaultActivePage={1} totalPages={this.state.response.count_pages} onPageChange={(event, data) => { 
+                    this.setState({
+                        page: data.activePage
+                    });
+                    this.loadDataForPage(data.activePage);
+                    window.scrollTo(0, 0);
+                }} />
+            );
         }
         
         if(tableRows.length > 0)

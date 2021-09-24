@@ -1,5 +1,5 @@
 export default class PasswordGenerator {
-    static generate( {needNumerics = true, needUpperChars = true, needSymbols = true, needLowerChars = true, length = 15}) {
+    static generate( {needNumerics = true, needUpperChars = true, needSymbols = true, needLowerChars = true, length = 15} ) {
         let password = '';
 
         let providers = [];
@@ -31,7 +31,7 @@ export default class PasswordGenerator {
             }
         }
 
-        return password;
+        return password.length ? password : PasswordGenerator.generate({});
     }
 
     static generateNumeric()

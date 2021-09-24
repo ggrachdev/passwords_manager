@@ -207,7 +207,7 @@ export default class PasswordsTable extends Component {
             if(this.state.activeProject.folders.length > 0)
             {
                 this.state.activeProject.folders.forEach((folder) => {
-                    let color = this.state.activeFolder === folder.id ? 'green' : 'teal';
+                    let color = this.state.activeFolder === folder.id ? 'green' : '';
                     FoldersButtons.push((
                         <Button onClick={() => { this.state.onClickFolder(folder); }} color={color} size='tiny'>{folder.name}</Button>
                     ));

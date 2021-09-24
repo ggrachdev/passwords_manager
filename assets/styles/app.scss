@@ -11,15 +11,24 @@ i.icon.icon_project {
     bottom: 2px;
 }
 
+#app {
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding-top: 53px;
+    
+    > .ui.container {
+        padding: 20px;
+        background: #fff;
+        border-radius: 5px;
+    }
+}
+
 .w100p {
     width: 100% !important;
 }
 
-.icon_add-new-project {
+icon.mini {
     font-size: 17px !important;
-    position: relative;
-    bottom: 2px;
-    margin-right: 5px;
 }
 
 .menu-projects__folder {
@@ -45,7 +54,29 @@ i.icon.icon_project {
 
 .ui.inverted.menu {
     border-radius: 0;
-    background-color: #223d7b !important;
+    background-color: #000 !important;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    top: 0;
+    left: 0;
+}
+
+.project-menu-item {
+
+    > .header {
+        cursor: pointer;
+    }
+}
+
+.project-menu-item.hide {
+    > .menu {
+        display: none;
+    }
+
+    > .header {
+        margin-bottom: 0px !important;
+    }
 }
 
 @media only screen and (min-width: 1600px) {

@@ -120,7 +120,7 @@ class UsersApiController extends AbstractController {
                 $this->getUser(), $em->getRepository(Permission::class)
             );
             
-            if($userPermission->canRemoveUsers())
+            if(!$userPermission->canRemoveUsers())
             {
                 $apiResponse->setErrors("Have not permissions for remove users");
             }

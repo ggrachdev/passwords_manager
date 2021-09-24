@@ -190,14 +190,21 @@ export default class ProjectsScreen extends Component {
             }
         };
         
+        /**
+         * Клик по кнопке с папкой в таблице паролей
+         */
         this.onClickFolderPasswordsTable = (folder) => {
-            this.setState({
-                activeFolder: folder.id
-            });
             
-            setTimeout(() => {
-                this.updatePasswords();
-            }, 50);
+            if(folder.id != this.state.activeFolder)
+            {
+                this.setState({
+                    activeFolder: folder.id
+                });
+
+                setTimeout(() => {
+                    this.updatePasswords();
+                }, 50);
+            }
         };
         
         this.onClickCloseModalAddProject = () => {
@@ -259,7 +266,6 @@ export default class ProjectsScreen extends Component {
             });
         }).catch(() => {
             Toasts.error(`Не получить данные о проектах`);
-            this.initialize();
         });
     }
     
@@ -397,17 +403,57 @@ export default class ProjectsScreen extends Component {
         (
             <Popup content='Добавить новый проект' 
                 trigger={(<Icon onClick={() => { this.setState({ modal_add_project_is_open: true }); }} 
-                className='icon_add-new-project' 
+                className='mini' 
                 style={{marginLeft: '5px'}} size='small' color='grey' link name='add circle' />)} 
+            /> 
+        ) : '';
+        
+        const ButtonHideAllProjects = this.state.projects.length > 0 ? 
+        (
+            <Popup content='Свернуть все проекты' 
+                trigger={(<Icon onClick={() => {
+                    let showedProjects = document.querySelectorAll('.project-menu-item:not(.hide) .header > span');
+
+                    if(showedProjects)
+                    {
+                        showedProjects.forEach((projectMenuNode) => {
+                            projectMenuNode.click();
+                        });
+                    }
+                }} 
+                className='mini' 
+                style={{marginLeft: '5px'}} size='small' color='grey' link name='eye slash' />)} 
+            /> 
+        ) : '';
+        
+        const ButtonShowAllProjects = this.state.projects.length > 0 ? 
+        (
+            <Popup content='Развернуть все проекты' 
+                trigger={(<Icon onClick={() => {
+                    let hiddenProjects = document.querySelectorAll('.project-menu-item.hide .header > span');
+
+                    if(hiddenProjects)
+                    {
+                        hiddenProjects.forEach((projectMenuNode) => {
+                            projectMenuNode.click();
+                        });
+                    }
+                }} 
+                className='mini' 
+                style={{marginLeft: '5px'}} size='small' color='grey' link name='eye' />)} 
             /> 
         ) : '';
     
         return (
             <React.Fragment>
                 <Container>
-                    <Header as='h1'>
+                    <Header as='h1' style={{'display': 'flex', 'alignItems': 'center'}}>
                         Проекты: 
-                        {ButtonAddProject}
+                        <div>
+                            {ButtonAddProject}
+                            {ButtonHideAllProjects}
+                            {ButtonShowAllProjects}
+                        </div>
                     </Header>
                     <Grid divided>
                         <Grid.Row>

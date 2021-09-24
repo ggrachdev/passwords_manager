@@ -1,8 +1,8 @@
 <?php
 
-namespace App\History\Domain\Repository;
+namespace App\Project\Domain\Repository;
 
-interface HistoryRepositoryInterface {
-    public function getTotalCount(): int;
-    public function getElementOnPage(int $pageNumber, int $countElementOnPage = 100): array;
+interface ProjectRepositoryInterface {
+    public function findById($id);
+    public function findByParams(array $params, array $sortParams);
 }
