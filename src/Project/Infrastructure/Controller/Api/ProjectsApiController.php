@@ -120,7 +120,9 @@ class ProjectsApiController extends AbstractController {
                 throw new AccessDeniedException(ErrorsHelper::getErrorMessages($form));
             }
 
-            $this->getDoctrine()->getManager()->persist($project)->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($project);
+            $em->flush();
             
             $this->managerHistory->logAddProjectEvent($this->getUser(), $project);
             
