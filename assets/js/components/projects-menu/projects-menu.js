@@ -95,10 +95,10 @@ export default class ProjectsMenu extends Component {
             // Перемещаем активный проект вперед
             
             this.state.projects.sort(function (a, b) {
-                if (a.name < b.name) {
+                if (a.name.toLowerCase() < b.name.toLowerCase()) {
                     return -1;
                 }
-                if (a.name > b.name) {
+                if (a.name.toLowerCase() > b.name.toLowerCase()) {
                     return 1;
                 }
                 return 0;
@@ -177,7 +177,7 @@ export default class ProjectsMenu extends Component {
                     
                 let visibleClass = isVisibleProject ? 'project-menu-item' : 'hide project-menu-item';
                 
-                let nowProjectFirstLetter = project.name.charAt(0);
+                let nowProjectFirstLetter = project.name.charAt(0).toLowerCase();
                 
                 let dataLetter = nowProjectFirstLetter !== lastFirstLetter ? nowProjectFirstLetter.toUpperCase() : '';
                 
