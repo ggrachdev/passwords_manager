@@ -246,6 +246,7 @@ export default class ProjectsScreen extends Component {
         
         this.onSubmitFormChangePassword = (e) => {
             const data = new FormSerializer(e.target).getObject();
+            
             PasswordsApi.update(this.state.id_password_for_change, data).then(() => {
                 Toasts.success(`Пароль успешно изменен`);
                 this.onClickCloseModalChangePasword();
@@ -253,6 +254,7 @@ export default class ProjectsScreen extends Component {
             }).catch(() => {
                 Toasts.error(`Не удалось изменить пароль`);
             });
+            
         };
 
         this.initialize();

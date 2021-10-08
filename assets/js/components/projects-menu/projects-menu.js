@@ -111,9 +111,10 @@ export default class ProjectsMenu extends Component {
                 this.state.projects.splice(indexActiveProject, 1);
                 this.state.projects.unshift(activeProject);
             }
+            
+            let lastFirstLetter = null;
 
             this.state.projects.forEach((project) => {
-                
                 
                 const folders = [];
 
@@ -154,12 +155,9 @@ export default class ProjectsMenu extends Component {
                     );
                 });
 
-                if (searchString.length > 0)
+                if (searchString.length > 0 && (!projectIsSearched && !folderIsSearched))
                 {
-                    if (!projectIsSearched && !folderIsSearched)
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 const iconEditProject = project.permissions.can_edit ? (
@@ -178,9 +176,15 @@ export default class ProjectsMenu extends Component {
                 let isVisibleProject = VisibleProjectsData.isVisible(projectId) || searchString.length > 0 || this.state.activeProject === projectId;
                     
                 let visibleClass = isVisibleProject ? 'project-menu-item' : 'hide project-menu-item';
+                
+                let nowProjectFirstLetter = project.name.charAt(0);
+                
+                let dataLetter = nowProjectFirstLetter !== lastFirstLetter ? nowProjectFirstLetter.toUpperCase() : '';
+                
+                lastFirstLetter = nowProjectFirstLetter;
 
                 menu.push(
-                    <Menu.Item className={visibleClass} style={styleObj}>
+                    <Menu.Item data-letter={dataLetter} className={visibleClass} style={styleObj}>
                         <Menu.Header>
                             <span onClick={(e) => {
                                 
